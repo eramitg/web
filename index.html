@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+
+<div class="page-header"><h1><img id="logo">Dashboard</h1></div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-2">
+                    <a href="#">Nr. Results <span class="badge" id="results">{{results}}</span></a>
+                </div>
+                <div class="col-md-2">
+                    <input checked data-toggle="toggle" type="checkbox" data-on="Sending" data-off="Receiving">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="daterange" class="form-control" value="01/01/2015 - 01/31/2015"/>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="panel-body">
+        <div class="ct-chart"></div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <table id="table" class="display">
+            <thead>
+            <tr>
+                <th>Date Sent</th>
+                <th>Date Received</th>
+                <th>Sender/Recipient</th>
+                <th>TnT</th>
+                <th>Temp category</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+    <script src="assets/app.bundle.js" charset="utf-8"></script>
+</body>
+</html>

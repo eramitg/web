@@ -1,0 +1,36 @@
+{
+  "name": "webview",
+  "version": "1.0.0",
+  "description": "Temperature Logging Web View for modum.io",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "modum.io",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "bootstrap-webpack": "0.0.5",
+    "css-loader": "^0.24.0",
+    "exports-loader": "^0.6.3",
+    "expose-loader": "^0.7.1",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
+    "imports-loader": "^0.6.5",
+    "less": "^2.7.1",
+    "less-loader": "^2.2.3",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "vue": "^2.0.0-rc.4",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.15.1"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "bootstrap-daterangepicker": "^2.1.24",
+    "bootstrap-toggle": "^2.2.2",
+    "chartist": "^0.9.8",
+    "datatables": "^1.10.12",
+    "jquery": "^3.1.0",
+    "moment": "^2.14.1"
+  }
+}
