@@ -1,0 +1,14 @@
+{
+  "send_comp": "Sender Company",
+  "send_user": "Sender User",
+  "rcv_comp": "Recipient Company",
+  "rcv_user": "Recipient User",
+  "date": "Date",
+  "tnt": "Track and Trace",
+  "transit": "Hours in Transit",
+  "cat": "Temperature Category",
+  "status": "Status",
+  "details": "Details",
+  "show": "Show",
+  "status_bad": "Out of Specification"
+}

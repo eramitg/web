@@ -1,9 +1,11 @@
 module.exports = {
-    entry: './src/app.js',
+    entry: {
+        app: './src/app.js',
+    },
     output: {
         path: './bin',
         publicPath: "/assets/",
-	filename: 'app.bundle.js'
+	    filename: 'app.bundle.js'
     },
     module: {
 	loaders: [
@@ -14,7 +16,8 @@ module.exports = {
     	    {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file'},
     	    {test: /\.css$/, loader: 'style-loader!css-loader'},
     	    {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml'},
-    	    {test: /(.*)\.(png)$/, loader: 'url-loader?limit=8192'}
+    	    {test: /(.*)\.(png)$/, loader: 'url-loader?limit=8192'},
+    	    {test: /\.json$/, loader: 'json-loader'}
 	]
     },
     devServer: {
