@@ -4,21 +4,42 @@
     <meta charset="utf-8">
 </head>
 <body>
+<div id="app"></div>
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+    <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><img id="logo"></a>
+    </div>
+    <center>
+        <div class="navbar-collapse collapse" id="navbar-main">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Link</a>
+                </li>
+                <li><a href="#">Dashboard</a>
+                </li>
+                <li><a href="#">Usermanagement</a>
+                </li>
+                <li><a href="#">Rating</a>
+                </li>
+            </ul>
+            <div id="login"><login/></div>
+        </div>
 
-<form method="post" id="login">
-    Username: <input type="text" name="username"><br>
-    Password: <input type="password" name="password"><br>
-</form>
+    </center>
+</div>
+</div>
 
-<button onclick="login()">Click me</button>
 
-<form method="post" id="create">
-    Username: <input type="text" name="username"><br>
-    Password: <input type="password" name="password"><br>
-</form>
-<button onclick="test()">Create User</button>
 
-<div class="page-header"><h1><img id="logo">Dashboard</h1></div>
+
+<div class="page-header"><h1>Dashboard</h1></div>
+
+<div id="create"><create/></div>
 
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -89,56 +110,9 @@
         <table id="table" class="display">
         </table>
     </div>
+</div>
 
     <script src="assets/app.bundle.js" charset="utf-8"></script>
-    <script>
-        function login() {
-            var arr = $("#login").serializeArray();
-            var len = arr.length, arr2 = {};
-            for ( i=0; i < len; i+=1 ) {
-                arr2[arr[i].name] = arr[i].value;
-             }
-            formData = JSON.stringify(arr2);
 
-            $.ajax({
-                type: "POST",
-                url: "/api/login",
-                data: formData,
-                success: function(data){
-                    localStorage.setItem("token", data.token);
-                },
-                dataType: "json",
-                contentType : "application/json"
-            });
-        }
-
-        function logout() {
-            localStorage.setItem("token", "");
-        }
-
-        function test() {
-
-            var arr = $("#create").serializeArray();
-            var len = arr.length, arr2 = {};
-            for ( i=0; i < len; i+=1 ) {
-                arr2[arr[i].name] = arr[i].value;
-             }
-            formData = JSON.stringify(arr2);
-
-            $.ajax({
-                type: "POST",
-                url: "/api/users",
-                data: formData,
-                success: function(data){
-                    localStorage.setItem("token", data.token);
-                },
-                dataType: "json",
-                contentType : "application/json",
-                headers: {
-                    'Authorization':'Bearer ' + localStorage.getItem("token")
-                }
-            });
-        }
-    </script>
 </body>
 </html>

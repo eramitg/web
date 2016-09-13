@@ -1,7 +1,7 @@
-//import $ from 'jquery';
-
 require('expose?$!expose?jQuery!jquery');
+
 require("bootstrap-webpack");
+//import 'bootstrap-webpack'
 
 require("bootstrap-daterangepicker/daterangepicker.css")
 require("bootstrap-daterangepicker")
@@ -16,6 +16,7 @@ img.src=require("./assets/logo.png")
 
 var i18 = require("i18next/i18next.js")
 
+
 i18.init({
   debug: 'false',
   lng: 'de',
@@ -29,13 +30,24 @@ i18.init({
     }
 });
 
-var Vue = require("vue/dist/vue.js")
-
 require("datatables/media/css/jquery.dataTables.css")
 var dt = require("datatables");
-
 $('input[name="daterange"]').daterangepicker();
 
+
+
+import Vue from 'vue/dist/vue.js'
+import Login from './login.vue'
+import Create from './create.vue'
+Vue.component('login', Login)
+Vue.component('create', Create)
+
+var v1 = new Vue({el: '#login'})
+var v1 = new Vue({el: '#create'})
+
+
+
+import auth from './auth.js'
 
 new Vue({
   el: '#results',
@@ -43,6 +55,8 @@ new Vue({
     results: '42'
   }
 })
+
+
 
 var data = {
   labels: ['21.10.2016', '22.10.2016', '23.10.2016', '24.10.2016', '25.10.2016', '26.10.2016', '27.10.2016', '28.10.2016'],
@@ -145,10 +159,19 @@ $(document).ready(function() {
             }
         ],
         "initComplete": function(settings, json) {
-            $(".btn").click(function(){
+            $(".btn1").click(function(){
                 $("#details-dialog").modal('show');
             });
         }
     } );
+
+    /*var token = localStorage.getItem("token");
+    if(token) {
+        $("#user-menu").show();
+        $("#login").hide();
+    } else {
+        $("#user-menu").hide();
+        $("#login").show();
+    }*/
 } );
 
