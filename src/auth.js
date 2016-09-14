@@ -10,6 +10,12 @@ export default {
                                        success: function(data) {
                                            localStorage.setItem("token", data.token);
                                            localStorage.setItem("username", formData.username);
+                                           let arr = data.token.split(".")
+                                           let decoded = atob(arr[1])
+                                           let json = JSON.parse(decoded);
+                                           localStorage.setItem("uid", json.userId);
+
+                                           console.log(localStorage.getItem('uid'));
                                            console.log(localStorage.getItem('token'));
                                            console.log(localStorage.getItem('username'));
 
@@ -24,6 +30,7 @@ export default {
     logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('username');
+            localStorage.removeItem('uid');
     },
 
     checkAuth() {
@@ -34,6 +41,11 @@ export default {
     username() {
             var username = localStorage.getItem('username')
             return username;
+    },
+
+    uid() {
+            let uid = localStorage.getItem('uid')
+            return uid;
     },
 
 
