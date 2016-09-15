@@ -79,9 +79,11 @@ require("bootstrap-daterangepicker")
 require("bootstrap-toggle/css/bootstrap-toggle.css")
 require("bootstrap-toggle")
 require("chartist/dist/chartist.min.css")
+require("datatables/media/css/jquery.dataTables.css")
+require("datatables");
 
 
-/*var i18 = require("i18next/i18next.js")
+var i18 = require("i18next/i18next.js")
 i18.init({
   debug: 'false',
   lng: 'de',
@@ -93,17 +95,7 @@ i18.init({
     'de':{ 'translation':require("./assets/locales/de/translation.json")},
     'en':{ 'translation':require("./assets/locales/en/translation.json")}
     }
-});*/
-
-
-
-/*const data = {
-  labels: ['21.10.2016', '22.10.2016', '23.10.2016', '24.10.2016', '25.10.2016', '26.10.2016', '27.10.2016', '28.10.2016'],
-  series: [
-    [5, 4, 3, 7, 5, 10, 3, 9],
-    [1, 2, 2, 1, 2, 1, 0, 1]
-  ]
-};*/
+});
 
 const options = {
   // Don't draw the line chart points
@@ -121,14 +113,8 @@ const options = {
   },
   height: 200
 };
-/*
-// Create a new line chart object where as first parameter we pass in a selector
-// that is resolving to our chart container element. The Second parameter
-// is the actual data object.
-//new Chartist.Line(this.$els.chart, data, options);
 
-
-var data2 = {
+var dataDetail = {
   labels: ['21.10.2016', '22.10.2016', '23.10.2016', '24.10.2016', '25.10.2016', '26.10.2016', '27.10.2016', '28.10.2016'],
   series: [
     [24.1, 24.2, 26, 27, 26, 25.2, 25.3, 25.1],
@@ -136,7 +122,7 @@ var data2 = {
   ]
 };
 
-var options2 = {
+var optionsDetail = {
   // Don't draw the line chart points
   showPoint: true,
   showArea: true,
@@ -154,16 +140,12 @@ var options2 = {
   width: 600
 };
 
-// Create a new line chart object where as first parameter we pass in a selector
-// that is resolving to our chart container element. The Second parameter
-// is the actual data object.
-//new Chartist.Line('.detail-graph', data2, options2);
-
-
-
-require("datatables/media/css/jquery.dataTables.css")
-var dt = require("datatables");
-
+import auth from './auth.js'
+import ajax from './utils.js'
+export default {
+    async mounted() {
+        var Chartist = require("chartist")
+        $('input[name="daterange"]').daterangepicker();
 
 var dataSet = [
     [ "Voigt", "Tom", "Schaer", "Malik", "21.6.2016 - 22.6.2016", "24h", "TnT 1234", "15-25",  "Ok", "link" ],
@@ -171,54 +153,40 @@ var dataSet = [
 ];
 
 
+        $('#table').DataTable( {
+                //"ajax": "data/objects.txt",
+                data: dataSet,
+                "columns": [
+                    { "title": i18.t('send_comp') },
+                    { "title": i18.t('send_user') },
+                    { "title": i18.t('rcv_comp') },
+                    { "title": i18.t('rcv_user') },
+                    { "title": i18.t('date') },
+                    { "title": i18.t('transit') },
+                    { "title": i18.t('tnt') },
+                    { "title": i18.t('cat') },
+                    { "title": i18.t('status') },
+                    { "title": i18.t('details'),
+                      "render": function ( data, type, full, meta ) {
+                        return '<button type="button" id="btn" data-toggle="modal" data-loading-text="Loading..." class="btn btn-default" autocomplete="off">'+i18.t('show')+'</button>';
+                      }
+                    }
+                ],
+                "initComplete": function(settings, json) {
+                    $(".btn1").click(function(){
+                        $("#details-dialog").modal('show');
+                    });
+                }
+            } );
 
-//<th>Date Sent</th>
-//                <th>Date Received</th>
-//                <th>Sender/Recipient</th>
-//                <th>TnT</th>
-//                <th>Temp category</th>
-//                <th>Status</th>
 
 
-
-$(document).ready(function() {
-    $('#table').DataTable( {
-        //"ajax": "data/objects.txt",
-        data: dataSet,
-        "columns": [
-            { "title": i18.t('send_comp') },
-            { "title": i18.t('send_user') },
-            { "title": i18.t('rcv_comp') },
-            { "title": i18.t('rcv_user') },
-            { "title": i18.t('date') },
-            { "title": i18.t('transit') },
-            { "title": i18.t('tnt') },
-            { "title": i18.t('cat') },
-            { "title": i18.t('status') },
-            { "title": i18.t('details'),
-              "render": function ( data, type, full, meta ) {
-                return '<button type="button" id="btn" data-toggle="modal" data-loading-text="Loading..." class="btn btn-default" autocomplete="off">'+i18.t('show')+'</button>';
-              }
-            }
-        ],
-        "initComplete": function(settings, json) {
-            $(".btn1").click(function(){
-                $("#details-dialog").modal('show');
-            });
-        }
-    } );
-    new Chartist.Line('.overview-graph', data, options)
-
-} );*/
-
-import auth from './auth.js'
-import ajax from './utils.js'
-export default {
-    async mounted() {
-        var Chartist = require("chartist")
-        $('input[name="daterange"]').daterangepicker();
-        let result = await this.parcels()
-        console.log(result)
+        let results = await this.parcels()
+        console.log(results)
+        var res = this.process(results)
+        this.data = res.data;
+        this.results = this.data.labels.length
+        console.log(this.data)
         new Chartist.Line(this.$refs.chart, this.data, options)
     },
     data() {
@@ -244,6 +212,30 @@ export default {
                 contentType : "application/json",
                 headers: auth.authHeader()
             });
+        },
+        process(rawData) {
+            var result = {data:{labels:[],series:[[],[]]}}
+            let len = rawData.length;
+            var index = -1;
+            for (var i = 0; i < len; i++) {
+                let date = rawData[i].dateSent.split('T')[0];
+                if(result.data.labels[index] !== date) {
+                    index++;
+                    result.data.labels[index] =  date
+
+                }
+
+                if(!result.data.series[0][index]) {
+                    result.data.series[0][index] = 0;
+                }
+                if(!result.data.series[1][index]) {
+                    result.data.series[1][index] = 0;
+                }
+
+                result.data.series[0][index] ++
+                result.data.series[1][index] += rawData[i].result.isSuccess? 1:0
+            }
+            return result;
         }
     }
 }
