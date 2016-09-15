@@ -146,41 +146,6 @@ export default {
     async mounted() {
         var Chartist = require("chartist")
         $('input[name="daterange"]').daterangepicker();
-
-var dataSet = [
-    [ "Voigt", "Tom", "Schaer", "Malik", "21.6.2016 - 22.6.2016", "24h", "TnT 1234", "15-25",  "Ok", "link" ],
-    [ "Schaer", "Malik", "Voigt", "Tom", "22.6.2016 - ", "34h...", "TnT 4321", "5-30", "Sent", "link" ]
-];
-
-
-        $('#table').DataTable( {
-                //"ajax": "data/objects.txt",
-                data: dataSet,
-                "columns": [
-                    { "title": i18.t('send_comp') },
-                    { "title": i18.t('send_user') },
-                    { "title": i18.t('rcv_comp') },
-                    { "title": i18.t('rcv_user') },
-                    { "title": i18.t('date') },
-                    { "title": i18.t('transit') },
-                    { "title": i18.t('tnt') },
-                    { "title": i18.t('cat') },
-                    { "title": i18.t('status') },
-                    { "title": i18.t('details'),
-                      "render": function ( data, type, full, meta ) {
-                        return '<button type="button" id="btn" data-toggle="modal" data-loading-text="Loading..." class="btn btn-default" autocomplete="off">'+i18.t('show')+'</button>';
-                      }
-                    }
-                ],
-                "initComplete": function(settings, json) {
-                    $(".btn1").click(function(){
-                        $("#details-dialog").modal('show');
-                    });
-                }
-            } );
-
-
-
         let results = await this.parcels()
         console.log(results)
         var res = this.process(results)
@@ -188,18 +153,40 @@ var dataSet = [
         this.results = this.data.labels.length
         console.log(this.data)
         new Chartist.Line(this.$refs.chart, this.data, options)
+        let tmp = this.processTable(results)
+        this.dataSet = tmp
+        $('#table').DataTable( {
+                        //"ajax": "data/objects.txt",
+                        data: this.dataSet,
+                        "columns": [
+                            { "title": i18.t('send_comp') },
+                            { "title": i18.t('send_user') },
+                            { "title": i18.t('rcv_comp') },
+                            { "title": i18.t('rcv_user') },
+                            { "title": i18.t('date') },
+                            { "title": i18.t('transit') },
+                            { "title": i18.t('tnt') },
+                            { "title": i18.t('cat') },
+                            { "title": i18.t('status') },
+                            { "title": i18.t('details'),
+                              "render": function ( data, type, full, meta ) {
+                                return '<button type="button" id="btn" data-toggle="modal" data-loading-text="Loading..." class="btn btn-default" autocomplete="off">'+i18.t('show')+'</button>';
+                              }
+                            }
+                        ],
+                        "initComplete": function(settings, json) {
+                            $(".btn1").click(function(){
+                                $("#details-dialog").modal('show');
+                            });
+                        }
+                    } );
     },
     data() {
         return {
             results: 42,
             message: '',
-            data : {
-              labels: ['21.10.2016', '22.10.2016', '23.10.2016', '24.10.2016', '25.10.2016', '26.10.2016', '27.10.2016', '28.10.2016'],
-              series: [
-                [5, 4, 3, 7, 5, 10, 3, 9],
-                [1, 2, 2, 1, 2, 1, 0, 1]
-              ]
-            }
+            data : '',
+            dataSet: ''
         }
     },
     methods: {
@@ -207,11 +194,29 @@ var dataSet = [
             let uid = auth.uid();
             return await ajax.ajax({
                 type: "GET",
-                url: "/api/users/"+uid+"/parcels",
+                url: "/api/users/"+uid+"/parcels/web",
                 dataType: "json",
                 contentType : "application/json",
                 headers: auth.authHeader()
             });
+        },
+        processTable(rawData) {
+                    var result = []
+                    let len = rawData.length;
+                    for (var i = 0; i < len; i++) {
+                        result[i] = [];
+                        result[i][0]= rawData[i].sender
+                        result[i][1]= rawData[i].sender
+                        result[i][2]= rawData[i].receiver
+                        result[i][3]= rawData[i].receiver
+                        result[i][4]= rawData[i].dateSent
+                        result[i][5]= '5h'
+                        result[i][6]= rawData[i].tntNumber
+                        result[i][7]= rawData[i].tempCategory.name
+                        result[i][8]= rawData[i].result.isSuccess
+                        result[i][9]= rawData[i].measurements
+                    }
+                    return result;
         },
         process(rawData) {
             var result = {data:{labels:[],series:[[],[]]}}
