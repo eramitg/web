@@ -3,12 +3,15 @@
   "send_user": "Sender User",
   "rcv_comp": "Recipient Company",
   "rcv_user": "Recipient User",
-  "date": "Date",
+  "date_sent": "Date Sent",
+  "date_received": "Date Received",
   "tnt": "Track and Trace",
   "transit": "Hours in Transit",
   "cat": "Temperature Category",
   "status": "Status",
   "details": "Details",
   "show": "Show",
-  "status_bad": "Out of Specification"
+  "status_bad": "Out of Specification",
+  "status_ok": "Good",
+  "status_transit": "In Progress"
 }
