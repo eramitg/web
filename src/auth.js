@@ -54,29 +54,4 @@ export default {
               'Authorization': 'Bearer ' + localStorage.getItem('token')
             }
     },
-
-    test() {
-            var arr11 = $("#create-form");
-            var arr = $("#create-form").serializeArray();
-            var len = arr.length, arr2 = {};
-            for ( var i=0; i < len; i+=1 ) {
-                arr2[arr[i].name] = arr[i].value;
-             }
-            var formData = JSON.stringify(arr2);
-
-            $.ajax({
-                type: "POST",
-                url: "/api/users",
-                data: formData,
-                success: function(data){
-                    localStorage.setItem("token", data.token);
-                },
-                dataType: "json",
-                contentType : "application/json",
-                headers: {
-                    'Authorization':'Bearer ' + localStorage.getItem("token")
-                }
-            });
-    }
-
 }

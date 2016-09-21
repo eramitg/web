@@ -109,17 +109,12 @@ const options = {
     // We can disable the grid for this axis
     //showGrid: false,
     // and also don't show the label
-    showLabel: true
+    showLabel: true,
+        labelInterpolationFnc: function skipLabels(value, index, labels) {
+            return index % Math.round(labels.length / 15)  === 0 ? value : null;
+     }
   },
   height: 200
-};
-
-var dataDetail = {
-  labels: ['21.10.2016', '22.10.2016', '23.10.2016', '24.10.2016', '25.10.2016', '26.10.2016', '27.10.2016', '28.10.2016'],
-  series: [
-    [24.1, 24.2, 26, 27, 26, 25.2, 25.3, 25.1],
-    [26, 26, 26, 26, 26, 26, 26, 26]
-  ]
 };
 
 var optionsDetail = {
@@ -134,10 +129,20 @@ var optionsDetail = {
     // We can disable the grid for this axis
     //showGrid: false,
     // and also don't show the label
-    showLabel: true
+    showLabel: true,
+    labelInterpolationFnc: function skipLabels(value, index, labels) {
+      return index % Math.round(labels.length / 8)  === 0 ? value : null;
+    }
   },
-  height: 400,
-  width: 600
+  axisY: {
+    high:40,
+    low:-10,
+    labelInterpolationFnc: function skipLabels(value, index, labels) {
+       return value + '°C';
+    }
+  },
+  height: 600,
+  width: 550
 };
 
 var Chartist = require("chartist")
@@ -237,11 +242,7 @@ export default {
                                 return '<button type="button" id="btn" data-toggle="modal" data-loading-text="Loading..." class="btn btn-default" autocomplete="off">'+i18.t('show')+'</button>';
                               }
                             }
-                        ],
-                        "drawCallback": function (settings) {
-                            var api = this.api();
-                            console.log(api.colReorder.transpose( 0 ))
-                        }
+                        ]
                     } );
 
              var tmp = this.table
@@ -252,7 +253,8 @@ export default {
                 console.log(pid)
                 var res = await that.parcelDetails(pid);
                 console.log(res)
-                //this.dataDetail = this.processDetail(res[index])
+                that.dataDetail = that.processDetail(res).data
+                $('#details-dialog').modal('show');
              } );
     },
     data() {
@@ -308,7 +310,10 @@ export default {
         processTable(rawData, start, end) {
                     var result = []
                     let len = rawData.length;
+                    console.log(rawData)
                     for (var i = 0, index = 0; i < len; i++) {
+                        console.log(rawData[i].id+ "/"+i);
+                        //console.log("adding1 id:"+rawData[i].id+ " / "+index)
                         if(start && moment(rawData[i].dateSent).isBefore(start) && moment(rawData[i].dateReceived).isBefore(start)) {
                           continue;
                         }
@@ -320,8 +325,8 @@ export default {
                         result[index][1]= rawData[i].sender
                         result[index][2]= rawData[i].receiver
                         result[index][3]= rawData[i].receiver
-                        result[index][4]= moment(rawData[i].dateSent).valueOf()
-                        result[index][5]= moment(rawData[i].dateReceived).valueOf()
+                        //result[index][4]= moment(rawData[i].dateSent).valueOf()
+                        //result[index][5]= moment(rawData[i].dateReceived).valueOf()
                         result[index][6]= 'n/a'
                         result[index][7]= rawData[i].tntNumber
                         result[index][8]= rawData[i].tempCategory.name
@@ -330,9 +335,10 @@ export default {
                         result[index][10]= rawData[i].measurements
                         result[index][11]=i
                         result[index][12]=rawData[i].id
+                        console.log("adding2 id:"+rawData[i].id+ " / "+index)
                         index++
                     }
-                    console.log("processed: "+result)
+                    console.log("processed: "+result.length)
                     return result;
         },
         process(rawData, start, end) {
@@ -366,8 +372,25 @@ export default {
             return result;
         },
         processDetail(rawData) {
-         console.log("raw data: " + JSON.stringify(rawData))
-         return [];
+            console.log(rawData)
+            var result = {data:{labels:[],series:[[],[]]}}
+            let len = rawData.measurements.length;
+            console.log("len: " + len)
+            for (var i = 0, index = 0; i < len; i++) {
+                let len2 = rawData.measurements[i].measurements.length;
+                console.log("len3: " + len2)
+                for (var j = 0; j < len2; j++) {
+                    let date = moment(rawData.measurements[i].measurements[j].timestamp);
+                    let label = date.format('DD.MM.YYYY hh:mm')
+                    result.data.labels[index] = label
+                    result.data.series[0][index] = rawData.tempCategory.maxTemp;
+                    result.data.series[1][index] = rawData.measurements[i].measurements[j].temperature;
+                    index++;
+                }
+
+            }
+            console.log(result)
+         return result;
         }
     }
 }
