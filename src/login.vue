@@ -53,6 +53,7 @@ export default {
             if(result.token) {
                 this.authenticated = true;
                 this.error = '';
+                this.$router.go('/')
             } else {
                 this.error = "no token";
             }

@@ -1,9 +1,12 @@
+var webpack = require('webpack');
+var PROD = JSON.parse(process.env.PROD_ENV || '0');
+
 module.exports = {
     entry: ['./src/app.js', './src/auth.js', './src/utils.js'],
     output: {
         path: './bin',
         publicPath: "assets/",
-	    filename: 'app.bundle.js'
+	    filename: PROD ? 'app.min.bundle.js' : 'app.bundle.js'
     },
     module: {
 	    loaders: [
@@ -26,5 +29,10 @@ module.exports = {
 
     devServer: {
 	    hot: true
-    }
+    },
+    plugins: PROD ? [
+        new webpack.optimize.UglifyJsPlugin({
+            compress: { warnings: false }
+        })
+    ] : []
 };
