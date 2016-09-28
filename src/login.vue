@@ -3,12 +3,15 @@
   <div class="navbar-collapse collapse" id="navbar-main">
               <div class=" navbar-right" role="search" id="login" v-if="authenticated">
               <ul class="nav navbar-nav">
+
+
                   <li class="dropdown" id="user-menu">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">User: {{credentials.username}} <b class="caret"></b></a>
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{credentials.role}} {{credentials.username}} / {{credentials.company}} <b class="caret"></b></a>
                       <ul class="dropdown-menu">
                           <li><a href="#" @click="logout()">Sign Out</a></li>
                       </ul>
                   </li>
+                  <li><p class="navbar-text">Logged in</p></li>
               </ul>
 
               </div>
@@ -35,11 +38,13 @@ export default {
     data() {
       return {
         credentials: {
-          username: auth.username(),
-          password: ''
+          role: auth.role().charAt(0).toUpperCase() + auth.role().slice(1).toLowerCase(),
+          username: auth.userName(),
+          password: '',
+          company: auth.companyName()
         },
         error: '',
-        authenticated: auth.checkAuth()
+        authenticated: auth.token()
       }
     },
     methods: {

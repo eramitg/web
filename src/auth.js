@@ -1,57 +1,75 @@
 import ajax from './utils.js'
+
 export default {
 
     async login(formData) {
-            var json = JSON.stringify(formData);
-            return await ajax.ajax({
-                                       type: "POST",
-                                       url: "/api/login",
-                                       data: json,
-                                       success: function(data) {
-                                           localStorage.setItem("token", data.token);
-                                           localStorage.setItem("username", formData.username);
-                                           let arr = data.token.split(".")
-                                           let decoded = atob(arr[1])
-                                           let json = JSON.parse(decoded);
-                                           localStorage.setItem("uid", json.userId);
-
-                                           console.log(localStorage.getItem('uid'));
-                                           console.log(localStorage.getItem('token'));
-                                           console.log(localStorage.getItem('username'));
-
-                                       },
-                                       dataType: "json",
-                                       contentType : "application/json"
-                                   });
+        return await ajax.ajax({
+            type: "POST",
+            url: "/api/login",
+            data: JSON.stringify(formData),
+            success: function (data) {
+                let arr = data.token.split(".")
+                let decoded = atob(arr[1])
+                let json = JSON.parse(decoded);
+                json['token'] = data.token
+                localStorage.setItem("user-profile", JSON.stringify(json));
+            },
+            dataType: "json",
+            contentType: "application/json"
+        });
     },
 
-
-
-    logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('username');
-            localStorage.removeItem('uid');
+    userName() {
+        let jsonStr = localStorage.getItem('user-profile')
+        if(!jsonStr) {
+            return "n/a"
+        }
+        return JSON.parse(jsonStr).userName
     },
-
-    checkAuth() {
-            var token = localStorage.getItem('token')
-            return token;
+    userId() {
+        let jsonStr = localStorage.getItem('user-profile')
+        if(!jsonStr) {
+            return "n/a"
+        }
+        return JSON.parse(jsonStr).userId
     },
-
-    username() {
-            var username = localStorage.getItem('username')
-            return username;
+    companyId() {
+        let jsonStr = localStorage.getItem('user-profile')
+        if(!jsonStr) {
+            return "n/a"
+        }
+        return JSON.parse(jsonStr).companyId
     },
-
-    uid() {
-            let uid = localStorage.getItem('uid')
-            return uid;
+    companyName() {
+        let jsonStr = localStorage.getItem('user-profile')
+        if(!jsonStr) {
+            return "n/a"
+        }
+        return JSON.parse(jsonStr).companyName
     },
-
+    role() {
+        let jsonStr = localStorage.getItem('user-profile')
+        if(!jsonStr) {
+            return "n/a"
+        }
+        return JSON.parse(jsonStr).role
+    },
+    token() {
+        let jsonStr = localStorage.getItem('user-profile')
+        if(!jsonStr) {
+            return "n/a"
+        }
+        return JSON.parse(jsonStr).token
+    },
 
     authHeader() {
-            return {
-              'Authorization': 'Bearer ' + localStorage.getItem('token')
-            }
+        let jsonStr = localStorage.getItem('user-profile')
+        if(!jsonStr) {
+            return "n/a"
+        }
+        return { 'Authorization': 'Bearer ' + JSON.parse(jsonStr).token }
     },
+    logout() {
+        localStorage.removeItem('user-profile');
+    }
 }

@@ -146,7 +146,7 @@ var optionsDetail = {
 var Chartist = require("chartist")
 
 import auth from './auth.js'
-import ajax from './utils.js'
+import utils from './utils.js'
 export default {
     updated() {
         $(function() {
@@ -199,7 +199,6 @@ export default {
         //this.dataSet = this.processTable(this.results, this.start, this.end)
         this.updateTable()
         this.table = $('#table').DataTable({
-            //"ajax": "data/objects.txt",
             data: this.dataSet,
             colReorder: true,
             "columns": [
@@ -356,20 +355,18 @@ export default {
             this.data = this.process(this.results, this.start, this.end, this.sending, this.senderName, this.recipientName).data
         },
         async parcels() {
-            let uid = auth.uid();
-            return await ajax.ajax({
+            return await utils.ajax({
                 type: "GET",
-                url: "/api/users/" + uid + "/parcels/web",
+                url: "/api/users/" + auth.userId() + "/parcels/web",
                 dataType: "json",
                 contentType: "application/json",
                 headers: auth.authHeader()
             });
         },
         async parcelDetails(pid) {
-            let uid = auth.uid();
-            return await ajax.ajax({
+            return await utils.ajax({
                 type: "GET",
-                url: "/api/users/" + uid + "/parcels/details/" + pid,
+                url: "/api/users/" + auth.userId() + "/parcels/details/" + pid,
                 dataType: "json",
                 contentType: "application/json",
                 headers: auth.authHeader()
@@ -390,11 +387,11 @@ export default {
                     console.log("after")
                     continue;
                 }
-                if (sending && rawData[i].sender !== auth.username() ) {
+                if (sending && rawData[i].sender !== auth.userName() ) {
                     console.log("not sender")
                     continue;
                 }
-                if (!sending && rawData[i].receiver !== auth.username() ) {
+                if (!sending && rawData[i].receiver !== auth.userName() ) {
                     console.log("not receiver")
                     continue;
                 }
@@ -443,11 +440,11 @@ export default {
                     console.log("after")
                     continue;
                 }
-                if (sending && rawData[i].sender !== auth.username() ) {
+                if (sending && rawData[i].sender !== auth.userName() ) {
                     console.log("not sender")
                     continue;
                 }
-                if (!sending && rawData[i].receiver !== auth.username() ) {
+                if (!sending && rawData[i].receiver !== auth.userName() ) {
                     console.log("not receiver")
                     continue;
                 }
