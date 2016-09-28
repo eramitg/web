@@ -28,7 +28,22 @@ require("./assets/css/jquery.dataTables-modum.css")
 require("datatables.net");
 require("datatables.net-colreorder");
 
-
+function filter(rawData) {
+    var result = []
+    let len = rawData.length;
+    console.log(rawData)
+    for (var i = 0, index = 0; i < len; i++) {
+        result[i] = [];
+        result[i][0] = rawData[i].name
+        result[i][1] = rawData[i].company.name
+        result[i][2] = rawData[i].role
+        result[i][3] = rawData[i].ID
+        result[i][4] = rawData[i].ID
+        result[i][5] = rawData[i].ID
+    }
+    console.log(result)
+    return result
+}
 
 export default {
     async mounted() {
@@ -36,24 +51,28 @@ export default {
         var result = 'hallo'
         console.log('Role:' + auth.role())
         if(auth.role() === 'ADMIN') {
-
             result = await this.loadCompanyUsers()
         } else if(auth.role() === 'SUPER') {
             result = await this.loadAllUsers()
         }
+        let data = filter(result)
         console.log(result)
-        $('#example').DataTable( {
-            "ajax": result,
-            "columns": [
-                { "data": "name" },
-                { "data": "position" },
-                { "data": "office" },
-                { "data": "extn" },
-                { "data": "start_date" },
-                { "data": "salary" }
-            ]
+
+        $('#example').on( 'click', 'tbody td:not(:first-child)', function (e) {
+            editor.inline( this );
         } );
 
+        $('#example').DataTable( {
+            "data": data,
+            "columns": [
+                { "title": "Name" },
+                { "title": "Company" },
+                { "title": "Role" },
+                { "title": "Password" },
+                { "title": "Repeat Password" },
+                { "title": "Action" }
+            ]
+        } );
     },
     methods: {
         async loadAllUsers() {
@@ -76,9 +95,9 @@ export default {
         }
     },
 
-    data: {
+    data() { return {
         isAdmin: auth.role() === 'ADMIN',
         isSuper: auth.role() === 'SUPER'
-    }
+    }}
   }
 </script>
