@@ -1,32 +1,37 @@
 <template>
-<div>
-  <div class="navbar-collapse collapse" id="navbar-main">
-              <div class=" navbar-right" role="search" id="login" v-if="authenticated">
-              <ul class="nav navbar-nav">
-                  <li class="dropdown" id="user-menu">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">User: {{credentials.username}} <b class="caret"></b></a>
-                      <ul class="dropdown-menu">
-                          <li><a href="#" @click="logout()">Sign Out</a></li>
-                      </ul>
-                  </li>
-              </ul>
-
+  <div>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="" v-if="authenticated">
+          <a class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <img src="" alt="">John Doe
+            <span class=" fa fa-angle-down"></span>
+          </a>
+          <ul class="dropdown-menu dropdown-usermenu pull-right">
+            <li><a href="javascript:;"> Profile</a></li>
+            <li>
+              <a href="javascript:;">
+                <span class="badge bg-red pull-right">50%</span>
+                <span>Settings</span>
+              </a>
+            </li>
+            <li><a href="javascript:;">Help</a></li>
+            <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Sign Out</a></li>
+          </li>
+          <li role="search" id="login" class="form-inline" v-if="!authenticated">
+            <a>
+              <div class="form-group">
+                  <input type="text" class="form-control" name="username" placeholder="Username">
               </div>
-              <div class="navbar-form navbar-right" role="search" id="login" v-if="!authenticated">
-                  <div class="form-group">
-                      <input type="text" class="form-control" name="username" placeholder="Username" v-model="credentials.username">
-                  </div>
-                  <div class="form-group">
-                      <input type="password" class="form-control" name="password" placeholder="Password" v-model="credentials.password">
-                  </div>
-                  <button class="btn btn-primary" @click="submit()">Sign In</button>
+              <div class="form-group">
+                  <input type="password" class="form-control" name="password" placeholder="Password">
               </div>
-          </div>
-          <div class="alert alert-danger" v-if="error">
-                  <a href="#" class="close"  @click="dismiss()">&times;</a>
-                  <p>{{ error }}</p>
-              </div>
-          </div>
+            <button class="btn btn-primary" @click="submit()">Sign In</button>
+          </a>
+          </li>
+          </ul>
+        </li>
+      </ul>
+  </div>
 </template>
 
 <script>

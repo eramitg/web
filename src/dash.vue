@@ -1,9 +1,13 @@
 <template>
-<div>
-
-<div class="page-header"><h1>Dashboard</h1></div>
-
-
+<div class="col-md-12 col-sm-12 col-xs-12">
+  <div>
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>Shipments</h2>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
 <div class="panel panel-default">
     <div class="panel-heading">
         <div class="container-fluid">
