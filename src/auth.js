@@ -35,7 +35,9 @@ export default {
 
     checkAuth() {
             var token = localStorage.getItem('token')
-            return token;
+            console.log("Token:")
+            console.log(token != null)
+            return token != null;
     },
 
     username() {
