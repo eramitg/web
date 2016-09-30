@@ -115,7 +115,8 @@ export default {
             console.log('oldValue', args.row)
             console.log('newValue', args.newValue)
             result = await this.updateUser(args.row)
-            if(args.row.id < 0) {
+            if(args.row.id <= 0) {
+                console.log("set new ID "+result.ID)
                 args.row.id = result.ID
             }
         })
@@ -187,8 +188,12 @@ export default {
             console.log("update or insert new user: " + row.id)
             if(row.id > 0) {
                 return utils.ajax({
+                    data: JSON.stringify({
+                        name: row.values.name,
+                        role: row.values.role,
+                        company: {ID: row.values.company}}),
                     type: "PUT",
-                    url: "/api/v1/company/user/update",
+                    url: "/api/v1/company/admin/update/" + row.id,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
