@@ -1,70 +1,117 @@
 <template>
-<div>
-
-<div class="page-header"><h1>Dashboard</h1></div>
-
-
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-2">
-                    <input name="checkbox" checked data-toggle="toggle" type="checkbox" data-on="Sending" data-off="Receiving">
+    <div>
+        <div class="row" v-if="!authenticated">
+            <div class="col-sm-12">
+                <p class="text-center">No information available. Please sign in.</p>
+            </div>
+        </div>
+        <div v-if="authenticated" class="row tile_count">
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <span class="count_top"></i>Total verschickte Sendungen</span>
+                <div class="count">55</div>
+                <div class="count"></div>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <span class="count_top"></i>Total Sendungen OK</span>
+                <div class="count">44</div>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <span class="count_top"></i>Anzahl Abweichungen</span>
+                <div class="count green">348</div>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <span class="count_top"></i>Anzahl nicht angekommen</span>
+                <div class="count">1</div>
+            </div>
+        </div>
+        <div v-if="authenticated" class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="dashboard_graph x_panel">
+                    <div class="row x_title">
+                        <div class="col-sm-4 col-xs-12">
+                            <input type="text" name="daterange" class="form-control" value="01/01/2015 - 01/31/2015"/>
+                        </div>
+                        <div class="col-sm-2 col-xs-12">
+                            <input name="checkbox" class="dropdown-toggle" checked data-toggle="toggle" type="checkbox"
+                                   data-on="Sending"
+                                   data-off="Receiving">
+                        </div>
+                        <div class="col-sm-2 col-xs-12">
+                            <div class="btn-group">
+                                <select class="form-control" v-model="selected">
+                                    <option v-if="sending" v-for="recipientName in recipientNames"
+                                            v-bind:value="recipientName" @click="filter()">{{ recipientName }}
+                                    </option>
+                                    <option v-if="!sending" v-for="senderName in senderNames" v-bind:value="senderName"
+                                            @click="filter()">{{ senderName }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div ref="chart" class="overview-graph"></div>
+                    </div>
+                    <div class="clearfix"></div>
                 </div>
-                <div class="col-sm-3">
-                    <input type="text" name="daterange" class="form-control" value="01/01/2015 - 01/31/2015"/>
-                </div>
-
-                <div class="col-sm-2">
-                    <!-- Split button -->
-                    <div class="btn-group">
-
-
-                        <select class="form-control" v-model="selected">
-                                <option v-if="sending" v-for="recipientName in recipientNames" v-bind:value="recipientName" @click="filter()">{{ recipientName }}</option>
-                                <option v-if="!sending" v-for="senderName in senderNames" v-bind:value="senderName" @click="filter()">{{ senderName }}</option>
-                         </select>
-
+            </div>
+        </div>
+        <div v-if="authenticated" class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="table-responsive">
+                                        <table id="table"
+                                               class="table dataTable table-responsive no-footer"></table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-            </div>
-
-        </div>
-
-    </div>
-    <div class="panel-body">
-        <div ref="chart" class="overview-graph"></div>
-    </div>
-</div>
-
-<!-- Modal HTML -->
-
-<div id="details-dialog" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Temperature Details</h4>
-            </div>
-            <div class="modal-body">
-                <div ref="chart2" class="overview-graph"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
+        <!-- Modal HTML -->
+        <div id="details-dialog" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Details</h4>
+                    </div>
+                    <div class="modal-body row">
+                        <div class="col-sm-9">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h5>Temperature Measurements</h5>
+                                </div>
+                                <div class="x_content">
+                                    <div ref="chart2" class="overview-graph"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h5>Infos</h5>
+                                </div>
+                                <div>
+                                    <dl>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-body">
-        <table id="table" class="display compact">
-        </table>
-    </div>
-</div>
-
-</div>
 </template>
 
 <script>
