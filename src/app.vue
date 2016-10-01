@@ -58,6 +58,7 @@
             require("gentelella/build/js/custom.js");
             require("gentelella/build/css/custom.css");
             require("font-awesome-webpack");
+            require("./assets/css/app.css")
         },
         data: {
             role: auth.role(),
