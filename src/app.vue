@@ -1,10 +1,11 @@
 <template>
-  <div class="container body" style="margin: 0;padding: 0;width: 100%;">
+  <div class="container body">
         <div class="main_container">
-          <div class="col-md-3 left_col" style="height: 100%;">
+          <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
-              <div class="navbar nav_title" style="border: 0;">
+              <div class="navbar nav_title">
                 <a href="index.html" class="site_title">
+                  <div class="logo"></div>
                 </a>
               </div>
 
@@ -36,20 +37,15 @@
                 <div class="nav toggle">
                   <a id="menu_toggle"><i class="fa fa-bars"></i></a>
                 </div>
-
                 <login></login>
-
-
               </nav>
             </div>
           </div>
           <!-- /top navigation -->
 
           <!-- page content -->
-          <div class="right_col" role="main" style="min-height: 1770px;">
-            <div class="row">
+          <div class="right_col" role="main">
               <router-view></router-view>
-            </div>
           </div>
           <!-- /page content -->
 
@@ -61,3 +57,13 @@
         </div>
       </div>
 </template>
+<script>
+  import auth from './auth.js'
+  export default {
+    mounted() {
+      require("gentelella/build/js/custom.js");
+      require("gentelella/build/css/custom.css");
+      require("font-awesome-webpack");
+    }
+  }
+</script>
