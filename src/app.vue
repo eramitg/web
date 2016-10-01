@@ -17,8 +17,8 @@
                                 <li class="">
                                     <router-link to="/"><i class="fa fa-home"></i>Dashboard</router-link>
                                 </li>
-                                <li v-if="authenticated"><i class="fa fa-users"></i>
-                                    <router-link to="/user">Usermanagement</router-link>
+                                <li v-if="authenticated">
+                                    <router-link to="/user"><i class="fa fa-users"></i>Usermanagement</router-link>
                                 </li>
                             </ul>
                         </div>
@@ -61,7 +61,7 @@
         },
         data: {
             role: auth.role(),
-            authenticated: auth.token() != null && auth.role() !== 'USER'
+            authenticated: auth.token() != "n/a" && auth.role() !== 'USER'
         }
     }
 </script>

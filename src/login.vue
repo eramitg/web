@@ -13,10 +13,12 @@
                     <li id="login" class="form-inline" v-if="!authenticated">
                         <a>
                             <div class="form-group">
-                                <input type="text" class="form-control" name="username" v-model="credentials.username"
-                                       placeholder="Username">
+                                <input type="text" class="form-control" name="username"  v-model="credentials.username" placeholder="Username">
+                                <input type="password" class="form-control" v-model="credentials.password" name="password" placeholder="Password">
                             </div>
+                            <button class="btn btn-primary" @click="submit()">Sign In</button>
                         </a>
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -29,12 +31,12 @@
             return {
                 credentials: {
                     role: auth.role().charAt(0).toUpperCase() + auth.role().slice(1).toLowerCase(),
-                    username: auth.userName(),
+                    username: auth.userName() != "n/a" ? auth.userName() : '',
                     password: '',
                     company: auth.companyName()
                 },
                 error: '',
-                authenticated: auth.token() != null && auth.role() !== 'USER'
+                authenticated: auth.token() != "n/a" && auth.role() !== 'USER'
             }
         },
         methods: {
@@ -42,7 +44,7 @@
                 var credentials = {
                     username: this.credentials.username,
                     password: this.credentials.password
-                }
+                };
                 try {
                     let result = await auth.login(credentials);
                     if (result.token) {
