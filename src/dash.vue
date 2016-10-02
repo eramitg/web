@@ -7,20 +7,20 @@
         </div>
         <div v-if="authenticated" class="row tile_count">
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-                <span class="count_top"></i>Total verschickte Sendungen</span>
+                <span class="count_top">Total verschickte Sendungen</span>
                 <div class="count">55</div>
                 <div class="count"></div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-                <span class="count_top"></i>Total Sendungen OK</span>
+                <span class="count_top">Total Sendungen OK</span>
                 <div class="count">44</div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-                <span class="count_top"></i>Anzahl Abweichungen</span>
+                <span class="count_top">Anzahl Abweichungen</span>
                 <div class="count green">348</div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-                <span class="count_top"></i>Anzahl nicht angekommen</span>
+                <span class="count_top">Anzahl nicht angekommen</span>
                 <div class="count">1</div>
             </div>
         </div>
@@ -351,7 +351,7 @@
                 recipientNames: '',
                 senderName: '',
                 recipientName: '',
-                authenticated: auth.token() != "n/a" && auth.role() !== 'USER'
+                authenticated: auth.token() != "n/a"
             }
         },
         watch: {

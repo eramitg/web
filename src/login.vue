@@ -9,18 +9,22 @@
                 </a>
                 <ul class="dropdown-menu dropdown-usermenu pull-right">
                     <li><a @click="logout()" href="/"><i class="fa fa-sign-out pull-right"></i> Sign Out</a></li>
-                    </li>
-                    <li id="login" class="form-inline" v-if="!authenticated">
-                        <a>
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="username"  v-model="credentials.username" placeholder="Username">
-                                <input type="password" class="form-control" v-model="credentials.password" name="password" placeholder="Password">
-                            </div>
-                            <button class="btn btn-primary" @click="submit()">Sign In</button>
-                        </a>
-                    </li>
                 </ul>
             </li>
+
+            <li id="login" class="form-inline" v-if="!authenticated">
+                <a>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="username" v-model="credentials.username"
+                               placeholder="Username">
+                        <input type="password" class="form-control" v-model="credentials.password" name="password"
+                               placeholder="Password">
+                    </div>
+                    <button class="btn btn-primary" @click="submit()">Sign In</button>
+                </a>
+            </li>
+
+
         </ul>
     </div>
 </template>
@@ -36,7 +40,7 @@
                     company: auth.companyName()
                 },
                 error: '',
-                authenticated: auth.token() != "n/a" && auth.role() !== 'USER'
+                authenticated: auth.token() != "n/a"
             }
         },
         methods: {

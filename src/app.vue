@@ -55,8 +55,8 @@
     import auth from './auth.js'
     export default {
         mounted() {
-            require("gentelella/build/js/custom.js");
-            require("gentelella/build/css/custom.css");
+            require("./assets/gentelella/js/custom.js");
+            require("./assets/gentelella/css/custom.css");
             require("font-awesome-webpack");
             require("./assets/css/app.css")
         },
