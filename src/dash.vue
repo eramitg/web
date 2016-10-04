@@ -8,20 +8,20 @@
         <div v-if="authenticated" class="row tile_count">
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                 <span class="count_top">Total verschickte Sendungen</span>
-                <div class="count">55</div>
+                <div class="count">{{total}}</div>
                 <div class="count"></div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                 <span class="count_top">Total Sendungen OK</span>
-                <div class="count">44</div>
+                <div class="count">{{total_ok}}</div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                 <span class="count_top">Anzahl Abweichungen</span>
-                <div class="count green">348</div>
+                <div class="count green">{{total_out_spec}}</div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                 <span class="count_top">Anzahl nicht angekommen</span>
-                <div class="count">1</div>
+                <div class="count">{{total_not_arrived}}</div>
             </div>
         </div>
         <div v-if="authenticated" class="row">
@@ -49,8 +49,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12">
+                    <div class="col-sm-8">
                         <div ref="chart" class="overview-graph"></div>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <div ref="chartPie" class="overview-pie"></div>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -153,10 +157,10 @@
             // We can disable the grid for this axis
             //showGrid: false,
             // and also don't show the label
-            showLabel: true,
-            labelInterpolationFnc: function skipLabels(value, index, labels) {
-                return index % Math.round(labels.length / 15) === 0 ? value : null;
-            }
+            showLabel: true
+            //labelInterpolationFnc: function skipLabels(value, index, labels) {
+            //    return index % Math.round(labels.length / 15) === 0 ? value : null;
+            //}
         },
         height: 200
     };
@@ -240,7 +244,22 @@
             console.log(this.data)
             this.senderNames = this.processSenderNames(this.results)
             this.recipientNames = this.processRecipientNames(this.results)
-            this.chart = new Chartist.Line(this.$refs.chart, this.data, options)
+            this.chart = new Chartist.Bar(this.$refs.chart, this.data, options)
+
+
+            var data = {
+                series: [5, 3, 4]
+            };
+
+            var sum = function(a, b) { return a + b };
+
+            new Chartist.Pie(this.$refs.chartPie, data, {
+                labelInterpolationFnc: function(value) {
+                    return Math.round(value / data.series.reduce(sum) * 100) + '%';
+                }
+            });
+            //new Chartist.Pie(this.$refs.chartPie, this.data, option)
+
             this.chartDetail = new Chartist.Line(this.$refs.chart2, [], optionsDetail)
             //this.dataSet = this.processTable(this.results, this.start, this.end)
             this.updateTable()
@@ -351,7 +370,11 @@
                 recipientNames: '',
                 senderName: '',
                 recipientName: '',
-                authenticated: auth.token() != "n/a"
+                authenticated: auth.token() != "n/a",
+                total: 0,
+                total_ok: 0,
+                total_not_arrived: 0,
+                total_out_spec: 0
             }
         },
         watch: {
@@ -372,6 +395,7 @@
                 if (this.chart) {
                     this.chart.update(val)
                 }
+                this.total = this.dataSet.length
             },
             'dataDetail': function (val, oldVal) {
                 console.log("dataDetail")
@@ -409,7 +433,7 @@
             async parcels() {
                 return await utils.ajax({
                     type: "GET",
-                    url: "/api/users/" + auth.userId() + "/parcels/web",
+                    url: "/api/v2/users/parcels/web",
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
@@ -418,7 +442,7 @@
             async parcelDetails(pid) {
                 return await utils.ajax({
                     type: "GET",
-                    url: "/api/users/" + auth.userId() + "/parcels/details/" + pid,
+                    url: "/api/v2/users/parcels/details/" + pid,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
