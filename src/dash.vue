@@ -358,7 +358,7 @@
                         "render": function (data, type, full, meta) {
 
                             //console.log(meta.row)
-                            return '<button type="button" id="btn" pieChartData-toggle="modal" pieChartData-loading-text="Loading..." class="btn btn-default" autocomplete="off">' + i18.t('show') + '</button>';
+                            return '<button type="button" id="btn" data-toggle="modal" data-loading-text="Loading..." class="btn btn-default" autocomplete="off">' + i18.t('show') + '</button>';
                         }
                     }
                 ]
