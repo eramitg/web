@@ -1,6 +1,9 @@
 <template>
 <div>
-    <table id="example" class="display" width="100%" cellspacing="0"></table>
+    <table id="example" class="display" width="100%" cellspacing="0">
+
+
+    </table>
     <button @click="submit()">New User</button>
 
     <!-- Modal HTML -->
@@ -86,7 +89,7 @@ export default {
         var action = {
             name:      'delete',
             type:      'button',
-            text:      'Delete',
+            text:      '<i class="fa fa-times"></i>',
             title:     'Delete this row',
             className: tableInstance.options.deleteActionClass,
             event:     this.remove.bind(tableInstance)
@@ -95,7 +98,7 @@ export default {
         var action2 = {
             name:      'password',
             type:      'button',
-            text:      'Set Password',
+            text:      '<i class="fa fa-cog" aria-hidden="true"></i>',
             title:     'Set Password',
             event:     this.password.bind(tableInstance)
         }
@@ -161,7 +164,16 @@ export default {
         async setPassword() {
             $('#details-dialog').modal('hide');
             console.log("set password " + this.currentRowId)
-
+            return utils.ajax({
+                data: JSON.stringify({
+                    username: this.currentName,
+                    password: this.passwordSet1}),
+                type: "PUT",
+                url: "/api/v1/company/admin/changepw/"+this.currentRowId,
+                dataType: "json",
+                contentType: "application/json",
+                headers: auth.authHeader()
+            });
         },
         async remove(row) {
             console.log("async call to remove user if > 0: " + row.id)
@@ -176,7 +188,7 @@ export default {
 
             return utils.ajax({
                 type: "DELETE",
-                url: auth.role() === 'USER' ? "/api/v1/company/user/delete" : "/api/v1/company/admin/delete/"+row.id,
+                url: "/api/v1/company/admin/delete/"+row.id,
                 dataType: "json",
                 contentType: "application/json",
                 headers: auth.authHeader()
@@ -187,8 +199,14 @@ export default {
             console.log("update or insert new user: " + row.id)
             if(row.id > 0) {
                 return utils.ajax({
+                    data: JSON.stringify({
+                        id: row.id,
+                        name: row.values.name,
+                        role: row.values.role,
+                        companyId: auth.role() === 'SUPER' ? row.values.company : auth.companyId(),
+                    }),
                     type: "PUT",
-                    url: "/api/v1/company/user/update",
+                    url: "/api/v1/company/admin/update/"+row.id,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
@@ -198,7 +216,7 @@ export default {
                     data: JSON.stringify({
                         username: row.values.name,
                         password: Math.random().toString(36).substring(7),
-                        companyId: auth.role() === 'SUPER' ? this.companies[0].ID : auth.companyId()}),
+                        companyId: auth.role() === 'SUPER' ? row.values.company : auth.companyId()}),
                     type: "POST",
                     url: "/api/v1/company/admin/create",
                     dataType: "json",
@@ -211,6 +229,7 @@ export default {
         },
         password(row) {
             this.currentRowId = row.id
+            this.currentName = row.values.name
             console.log("async call to remove user if > 0: " + row.id)
             $('#details-dialog').modal('show');
         },
@@ -231,7 +250,8 @@ export default {
         companies: null,
         passwordSet1: null,
         passwordSet2: null,
-        currentRowId: null
+        currentRowId: null,
+        currentName: null
     }},
     watch: {
         'data' : function (val, oldVal) {
@@ -257,3 +277,9 @@ export default {
     }
   }
 </script>
+
+<style>
+ .table {
+     width: 100%;
+ }
+</style>

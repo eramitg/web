@@ -58,10 +58,8 @@
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 bg-white">
                         <div class="col-md-12 col-sm-12 col-xs-12">
-                            <div class="col-md-12 col-xs-6">
-                                <div class="x_title">Anteil Gut/Temperatur überschritten/In Arbeit</div>
-                                <div ref="pieChart" class=""></div>
-                            </div>
+                            <div class="x_title">Anteil Gut/Temperatur überschritten/In Arbeit</div>
+                            <div ref="pieChart" class=""></div>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -169,10 +167,10 @@
             // We can disable the grid for this axis
             //showGrid: false,
             // and also don't show the label
-            showLabel: true,
-            labelInterpolationFnc: function skipLabels(value, index, labels) {
-                return index % Math.round(labels.length / 15) === 0 ? value : null;
-            }
+            showLabel: true
+            //labelInterpolationFnc: function skipLabels(value, index, labels) {
+            //    return index % Math.round(labels.length / 15) === 0 ? value : null;
+            //}
         },
         height: 200,
     };
@@ -254,7 +252,22 @@
             this.updateChart();
             this.senderNames = this.processSenderNames(this.results)
             this.recipientNames = this.processRecipientNames(this.results)
-            this.chart = new Chartist.Line(this.$refs.chart, this.data, options)
+            this.chart = new Chartist.Bar(this.$refs.chart, this.data, options)
+
+
+            var data = {
+                series: [5, 3, 4]
+            };
+
+            var sum = function(a, b) { return a + b };
+
+            new Chartist.Pie(this.$refs.chartPie, data, {
+                labelInterpolationFnc: function(value) {
+                    return Math.round(value / data.series.reduce(sum) * 100) + '%';
+                }
+            });
+            //new Chartist.Pie(this.$refs.chartPie, this.data, option)
+
             this.chartDetail = new Chartist.Line(this.$refs.chart2, [], optionsDetail)
 
             var barChartData = {
@@ -411,6 +424,7 @@
                 if (this.chart) {
                     this.chart.update(val)
                 }
+                this.total = this.dataSet.length
             },
             'dataDetail': function (val, oldVal) {
                 console.log("dataDetail")
@@ -451,7 +465,7 @@
             async parcels() {
                 return await utils.ajax({
                     type: "GET",
-                    url: "/api/users/" + auth.userId() + "/parcels/web",
+                    url: "/api/v2/users/parcels/web",
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
@@ -460,7 +474,7 @@
             async parcelDetails(pid) {
                 return await utils.ajax({
                     type: "GET",
-                    url: "/api/users/" + auth.userId() + "/parcels/details/" + pid,
+                    url: "/api/v2/users/parcels/details/" + pid,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
