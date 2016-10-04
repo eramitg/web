@@ -18,7 +18,7 @@
                                     <router-link to="/"><i class="fa fa-home"></i>Dashboard</router-link>
                                 </li>
                                 <li v-if="authenticated">
-                                    <router-link to="/user"><i class="fa fa-users"></i>Usermanagement</router-link>
+                                    <router-link to="/user"><i class="fa fa-users"></i>User Management</router-link>
                                 </li>
                             </ul>
                         </div>
