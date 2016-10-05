@@ -105,8 +105,29 @@
                                     <h5>Infos</h5>
                                 </div>
                                 <div>
-                                    <dl>
-                                    </dl>
+                                    <dd>Track and Trace</dd>
+                                    <dl>{{parcelDetails.tntNumber}}</dl>
+
+                                    <dd>Sender</dd>
+                                    <dl>{{parcelDetails.sender}} / {{parcelDetails.senderCompany}}</dl>
+
+                                    <dd>Receiver</dd>
+                                    <dl>{{parcelDetails.receiver}} / {{parcelDetails.receiverCompany}}</dl>
+
+                                    <dd>Date Sent</dd>
+                                    <dl>{{parcelDetails.dateSent | dateFormatFull}}</dl>
+
+                                    <dd>Date Received</dd>
+                                    <dl>{{parcelDetails.dateReceived | dateFormatFull}}</dl>
+
+                                    <dd>Status</dd>
+                                    <dl>{{statusDetails}}</dl>
+
+                                    <dd>Temperature Category</dd>
+                                    <dl>{{tempCategory.name}}</dl>
+
+                                    <button @click="print()"><i class="fa fa-print" aria-hidden="true"></i></button>
+
                                 </div>
                             </div>
                         </div>
@@ -132,6 +153,7 @@
     require("./assets/css/jquery.dataTables-modum.css")
     require("datatables.net");
     require("datatables.net-colreorder");
+    require("jQuery.print/jQuery.print.js");
 
     var i18 = require("i18next/i18next.js")
     i18.init({
@@ -194,13 +216,14 @@
             }
         },
         axisY: {
-            high: 40,
-            low: -10,
+            //high: 40,
+            //low: -10,
             labelInterpolationFnc: function skipLabels(value, index, labels) {
                 return value + '°C';
             }
         },
         height: 600,
+        width: 500
     };
 
     var Chartist = require("chartist")
@@ -363,10 +386,10 @@
             var tmp = this.table
             $('#table tbody').on('click', 'button', async function () {
                 let row = tmp.row($(this).parents('tr'))
-                let pid = row.data()[12]
+                let pid = row.data()[9]
 
                 var res = await that.parcelDetails(pid);
-                hat.dataDetail = that.processDetail(res).data
+                that.dataDetail = that.processDetail(res).data
                 $('#details-dialog').modal('show');
             })
 
@@ -402,7 +425,15 @@
                 total: 0,
                 total_ok: 0,
                 total_not_arrived: 0,
-                total_out_spec: 0
+                total_out_spec: 0,
+                parcelDetails: '',
+                tempCategory: '',
+                statusDetails: ''
+            }
+        },
+        filters: {
+            dateFormatFull: function (value) {
+                return moment(value).format('DD.MM.YYYY, HH:mm')
             }
         },
         watch: {
@@ -551,6 +582,38 @@
                 console.log("processed: " + result.length)
                 return result;
             },
+
+            print() {
+
+                $.print('#details-dialog' /*, options*/);
+            },
+
+            printElement(elem, append, delimiter) {
+                var domClone = elem.cloneNode(true);
+
+                var $printSection = document.getElementById("printSection");
+
+                if (!$printSection) {
+                    $printSection = document.createElement("div");
+                    $printSection.id = "printSection";
+                    document.body.appendChild($printSection);
+                }
+
+                if (append !== true) {
+                    $printSection.innerHTML = "";
+                }
+
+                else if (append === true) {
+                    if (typeof (delimiter) === "string") {
+                        $printSection.innerHTML += delimiter;
+                    }
+                    else if (typeof (delimiter) === "object") {
+                        $printSection.appendChlid(delimiter);
+                    }
+                }
+                $printSection.appendChild(domClone);
+            },
+
             process(rawData, start, end, sending, selectedCompany) {
                 this.total_ok = 0;
                 this.total_out_spec = 0;
@@ -626,7 +689,7 @@
             },
             processDetail(rawData) {
                 console.log(rawData)
-                var result = {data: {labels: [], series: [[], []]}}
+                var result = {data: {labels: [], series: [[], [], []]}}
                 let len = rawData.measurements.length;
                 console.log("len: " + len)
                 for (var i = 0, index = 0; i < len; i++) {
@@ -637,11 +700,15 @@
                         let label = date.format('DD.MM.YYYY hh:mm')
                         result.data.labels[index] = label
                         result.data.series[0][index] = rawData.tempCategory.maxTemp;
-                        result.data.series[1][index] = rawData.measurements[i].measurements[j].temperature;
+                        result.data.series[1][index] = rawData.tempCategory.minTemp;
+                        result.data.series[2][index] = rawData.measurements[i].measurements[j].temperature;
                         index++;
                     }
 
                 }
+                this.parcelDetails = rawData;
+                this.tempCategory = rawData.tempCategory;
+                this.statusDetails = !rawData.result.isFailed && !rawData.result.isSuccess ? "In Progress" : rawData.result.nrFailures > 0 ? "Out of Specification" : "Good";
                 console.log(result)
                 return result;
             },
@@ -769,4 +836,12 @@
     .detail-graph .ct-series-b .ct-area {
         fill: green;
     }
+
+    @media screen {
+        #printSection {
+            display: none;
+        }
+    }
+
+
 </style>
