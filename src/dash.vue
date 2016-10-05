@@ -2,12 +2,12 @@
     <div>
         <div class="row" v-if="!authenticated">
             <div class="col-sm-12">
-                <p class="text-center">No information available. Please sign in.</p>
+                <p class="text-center">Keine Informationen verfügbar. Bitte loggen Sie sich ein.</p>
             </div>
         </div>
         <div v-if="authenticated" class="row tile_count">
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-                <span class="count_top">Total verschickte Sendungen</span>
+                <span class="count_top">Total # Sendungen verschickt</span>
                 <div class="count">{{total}}</div>
                 <div class="count"></div>
             </div>
@@ -23,6 +23,10 @@
                 <span class="count_top">Anzahl nicht angekommen</span>
                 <div class="count">{{total_not_arrived}}</div>
             </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <span class="count_top"># Sendungen unterwegs</span>
+                <div class="count">{{totalNrTransit}}</div>
+            </div>
         </div>
         <div v-if="authenticated" class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
@@ -33,28 +37,34 @@
                         </div>
                         <div class="col-sm-2 col-xs-12">
                             <input name="checkbox" class="dropdown-toggle" checked data-toggle="toggle" type="checkbox"
-                                   data-on="Sending"
-                                   data-off="Receiving">
+                                   data-on="Sender"
+                                   data-off="Empfänger">
                         </div>
                         <div class="col-sm-2 col-xs-12">
                             <div class="btn-group">
                                 <select class="form-control" v-model="selected">
-                                    <option v-if="sending" v-for="recipientCompany0 in recipientCompany"
-                                            v-bind:value="recipientCompany" @click="filter()">{{ recipientCompany0 }}
+                                    <option v-if="sending" v-for="recipientName in recipientNames"
+                                            v-bind:value="recipientName" @click="filter()">{{ recipientName }}
                                     </option>
-                                    <option v-if="!sending" v-for="senderCompany0 in senderCompany" v-bind:value="senderCompany"
-                                            @click="filter()">{{ senderCompany0 }}
+                                    <option v-if="!sending" v-for="senderName in senderNames" v-bind:value="senderName"
+                                            @click="filter()">{{ senderName }}
                                     </option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-9 col-xs-12">
                         <div ref="chart" class="overview-graph"></div>
-
                     </div>
-                    <div class="col-sm-4">
-                        <div ref="chartPie" class="overview-pie"></div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 bg-white">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="x_title">Anteil Gut/Temperatur überschritten/In Arbeit</div>
+                            <div ref="pieChart" class=""></div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_title">Anzahl Sendungen pro Tag</div>
+                        <div ref="barChart"></div>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -67,7 +77,7 @@
                         <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <div class="table-responsive">
+                                    <div class="table">
                                         <table id="table"
                                                class="table dataTable table-responsive no-footer"></table>
                                     </div>
@@ -199,7 +209,6 @@
             }
         },
         height: 600,
-        width: 550
     };
 
     var Chartist = require("chartist")
@@ -247,7 +256,7 @@
             })
 
 
-            this.results = await this.parcels()
+            this.results = await this.parcels();
 
             this.updateChart();
             console.log(this.data)
@@ -278,9 +287,27 @@
             //new Chartist.Pie(this.$refs.chartPie, this.data, option)
 
             this.chartDetail = new Chartist.Line(this.$refs.chart2, [], optionsDetail)
-            //this.dataSet = this.processTable(this.results, this.start, this.end)
-            this.updateTable()
+
+            var barChartData = {
+                labels: this.data.labels,
+                series: [
+                    [5, 4, 3, 7, 5, 10, 3, 4, 8, 10, 6, 8],
+                ]
+            };
+
+
+            this.barChart = new Chartist.Bar(this.$refs.barChart, barChartData, {});
+
+            //this.dataSet = this.processTable(this.results, this.start, this.end)w
+            this.updateParcelsOverview(this.senderNames, this.results);
+            this.updateTable();
+            this.updatePieChart();
+            this.pieChart = new Chartist.Pie(this.$refs.pieChart, this.dataPieChart, {});
             this.table = $('#table').DataTable({
+                responsive: true,
+                language: {
+                    zeroRecords: i18.t('zero_records')
+                },
                 data: this.dataSet,
                 colReorder: true,
                 "columns": [
@@ -379,6 +406,10 @@
                 senderCompany: '',
                 recipientCompany: '',
                 authenticated: auth.token() != "n/a",
+                totalNrSent: '',
+                totalNrTransit: '',
+                totalNrOK: '',
+                totalNrOfFailures: '',
                 total: 0,
                 total_ok: 0,
                 total_not_arrived: 0,
@@ -520,7 +551,6 @@
                     if (i > 0 && rawData[i - 1].id === rawData[i].id) {
                         continue;
                     }
-
                     result[index] = [];
                     result[index][0] = rawData[i].tntNumber
                     result[index][1] = rawData[i].senderCompany
@@ -664,6 +694,54 @@
                 }
                 this.updateChart()
                 this.updateTable()
+            },
+            updateParcelsOverview(senderNames, data) {
+                var countTransit = 0;
+                var countOK = 0;
+                var countNrFailures = 0;
+                var countSent = 0;
+                data.forEach(function (element, index, array) {
+                    if(element.isReceived == false) {
+                        countTransit++;
+                    }
+                    if(element.result != undefined) {
+                        if (element.result.nrFailures == 0) {
+                            countOK++;
+                        }
+                        else {
+                            countNrFailures += element.result.nrFailures;
+                        }
+                    }
+                    if(senderNames.includes(element.sender) && index == 0 || index > 0 && array[index - 1].id != element.id) {
+                        countSent ++;
+                    }
+                });
+                this.totalNrSent = countSent;
+                this.totalNrTransit = countTransit;
+                this.totalNrOK = countOK;
+                this.totalNrOfFailures = countNrFailures;
+            },
+            processPieChart(data) {
+                var result = {data: {series: [0, 0, 0], labels:[]}};
+                data.forEach(function (element) {
+                    var nrFailures = element[9];
+                    if(nrFailures > 0) {
+                        result.data.series[0]++;
+                    }
+                    else if(nrFailures == 0) {
+                        result.data.series[1]++;
+                    }
+                    else {
+                        result.data.series[2]++;
+                    }
+                });
+                function sum(a, b) {
+                    return a + b;
+                }
+                result.data.series.forEach(function (element) {
+                    result.data.labels.push(Math.round(element / result.data.series.reduce(sum) * 100) + '%');
+                });
+                return result;
             }
         }
     }
@@ -690,6 +768,10 @@
     .detail-graph .ct-series-a .ct-line,
     .detail-graph .ct-series-a .ct-point {
         stroke: blue;
+    }
+
+    line.ct-bar {
+        stroke: #7d83ff !important;
     }
 
     .detail-graph .ct-series-a .ct-area {
