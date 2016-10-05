@@ -20,12 +20,8 @@
                 <div class="count green">{{total_out_spec}}</div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-                <span class="count_top">Anzahl nicht angekommen</span>
-                <div class="count">{{total_not_arrived}}</div>
-            </div>
-            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                 <span class="count_top"># Sendungen unterwegs</span>
-                <div class="count">{{totalNrTransit}}</div>
+                <div class="count">{{total_not_arrived}}</div>
             </div>
         </div>
         <div v-if="authenticated" class="row">
@@ -33,7 +29,7 @@
                 <div class="dashboard_graph x_panel">
                     <div class="row x_title">
                         <div class="col-sm-4 col-xs-12">
-                            <input type="text" name="daterange" class="form-control" value="01/01/2015 - 01/31/2015"/>
+                            <input type="text" name="daterange" class="form-control" />
                         </div>
                         <div class="col-sm-2 col-xs-12">
                             <input name="checkbox" class="dropdown-toggle" checked data-toggle="toggle" type="checkbox"
@@ -43,11 +39,11 @@
                         <div class="col-sm-2 col-xs-12">
                             <div class="btn-group">
                                 <select class="form-control" v-model="selected">
-                                    <option v-if="sending" v-for="recipientName in recipientNames"
-                                            v-bind:value="recipientName" @click="filter()">{{ recipientName }}
+                                    <option v-if="sending" v-for="recipientCompany in recipientCompanies"
+                                            @click="filter()">{{ recipientCompany }}
                                     </option>
-                                    <option v-if="!sending" v-for="senderName in senderNames" v-bind:value="senderName"
-                                            @click="filter()">{{ senderName }}
+                                    <option v-if="!sending" v-for="senderCompany in senderCompanies"
+                                            @click="filter()">{{ senderCompany }}
                                     </option>
                                 </select>
                             </div>
@@ -59,12 +55,8 @@
                     <div class="col-md-3 col-sm-3 col-xs-12 bg-white">
                         <div class="col-md-12 col-sm-12 col-xs-12">
                             <div class="x_title">Anteil Gut/Temperatur überschritten/In Arbeit</div>
-                            <div ref="pieChart" class=""></div>
+                            <div ref="chartPie" class=""></div>
                         </div>
-                    </div>
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="x_title">Anzahl Sendungen pro Tag</div>
-                        <div ref="barChart"></div>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -260,8 +252,8 @@
 
             this.updateChart();
             console.log(this.data)
-            this.senderCompany = this.processSenderNames(this.results)
-            this.recipientCompany = this.processRecipientNames(this.results)
+            this.senderCompanies = this.processSenderNames(this.results)
+            this.recipientCompanies = this.processRecipientNames(this.results)
             this.chart = new Chartist.Bar(this.$refs.chart, this.data, options)
 
 
@@ -279,16 +271,14 @@
 
                     var res = Math.round((value * 100) / (this.total_ok + this.total_out_spec + this.total_not_arrived)) + '% ';
                     res += this.dataPie.series[index].name;
-                    console.log("au: "+res)
                     return res
                 },
                 labelDirection: 'explode'
             });
-            //new Chartist.Pie(this.$refs.chartPie, this.data, option)
 
             this.chartDetail = new Chartist.Line(this.$refs.chart2, [], optionsDetail)
 
-            var barChartData = {
+            /*var barChartData = {
                 labels: this.data.labels,
                 series: [
                     [5, 4, 3, 7, 5, 10, 3, 4, 8, 10, 6, 8],
@@ -296,13 +286,12 @@
             };
 
 
-            this.barChart = new Chartist.Bar(this.$refs.barChart, barChartData, {});
+            this.barChart = new Chartist.Bar(this.$refs.barChart, barChartData, {});*/
 
             //this.dataSet = this.processTable(this.results, this.start, this.end)w
-            this.updateParcelsOverview(this.senderNames, this.results);
+            //this.updateParcelsOverview(this.senderCompany, this.results);
             this.updateTable();
-            this.updatePieChart();
-            this.pieChart = new Chartist.Pie(this.$refs.pieChart, this.dataPieChart, {});
+            this.updatePie();
             this.table = $('#table').DataTable({
                 responsive: true,
                 language: {
@@ -375,11 +364,9 @@
             $('#table tbody').on('click', 'button', async function () {
                 let row = tmp.row($(this).parents('tr'))
                 let pid = row.data()[12]
-                console.log(pid)
-                var res = await
-                        that.parcelDetails(pid);
-                console.log(res)
-                that.dataDetail = that.processDetail(res).data
+
+                var res = await that.parcelDetails(pid);
+                hat.dataDetail = that.processDetail(res).data
                 $('#details-dialog').modal('show');
             })
 
@@ -403,8 +390,10 @@
                 sending: true,
                 //senderNames: '',
                 //recipientNames: '',
-                senderCompany: '',
-                recipientCompany: '',
+                senderCompanies: null,
+                recipientCompanies: null,
+                senderCompany: null,
+                recipientCompany: null,
                 authenticated: auth.token() != "n/a",
                 totalNrSent: '',
                 totalNrTransit: '',
@@ -461,11 +450,8 @@
                 this.updateTable();
                 this.updateChart();
             },
-            'recipientName': function (val, oldVal) {
-                this.updateTable();
-                this.updateChart();
-            },
-            'senderName': function (val, oldVal) {
+            'selected': function (val, oldVal) {
+                console.log("send company changed: "+val)
                 this.updateTable();
                 this.updateChart();
             },
@@ -481,15 +467,12 @@
         },
         methods: {
             updateTable () {
-                this.dataSet = this.processTable(this.results, this.start, this.end, this.sending, this.senderName, this.recipientName)
+                this.dataSet = this.processTable(this.results, this.start, this.end, this.sending, this.selected)
             },
             updateChart () {
-                this.data = this.process(this.results, this.start, this.end, this.sending, this.senderName, this.recipientName).data
+                this.data = this.process(this.results, this.start, this.end, this.sending, this.selected).data
             },
             updatePie () {
-                console.log("set1: "+this.total_ok)
-                console.log("set2: "+this.total_out_spec)
-                console.log("set3: "+this.total_not_arrived)
                 this.dataPie = {
                     series: [
                         {value:this.total_ok, name: "Sendungen Ok"},
@@ -515,13 +498,13 @@
                     headers: auth.authHeader()
                 });
             },
-            processTable(rawData, start, end, sending, senderCompany, recipientCompany) {
+            processTable(rawData, start, end, sending, selectedCompany) {
                 var result = []
                 let len = rawData.length;
                 let isSuperuser = auth.role() === 'SUPER';
                 console.log(rawData)
                 for (var i = 0, index = 0; i < len; i++) {
-                    console.log(rawData[i].id + "/" + i);
+                    //console.log(rawData[i].id + "/" + i);
                     //console.log("adding1 id:"+rawData[i].id+ " / "+index)
                     if (start && moment(rawData[i].dateSent).isBefore(start)) {
                         console.log("before")
@@ -539,11 +522,11 @@
                         console.log("not receiver")
                         continue;
                     }
-                    if (sending && recipientCompany && recipientCompany !== '-' && (recipientCompany !== rawData[i].receiverCompany && !isSuperuser)) {
-                        console.log("not receiver selected")
+                    if (!sending && selectedCompany && selectedCompany !== '-' && (selectedCompany !== rawData[i].receiverCompany)) {
+                        console.log("not receiver selected / " + selectedCompany)
                         continue;
                     }
-                    if (!sending && senderCompany && senderCompany !== '-' && (senderCompany !== rawData[i].senderCompany && !isSuperuser)) {
+                    if (sending && selectedCompany && selectedCompany !== '-' && (selectedCompany !== rawData[i].senderCompany)) {
                         console.log("not sender selected")
                         continue;
                     }
@@ -568,7 +551,7 @@
                 console.log("processed: " + result.length)
                 return result;
             },
-            process(rawData, start, end, sending, senderCompany, recipientCompany) {
+            process(rawData, start, end, sending, selectedCompany) {
                 this.total_ok = 0;
                 this.total_out_spec = 0;
                 this.total_not_arrived = 0;
@@ -592,11 +575,11 @@
                      console.log("not receiver")
                      continue;
                      }
-                    if (sending && recipientCompany && recipientCompany !== '-' && (recipientCompany !== rawData[i].receiverCompany && !isSuperuser)) {
-                        console.log("not receiver selected")
+                    if (!sending && selectedCompany && selectedCompany !== '-' && (selectedCompany !== rawData[i].receiverCompany)) {
+                        console.log("not receiver selected / " + selectedCompany)
                         continue;
                     }
-                    if (!sending && senderCompany && senderCompany !== '-' && (senderCompany !== rawData[i].senderCompany && !isSuperuser)) {
+                    if (sending && selectedCompany && selectedCompany !== '-' && (selectedCompany !== rawData[i].senderCompany)) {
                         console.log("not sender selected")
                         continue;
                     }
@@ -695,7 +678,7 @@
                 this.updateChart()
                 this.updateTable()
             },
-            updateParcelsOverview(senderNames, data) {
+            updateParcelsOverview(senderCompanies, data) {
                 var countTransit = 0;
                 var countOK = 0;
                 var countNrFailures = 0;
@@ -712,7 +695,7 @@
                             countNrFailures += element.result.nrFailures;
                         }
                     }
-                    if(senderNames.includes(element.sender) && index == 0 || index > 0 && array[index - 1].id != element.id) {
+                    if(senderCompanies.includes(element.sender) && index == 0 || index > 0 && array[index - 1].id != element.id) {
                         countSent ++;
                     }
                 });
