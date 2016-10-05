@@ -39,11 +39,11 @@
                         <div class="col-sm-2 col-xs-12">
                             <div class="btn-group">
                                 <select class="form-control" v-model="selected">
-                                    <option v-if="sending" v-for="recipientName in recipientNames"
-                                            v-bind:value="recipientName" @click="filter()">{{ recipientName }}
+                                    <option v-if="sending" v-for="recipientCompany0 in recipientCompany"
+                                            v-bind:value="recipientCompany" @click="filter()">{{ recipientCompany0 }}
                                     </option>
-                                    <option v-if="!sending" v-for="senderName in senderNames" v-bind:value="senderName"
-                                            @click="filter()">{{ senderName }}
+                                    <option v-if="!sending" v-for="senderCompany0 in senderCompany" v-bind:value="senderCompany"
+                                            @click="filter()">{{ senderCompany0 }}
                                     </option>
                                 </select>
                             </div>
@@ -150,9 +150,7 @@
         showPoint: true,
         showArea: true,
         fullWidth: true,
-        // Disable line smoothing
-        lineSmooth: false,
-        // X-Axis specific configuration
+        seriesBarDistance: 0,
         axisX: {
             // We can disable the grid for this axis
             //showGrid: false,
@@ -160,7 +158,18 @@
             showLabel: true
             //labelInterpolationFnc: function skipLabels(value, index, labels) {
             //    return index % Math.round(labels.length / 15) === 0 ? value : null;
-            //}
+            //},
+            ,
+            ticks: {
+                maxRotation: 90,
+                minRotation: 90
+            },
+        },
+        chartPadding: {
+            top: 15,
+            right: 15,
+            bottom: 30,
+            left: 10
         },
         height: 200
     };
@@ -242,21 +251,29 @@
 
             this.updateChart();
             console.log(this.data)
-            this.senderNames = this.processSenderNames(this.results)
-            this.recipientNames = this.processRecipientNames(this.results)
+            this.senderCompany = this.processSenderNames(this.results)
+            this.recipientCompany = this.processRecipientNames(this.results)
             this.chart = new Chartist.Bar(this.$refs.chart, this.data, options)
 
 
-            var data = {
-                series: [5, 3, 4]
+            this.dataPie = {
+                series: [
+                    {value:this.total_ok, name: "Sendungen Ok"},
+                    {value:this.total_out_spec, name: "Out of Specification"},
+                    {value:this.total_not_arrived, name: "Nicht Angekommen"}]
             };
 
-            var sum = function(a, b) { return a + b };
+           // var sum = function(a, b) { console.log("value2 "+a); console.log(a.value); return a.value + b.value; };
 
-            new Chartist.Pie(this.$refs.chartPie, data, {
-                labelInterpolationFnc: function(value) {
-                    return Math.round(value / data.series.reduce(sum) * 100) + '%';
-                }
+            this.chartPie =new Chartist.Pie(this.$refs.chartPie, this.dataPie, {
+                labelInterpolationFnc: (value, index) => {
+
+                    var res = Math.round((value * 100) / (this.total_ok + this.total_out_spec + this.total_not_arrived)) + '% ';
+                    res += this.dataPie.series[index].name;
+                    console.log("au: "+res)
+                    return res
+                },
+                labelDirection: 'explode'
             });
             //new Chartist.Pie(this.$refs.chartPie, this.data, option)
 
@@ -267,6 +284,7 @@
                 data: this.dataSet,
                 colReorder: true,
                 "columns": [
+                    {"title": i18.t('tnt')},
                     {
                         "title": i18.t('send_comp'),
                         "render": function (data, type, full, meta) {
@@ -274,19 +292,7 @@
                         }
                     },
                     {
-                        "title": i18.t('send_user'),
-                        "render": function (data, type, full, meta) {
-                            return data ? data : "-"
-                        }
-                    },
-                    {
                         "title": i18.t('rcv_comp'),
-                        "render": function (data, type, full, meta) {
-                            return data ? data : "-"
-                        }
-                    },
-                    {
-                        "title": i18.t('rcv_user'),
                         "render": function (data, type, full, meta) {
                             return data ? data : "-"
                         }
@@ -310,14 +316,14 @@
                     {
                         "title": i18.t('transit'),
                         "render": function (data, type, full, meta) {
-                            let a = moment(full[5])
-                            let b = moment(full[4])
+                            let a = moment(full[4])
+                            let b = moment(full[3])
                             let diff = a.diff(b, 'hours', true)
                             if (diff < 0) return "n/a";
                             return a.diff(b, 'hours', true).toFixed(1) + 'h'
                         }
                     },
-                    {"title": i18.t('tnt')}, {"title": i18.t('cat')}, {
+                    {
                         "title": i18.t('status'),
                         "render": function (data, type, full, meta) {
                             if (data < 0) {
@@ -362,14 +368,16 @@
                 data: '',
                 dataSet: '',
                 dataDetail: '',
+                dataPie: null,
                 table: '',
                 chart: '',
                 chartDetail: '',
+                chartPie: null,
                 sending: true,
-                senderNames: '',
-                recipientNames: '',
-                senderName: '',
-                recipientName: '',
+                //senderNames: '',
+                //recipientNames: '',
+                senderCompany: '',
+                recipientCompany: '',
                 authenticated: auth.token() != "n/a",
                 total: 0,
                 total_ok: 0,
@@ -397,6 +405,14 @@
                 }
                 this.total = this.dataSet.length
             },
+            'dataPie': function (val, oldVal) {
+                console.log("data")
+                console.log(val)
+                if (this.chartPie) {
+                    this.chartPie.update(val)
+                }
+                this.total = this.dataSet.length
+            },
             'dataDetail': function (val, oldVal) {
                 console.log("dataDetail")
                 console.log(val)
@@ -421,6 +437,15 @@
             'senderName': function (val, oldVal) {
                 this.updateTable();
                 this.updateChart();
+            },
+            'total_ok': function (val, oldVal) {
+                this.updatePie();
+            },
+            'total_out_spec': function (val, oldVal) {
+                this.updatePie();
+            },
+            'total_not_arrived': function (val, oldVal) {
+                this.updatePie();
             }
         },
         methods: {
@@ -430,10 +455,21 @@
             updateChart () {
                 this.data = this.process(this.results, this.start, this.end, this.sending, this.senderName, this.recipientName).data
             },
+            updatePie () {
+                console.log("set1: "+this.total_ok)
+                console.log("set2: "+this.total_out_spec)
+                console.log("set3: "+this.total_not_arrived)
+                this.dataPie = {
+                    series: [
+                        {value:this.total_ok, name: "Sendungen Ok"},
+                        {value:this.total_out_spec, name: "Out of Specification"},
+                        {value:this.total_not_arrived, name: "Nicht Angekommen"}]
+                };
+            },
             async parcels() {
                 return await utils.ajax({
                     type: "GET",
-                    url: "/api/v2/users/parcels/web",
+                    url: "/api/v2/parcels/web",
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
@@ -442,15 +478,16 @@
             async parcelDetails(pid) {
                 return await utils.ajax({
                     type: "GET",
-                    url: "/api/v2/users/parcels/details/" + pid,
+                    url: "/api/v2/parcels/details/" + pid,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
                 });
             },
-            processTable(rawData, start, end, sending, senderName, recipientName) {
+            processTable(rawData, start, end, sending, senderCompany, recipientCompany) {
                 var result = []
                 let len = rawData.length;
+                let isSuperuser = auth.role() === 'SUPER';
                 console.log(rawData)
                 for (var i = 0, index = 0; i < len; i++) {
                     console.log(rawData[i].id + "/" + i);
@@ -463,50 +500,51 @@
                         console.log("after")
                         continue;
                     }
-                    if (sending && rawData[i].sender !== auth.userName()) {
-                        console.log("not sender")
+                    if (sending && (rawData[i].senderCompany !== auth.companyName() && !isSuperuser)) {
+                        console.log("not sender: " + rawData[i].senderCompany +"/"+auth.companyName() + "su: "+ isSuperuser)
                         continue;
                     }
-                    if (!sending && rawData[i].receiver !== auth.userName()) {
+                    if (!sending && (rawData[i].receiverCompany !== auth.companyName()) && !isSuperuser) {
                         console.log("not receiver")
                         continue;
                     }
-                    if (sending && recipientName && recipientName !== '-' && recipientName !== rawData[i].receiver) {
-                        console.log("not receiver selected " + recipientName + "/" + rawData[i].receiver)
+                    if (sending && recipientCompany && recipientCompany !== '-' && (recipientCompany !== rawData[i].receiverCompany && !isSuperuser)) {
+                        console.log("not receiver selected")
                         continue;
                     }
-                    if (!sending && senderName && senderName !== '-' && senderName !== rawData[i].sender) {
+                    if (!sending && senderCompany && senderCompany !== '-' && (senderCompany !== rawData[i].senderCompany && !isSuperuser)) {
                         console.log("not sender selected")
                         continue;
                     }
                     //fragile, enforce id ordering from server or use a map!
-                    if (index > 0 && result[index - 1][12] === rawData[i].id) {
+                    if (i > 0 && rawData[i - 1].id === rawData[i].id) {
                         continue;
                     }
+
                     result[index] = [];
-                    result[index][0] = rawData[i].sender
-                    result[index][1] = rawData[i].sender
-                    result[index][2] = rawData[i].receiver
-                    result[index][3] = rawData[i].receiver
-                    //result[index][4]= moment(rawData[i].dateSent).valueOf()
-                    //result[index][5]= moment(rawData[i].dateReceived).valueOf()
-                    result[index][6] = 'n/a'
-                    result[index][7] = rawData[i].tntNumber
-                    result[index][8] = rawData[i].tempCategory.name
+                    result[index][0] = rawData[i].tntNumber
+                    result[index][1] = rawData[i].senderCompany
+                    result[index][2] = rawData[i].receiverCompany
+                    result[index][3]= moment(rawData[i].dateSent).valueOf()
+                    result[index][4]= moment(rawData[i].dateReceived).valueOf()
+                    result[index][5] = 'n/a'
                     //-1 means not finished yet
-                    result[index][9] = (!rawData[i].result.isFailed && !rawData[i].result.isSuccess) ? -1 : rawData[i].result.nrFailures
-                    result[index][10] = rawData[i].measurements
-                    result[index][11] = i
-                    result[index][12] = rawData[i].id
-                    console.log("adding2 id:" + rawData[i].id + " / " + index)
+                    result[index][6] = (!rawData[i].result.isFailed && !rawData[i].result.isSuccess) ? -1 : rawData[i].result.nrFailures
+                    result[index][7] = rawData[i].measurements
+                    result[index][8] = i
+                    result[index][9] = rawData[i].id
                     index++
                 }
                 console.log("processed: " + result.length)
                 return result;
             },
-            process(rawData, start, end, sending, senderName, recipientName) {
+            process(rawData, start, end, sending, senderCompany, recipientCompany) {
+                this.total_ok = 0;
+                this.total_out_spec = 0;
+                this.total_not_arrived = 0;
                 var result = {data: {labels: [], series: [[], []]}}
                 let len = rawData.length;
+                let isSuperuser = auth.role() === 'SUPER';
                 for (var i = 0, index = -1; i < len; i++) {
                     if (start && moment(rawData[i].dateSent).isBefore(start)) {
                         console.log("before")
@@ -516,44 +554,61 @@
                         console.log("after")
                         continue;
                     }
-                    if (sending && rawData[i].sender !== auth.userName()) {
-                        console.log("not sender")
-                        continue;
-                    }
-                    if (!sending && rawData[i].receiver !== auth.userName()) {
-                        console.log("not receiver")
-                        continue;
-                    }
-                    if (sending && recipientName && recipientName !== '-' && recipientName !== rawData[i].receiver) {
+                    if (sending && (rawData[i].senderCompany !== auth.companyName() && !isSuperuser)) {
+                     console.log("not sender")
+                     continue;
+                     }
+                     if (!sending && (rawData[i].receiverCompany !== auth.companyName()) && !isSuperuser) {
+                     console.log("not receiver")
+                     continue;
+                     }
+                    if (sending && recipientCompany && recipientCompany !== '-' && (recipientCompany !== rawData[i].receiverCompany && !isSuperuser)) {
                         console.log("not receiver selected")
                         continue;
                     }
-                    if (!sending && senderName && senderName !== '-' && senderName !== rawData[i].sender) {
+                    if (!sending && senderCompany && senderCompany !== '-' && (senderCompany !== rawData[i].senderCompany && !isSuperuser)) {
                         console.log("not sender selected")
                         continue;
                     }
 
                     //fragile, enforce id ordering from server or use a map!
-                    if (index > 0 && rawData[index - 1][12] === rawData[i].id) {
+                    if (i > 0 && rawData[i - 1].id === rawData[i].id) {
                         continue;
                     }
 
-                    let date = rawData[i].dateSent.split('T')[0];
-                    if (result.data.labels[index] !== date) {
+                    let date = null
+                    if(this.sending) {
+                        date = moment(rawData[i].dateSent)
+                    } else {
+                        date = moment(rawData[i].dateReceived)
+                    }
+
+                    //let date = rawData[i].dateSent.split('T')[0];
+                    let dateString = date.format('DD.MMM')
+                    if (result.data.labels[index] !== dateString) {
                         index++;
-                        result.data.labels[index] = date
+                        result.data.labels[index] = dateString
                     }
 
                     if (!result.data.series[0][index]) {
                         result.data.series[0][index] = 0;
                     }
-                    if (!result.data.series[1][index]) {
+
+
+
+                    /*if (!result.data.series[1][index]) {
                         result.data.series[1][index] = 0;
-                    }
+                    }*/
 
                     result.data.series[0][index]++
-                    result.data.series[1][index] += rawData[i].result.nrFailures > 0 ? 1 : 0
+                    this.total_ok += rawData[i].result.nrFailures > 0 ? 0 : 1
+
+                    this.total_not_arrived += rawData[i].isReceived ? 0:1
+                    this.total_out_spec += rawData[i].result.nrFailures > 0 ? 1 : 0
                 }
+
+                this.total_out_spec -= this.total_not_arrived;
+                console.log(rawData)
                 return result;
             },
             processDetail(rawData) {
@@ -582,8 +637,8 @@
                 let len = rawData.length;
                 result.add('-')
                 for (var i = 0, index = -1; i < len; i++) {
-                    if (rawData[i].sender) {
-                        result.add(rawData[i].sender)
+                    if (rawData[i].senderCompany) {
+                        result.add(rawData[i].senderCompany)
                     }
                 }
                 return Array.from(result)
@@ -593,19 +648,19 @@
                 let len = rawData.length;
                 result.add('-')
                 for (var i = 0, index = -1; i < len; i++) {
-                    if (rawData[i].receiver) {
-                        result.add(rawData[i].receiver)
+                    if (rawData[i].receiverCompany) {
+                        result.add(rawData[i].receiverCompany)
                     }
                 }
                 return Array.from(result)
             },
             filter() {
                 if (this.sending) {
-                    this.recipientName = ""
-                    this.senderName = this.selected
+                    this.recipientCompany = ""
+                    this.senderCompany = this.selected
                 } else {
                     this.recipientName = this.selected
-                    this.senderName = ""
+                    this.senderCompany = ""
                 }
                 this.updateChart()
                 this.updateTable()
@@ -614,23 +669,23 @@
     }
 </script>
 <style>
-    .overview-graph .ct-series-a .ct-line,
-    .overview-graph .ct-series-a .ct-point {
-        stroke: green;
+
+    .ct-chart-bar .ct-label.ct-horizontal.ct-end {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+        text-align: center;
+        max-height: 1em;
+        min-width: 50px;
+        max-width: 50px;
+        position: relative;
+        top: 15px;
     }
 
-    .overview-graph .ct-series-a .ct-area {
-        fill: green;
-    }
 
-    .overview-graph .ct-series-b .ct-line,
-    .overview-graph .ct-series-b .ct-point {
-        stroke: red;
-    }
-
-    .overview-graph .ct-series-b .ct-area {
-        fill: red;
-    }
 
     .detail-graph .ct-series-a .ct-line,
     .detail-graph .ct-series-a .ct-point {
