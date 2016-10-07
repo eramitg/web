@@ -279,7 +279,9 @@ export default {
 </script>
 
 <style>
- .table {
-     width: 100%;
+    .example {width: 100%;}
+ .json-meta-table-sortable {
+     width: 20%;
  }
+
 </style>
