@@ -7,17 +7,17 @@
         </div>
         <div v-if="authenticated" class="row tile_count">
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-                <span class="count_top">Total # Sendungen verschickt</span>
+                <span class="count_top">Total Sendungen verschickt</span>
                 <div class="count">{{total}}</div>
                 <div class="count"></div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                 <span class="count_top">Total Sendungen OK</span>
-                <div class="count">{{total_ok}}</div>
+                <div class="count green">{{total_ok}}</div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                 <span class="count_top">Anzahl Abweichungen</span>
-                <div class="count green">{{total_out_spec}}</div>
+                <div class="count orange">{{total_out_spec}}</div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
                 <span class="count_top"># Sendungen unterwegs</span>
@@ -52,11 +52,8 @@
                     <div class="col-sm-9 col-xs-12">
                         <div ref="chart" class="overview-graph"></div>
                     </div>
-                    <div class="col-md-3 col-sm-3 col-xs-12 bg-white">
-                        <div class="col-md-12 col-sm-12 col-xs-12">
-                            <div class="x_title">Anteil Gut/Temperatur überschritten/In Arbeit</div>
-                            <div ref="chartPie" class=""></div>
-                        </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12">
+                        <div ref="chartPie" class=""></div>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -84,7 +81,7 @@
         <div id="details-dialog" class="modal fade">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header no-print">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 class="modal-title">Details</h4>
                     </div>
@@ -125,14 +122,12 @@
 
                                     <dd>Temperature Category</dd>
                                     <dl>{{tempCategory.name}}</dl>
-
-                                    <button @click="print()"><i class="fa fa-print" aria-hidden="true"></i></button>
-
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer no-print">
+                        <button class="btn btn-default" @click="print()"><i class="fa fa-print" aria-hidden="true"></i></button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -282,9 +277,9 @@
 
             this.dataPie = {
                 series: [
-                    {value:this.total_ok, name: "Sendungen Ok"},
-                    {value:this.total_out_spec, name: "Out of Specification"},
-                    {value:this.total_not_arrived, name: "Nicht Angekommen"}]
+                    {value: this.total_ok, name: "Sendungen Ok", className: "piechart-ok"},
+                    {value: this.total_out_spec, name: "Out of Specification", className: "piechart-outspec"},
+                    {value: this.total_not_arrived, name: "Nicht Angekommen", className: "piechart-notarrived"}],
             };
 
            // var sum = function(a, b) { console.log("value2 "+a); console.log(a.value); return a.value + b.value; };
@@ -293,10 +288,13 @@
                 labelInterpolationFnc: (value, index) => {
 
                     var res = Math.round((value * 100) / (this.total_ok + this.total_out_spec + this.total_not_arrived)) + '% ';
-                    res += this.dataPie.series[index].name;
+                    //res += this.dataPie.series[index].name;
                     return res
                 },
-                labelDirection: 'explode'
+                donut: true,
+                showLabel: true,
+                donutWidth: '40%',
+                height: 200
             });
 
             this.chartDetail = new Chartist.Line(this.$refs.chart2, [], optionsDetail)
@@ -377,7 +375,7 @@
                         "render": function (data, type, full, meta) {
 
                             //console.log(meta.row)
-                            return '<button type="button" id="btn" data-toggle="modal" data-loading-text="Loading..." class="btn btn-default" autocomplete="off">' + i18.t('show') + '</button>';
+                            return '<button type="button" id="btn" data-toggle="modal" data-target="#details-dialog" data-loading-text="Loading..." class="btn btn-default" autocomplete="off">' + i18.t('show') + '</button>';
                         }
                     }
                 ]
@@ -506,10 +504,10 @@
             updatePie () {
                 this.dataPie = {
                     series: [
-                        {value:this.total_ok, name: "Sendungen Ok"},
-                        {value:this.total_out_spec, name: "Out of Specification"},
-                        {value:this.total_not_arrived, name: "Nicht Angekommen"}]
-                };
+                        {value: this.total_ok, name: "Sendungen Ok", className: "piechart-ok"},
+                        {value: this.total_out_spec, name: "Out of Specification", className: "piechart-outspec"},
+                        {value: this.total_not_arrived, name: "Nicht Angekommen", className: "piechart-notarrived"}],
+                }
             },
             async parcels() {
                 return await utils.ajax({
@@ -584,7 +582,6 @@
             },
 
             print() {
-
                 $.print('#details-dialog' /*, options*/);
             },
 
@@ -682,6 +679,9 @@
                     this.total_not_arrived += rawData[i].isReceived ? 0:1
                     this.total_out_spec += rawData[i].result.nrFailures > 0 ? 1 : 0
                 }
+
+                result.data.labels.reverse();
+                result.data.series.reverse();
 
                 this.total_out_spec -= this.total_not_arrived;
                 console.log(rawData)
@@ -813,6 +813,9 @@
         top: 15px;
     }
 
+    .ct-chart-pie .ct-label {
+        color: white;
+    }
 
 
     .detail-graph .ct-series-a .ct-line,
@@ -821,7 +824,7 @@
     }
 
     line.ct-bar {
-        stroke: #7d83ff !important;
+        stroke: #25a9e1 !important;
     }
 
     .detail-graph .ct-series-a .ct-area {
@@ -843,5 +846,24 @@
         }
     }
 
+    .piechart-ok {
+        stroke: #90ee90;
+    }
+
+    .piechart-outspec {
+        stroke: #ffa500;
+    }
+
+    .piechart-notarrived {
+        stroke: #c86463;
+    }
+
+    .green {
+        color: #90ee90 !important;
+    }
+
+    .orange {
+        color: #ffa500;
+    }
 
 </style>
