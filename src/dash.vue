@@ -366,7 +366,9 @@
                             if (data < 0) {
                                 return i18.t('status_transit')
                             }
-                            return data === 0 ? i18.t('status_ok') : i18.t('status_bad')
+                            var statusIcon = data === 0 ? 'fa fa-check green' : 'fa fa-times orange';
+                            var statusText = data === 0 ? i18.t('status_ok') : i18.t('status_bad');
+                            return '<i class="' + statusIcon + '"></i> ';
                         }
 
                     },
@@ -666,8 +668,6 @@
                     if (!result.data.series[0][index]) {
                         result.data.series[0][index] = 0;
                     }
-
-
 
                     /*if (!result.data.series[1][index]) {
                         result.data.series[1][index] = 0;
