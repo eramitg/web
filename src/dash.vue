@@ -833,10 +833,6 @@
         top: 15px;
     }
 
-    .daterangepicker.opensright .ranges, .daterangepicker.opensright .calendar, .daterangepicker.openscenter .ranges, .daterangepicker.openscenter .calendar {
-        float:left;
-    }
-
     .ct-chart-pie .ct-label {
         color: white;
     }
