@@ -15,17 +15,25 @@
             <li id="login" class="form-inline" v-if="!authenticated">
                 <a>
                     <div class="form-group">
-                        <input type="text" class="form-control" name="username" v-model="credentials.username"
+                        <input type="text" class="form-control" name="username" v-bind:class="{'parsley-error' : error !== ''}" v-model="credentials.username"
                                placeholder="Username">
-                        <input type="password" class="form-control" v-model="credentials.password" name="password"
+                        <input type="password" class="form-control" v-model="credentials.password" v-bind:class="{'parsley-error' : error !== ''}" name="password"
                                placeholder="Password">
                     </div>
                     <button class="btn btn-primary" @click="submit()">Sign In</button>
                 </a>
             </li>
-
-
         </ul>
+        <div id="errordialog" class="modal fade">
+            <div class="modal-dialog">
+                <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">×</span>
+                    </button>
+                    {{error}}
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -60,6 +68,10 @@
                     }
                 } catch (err) {
                     this.error = err.responseJSON.message;
+                }
+
+                if(this.error !== '') {
+                    $('#errordialog').modal('show');
                 }
             },
             dismiss() {

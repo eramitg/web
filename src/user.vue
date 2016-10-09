@@ -1,35 +1,53 @@
 <template>
 <div>
-    <table id="example" class="display" width="100%" cellspacing="0">
-
-
-    </table>
-    <button @click="submit()">New User</button>
-
-    <!-- Modal HTML -->
-
-    <div id="details-dialog" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Set/reset Password</h4>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Users</h2>
+                    <div class="col-sm-4">
+                        <button class="btn btn-default" @click="submit()">
+                            <i class="fa fa-user-plus" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="clearfix"></div>
                 </div>
-                <div class="form-group">
-                    <input type="password" value="" placeholder="Password" class="form-control" v-model="passwordSet1">
+                <div class="x_content">
+                    <div id="datatable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
+                        <table id="example" class="table table-striped table-bordered dataTable no-footer" width="100%"
+                               cellspacing="0"></table>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="password" value="" placeholder="Password" class="form-control" v-model="passwordSet2">
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="save" type="button" class="btn btn-default" ref="save" @click="setPassword()">Save</button>
+            </div>
+        </div>
+        <!-- Modal HTML -->
+        <div id="details-dialog" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Set/Reset Password</h4>
+                    </div>
+                    <div class="modal-body row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <input type="password" value="" placeholder="Password" class="form-control"
+                                       v-model="passwordSet1">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" value="" placeholder="Password" class="form-control"
+                                       v-model="passwordSet2">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button id="save" type="button" class="btn btn-default" ref="save" data-dismiss="details-dialog" @click="setPassword()">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 
@@ -82,22 +100,23 @@ export default {
         console.log(result)
 
         tableInstance = new JSONMetaTable.default('#example')
-        tableInstance.options.tableClass = "table table-zebra"
+        tableInstance.options.tableClass = "table table-responsive"
         tableInstance.options.columnFiltering = false
         tableInstance.options.inlineDeleting = false
 
         var action = {
             name:      'delete',
-            type:      'button',
-            text:      '<i class="fa fa-times"></i>',
+            type: 'button',
+            text:      '<i class="fa fa-times text-danger"></i>',
             title:     'Delete this row',
-            className: tableInstance.options.deleteActionClass,
+            className: 'btn btn-default btn-xs',
             event:     this.remove.bind(tableInstance)
         }
 
         var action2 = {
             name:      'password',
             type:      'button',
+            className: 'btn btn-default btn-xs',
             text:      '<i class="fa fa-cog" aria-hidden="true"></i>',
             title:     'Set Password',
             event:     this.password.bind(tableInstance)
