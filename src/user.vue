@@ -1,5 +1,17 @@
 <template>
 <div>
+
+    <div class="alert alert-danger" v-if="error">
+        <a href="#" class="close" v-on:click.prevent="dismissDialog()">&times;</a>
+        <p>{{ error }}</p>
+    </div>
+
+    <div class="alert alert-success" v-if="oktext">
+        <a href="#" class="close" v-on:click.prevent="dismissDialog()">&times;</a>
+        <p>{{ oktext }}</p>
+    </div>
+
+
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
@@ -136,9 +148,21 @@ export default {
         tableInstance.on('updateRow:post', async (args) => {
             console.log('oldValue', args.row)
             console.log('newValue', args.newValue)
-            result = await this.updateUser(args.row)
-            if(args.row.id < 0) {
-                args.row.id = result.ID
+            try {
+                let result = await this.updateUser(args.row)
+                if (args.row.id < 0) {
+                    args.row.id = result.ID
+                }
+                this.oktext = 'Added user'
+            } catch (err) {
+                //not sure why this happens
+                if(err.status == 200) {
+                    this.oktext = 'User changed'
+                } else {
+                    console.log(err)
+                    this.data = filter(result)
+                    this.error = err;
+                }
             }
         })
 
@@ -243,8 +267,10 @@ export default {
                     headers: auth.authHeader()
                 });
             }
-
-            this.data = data
+        },
+        dismissDialog() {
+            this.error = '';
+            this.oktext = '';
         },
         password(row) {
             this.currentRowId = row.id
@@ -255,10 +281,10 @@ export default {
         submit() {
             if(this.data) {
                 if(auth.role() === 'SUPER') {
-                    this.data.push({'id': -1, 'values': {'name': 'new user', 'company': this.companies[0].ID, 'role': 'USER'}})
+                    this.data.unshift({'id': -1, 'values': {'name': 'new user', 'company': this.companies[0].ID, 'role': 'USER'}})
                 }
                 if(auth.role() === 'ADMIN') {
-                    this.data.push({'id': -1, 'values': {'name': 'new user', 'company': auth.companyId(), 'role': 'USER'}})
+                    this.data.unshift({'id': -1, 'values': {'name': 'new user', 'company': auth.companyId(), 'role': 'USER'}})
                 }
             }
         }
@@ -270,7 +296,9 @@ export default {
         passwordSet1: null,
         passwordSet2: null,
         currentRowId: null,
-        currentName: null
+        currentName: null,
+        error: '',
+        oktext: ''
     }},
     watch: {
         'data' : function (val, oldVal) {
