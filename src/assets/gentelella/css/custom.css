@@ -4122,8 +4122,8 @@ ul.notifications {
   overflow: hidden;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175); }
 
-.daterangepicker.opensright .ranges, .daterangepicker.opensright .calendar, .daterangepicker.openscenter .ranges, .daterangepicker.openscenter .calendar {
-  float: right; }
+/*.daterangepicker.opensright .ranges, .daterangepicker.opensright .calendar, .daterangepicker.openscenter .ranges, .daterangepicker.openscenter .calendar {
+  float: right; }*/
 
 .daterangepicker table {
   width: 100%;

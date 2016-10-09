@@ -532,6 +532,16 @@
             processTable(rawData, start, end, sending, selectedCompany) {
                 var result = []
                 let len = rawData.length;
+
+                var tmp = []
+                for (var i = 0; i < len; i++) {
+                    tmp.push(rawData[i]);
+                }
+                tmp.sort(function(a, b) {
+                    return sending ? moment(a.dateSent).isAfter(moment(b.dateSent)) : moment(a.dateReceived).isAfter(moment(b.dateReceived))
+                });
+                rawData = tmp
+
                 let isSuperuser = auth.role() === 'SUPER';
                 console.log(rawData)
                 for (var i = 0, index = 0; i < len; i++) {
@@ -619,6 +629,16 @@
                 this.total_not_arrived = 0;
                 var result = {data: {labels: [], series: [[], []]}}
                 let len = rawData.length;
+
+                var tmp = []
+                for (var i = 0; i < len; i++) {
+                    tmp.push(rawData[i]);
+                }
+                tmp.sort(function(a, b) {
+                    return sending ? moment(a.dateSent).isAfter(moment(b.dateSent)) : moment(a.dateReceived).isAfter(moment(b.dateReceived))
+                });
+                rawData = tmp
+
                 let isSuperuser = auth.role() === 'SUPER';
                 for (var i = 0, index = -1; i < len; i++) {
                     if (start && moment(rawData[i].dateSent).isBefore(start)) {
@@ -680,8 +700,8 @@
                     this.total_out_spec += rawData[i].result.nrFailures > 0 ? 1 : 0
                 }
 
-                result.data.labels.reverse();
-                result.data.series.reverse();
+                //result.data.labels.reverse();
+                //result.data.series.reverse();
 
                 this.total_out_spec -= this.total_not_arrived;
                 console.log(rawData)
@@ -811,6 +831,10 @@
         max-width: 50px;
         position: relative;
         top: 15px;
+    }
+
+    .daterangepicker.opensright .ranges, .daterangepicker.opensright .calendar, .daterangepicker.openscenter .ranges, .daterangepicker.openscenter .calendar {
+        float:left;
     }
 
     .ct-chart-pie .ct-label {
