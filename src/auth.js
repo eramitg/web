@@ -19,6 +19,10 @@ export default {
         });
     },
 
+    roles() {
+        return [{label: 'USER', value: 'USER'}, {label: 'ADMIN', value: 'ADMIN'}]
+    },
+
     userName() {
         let jsonStr = localStorage.getItem('user-profile')
         if(!jsonStr) {
@@ -71,5 +75,16 @@ export default {
     },
     logout() {
         localStorage.removeItem('user-profile');
+    },
+
+    async loadCompanies() {
+        var that = this;
+        return ajax({
+            type: "GET",
+            url: "/api/v1/company/companies",
+            dataType: "json",
+            contentType: "application/json",
+            headers: that.authHeader()
+        });
     }
 }
