@@ -87,54 +87,12 @@
 </template>
 
 <script>
-
     import auth from './auth.js'
     import utils from './utils.js'
-    //import * as JSONMetaTable from "json-meta-table/public/json-meta-table-bundle.js"
-    import $ from 'jquery';
-    require("datatables.net");
-    require("datatables.net-colreorder");
-
-    var table2;
-
-
-
-
-function filter(rawData) {
-    var result = []
-    let len = rawData.length;
-    console.log(rawData)
-    for (var i = 0, index = 0; i < len; i++) {
-        result[rawData[i].ID] = [];
-        result[rawData[i].ID]['name'] = rawData[i].name
-        result[rawData[i].ID]['company'] = rawData[i].company.ID
-        result[rawData[i].ID]['companyName'] = rawData[i].company.name
-        result[rawData[i].ID]['role'] = rawData[i].role
-    }
-    console.log(result)
-    return result
-}
-
-function filter2(rawData) {
-    var result = []
-    let len = rawData.length;
-    console.log(rawData)
-    for (var i = 0, index = 0; i < len; i++) {
-        result[i] = []
-        result[i][0] = rawData[i].name
-
-        result[i][1] = rawData[i].company.name
-        result[i][2] = rawData[i].role
-
-        result[i][3] = rawData[i].company.ID
-        result[i][4] = rawData[i].ID
-    }
-    console.log(result)
-    return result
-}
+    var userTable;
 
 export default {
-    async mounted() {
+    async beforeMount() {
         if(auth.role() === 'ADMIN') {
             //drop-down with one name
             this.companies = [{value: auth.companyId(), label: auth.companyName()}]
@@ -150,7 +108,7 @@ export default {
 
         this.loadData()
 
-        table2 = $('#table').DataTable({
+        userTable = $('#table').DataTable({
             responsive: true,
             language: {
                 zeroRecords: 'zero_records'
@@ -197,14 +155,30 @@ export default {
     },
     methods: {
         async loadData() {
-            let rawData = [];
+            let asyncData = null;
             if(auth.role() === 'ADMIN') {
-                rawData = this.loadCompanyUsers()
+                asyncData = this.loadCompanyUsers()
             } else if(auth.role() === 'SUPER') {
-                rawData = this.loadAllUsers()
+                asyncData = this.loadAllUsers()
             }
-            rawData.then(rawData => {this.dataSet = filter2(rawData); this.dataLookup = filter(rawData)})
-            return rawData;
+            if(asyncData) {
+                let rawData = await asyncData
+
+                this.dataLookup = []
+                this.dataSet = rawData.map(row => {
+                    var result = []
+                    //create an additional lookup table
+                    this.dataLookup[row.ID] = [];
+                    this.dataLookup[row.ID]['name'] = result[0] = row.name
+                    this.dataLookup[row.ID]['companyName'] = result[1] = row.company.name
+                    this.dataLookup[row.ID]['role'] = result[2] = row.role
+                    this.dataLookup[row.ID]['company'] = result[3] = row.company.ID
+                    result[4] = row.ID
+                    return result
+                });
+                return rawData
+            }
+            return []
         },
         async loadAllUsers() {
             return utils.ajax({
@@ -251,45 +225,69 @@ export default {
                 contentType: "application/json",
                 headers: auth.authHeader()
             });
-            return p1.then(() => {this.loadData(); this.oktext="deleted ok"});
-
+            await p1
+            this.oktext="deleted ok"
+            this.loadData()
+        },
+        async adminUpdate() {
+            return utils.ajax({
+                data: JSON.stringify({
+                    id: this.currentUserId,
+                    name: this.username,
+                    role: this.selectedRole,
+                    companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
+                }),
+                type: "PUT",
+                url: "/api/v1/company/admin/update/" + this.currentUserId,
+                dataType: "json",
+                contentType: "application/json",
+                headers: auth.authHeader()
+            });
+        },
+        async adminChangePassword() {
+            return utils.ajax({
+                data: JSON.stringify({
+                    username: this.username,
+                    password: this.passwordSet1
+                }),
+                type: "PUT",
+                url: "/api/v1/company/admin/changepw/" + this.currentUserId,
+                dataType: "json",
+                contentType: "application/json",
+                headers: auth.authHeader()
+            });
+        },
+        async adminCreate() {
+            return utils.ajax({
+                data: JSON.stringify({
+                    username: this.username,
+                    password: this.passwordSet1,
+                    companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId()
+                }),
+                type: "POST",
+                url: "/api/v1/company/admin/create",
+                dataType: "json",
+                contentType: "application/json",
+                headers: auth.authHeader()
+            });
         },
         async createUpdate() {
             console.log("update or insert new user: " + this.currentUserId)
                 if (this.currentUserId > 0) {
                     try {
-                        //update userdata
-                        let p1 = utils.ajax({
-                            data: JSON.stringify({
-                                id: this.currentUserId,
-                                name: this.username,
-                                role: this.selectedRole,
-                                companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
-                            }),
-                            type: "PUT",
-                            url: "/api/v1/company/admin/update/" + this.currentUserId,
-                            dataType: "json",
-                            contentType: "application/json",
-                            headers: auth.authHeader()
-                        });
+                        let p1 = this.adminUpdate()
                         //change password
                         if(this.passwordSet1) {
-                            let p2 = utils.ajax({
-                                data: JSON.stringify({
-                                    username: this.username,
-                                    password: this.passwordSet1
-                                }),
-                                type: "PUT",
-                                url: "/api/v1/company/admin/changepw/" + this.currentUserId,
-                                dataType: "json",
-                                contentType: "application/json",
-                                headers: auth.authHeader()
-                            });
-
-                            return Promise.all([p1, p2]).then(() => {this.loadData();$('#details-dialog').modal('hide');});
+                            let p2 = this.adminChangePassword()
+                            await p1
+                            await p2
+                            this.loadData()
+                            $('#details-dialog').modal('hide')
                         } else {
                             console.log("only update with one call");
-                            return p1.then(() => {this.loadData();$('#details-dialog').modal('hide');this.oktext="updated ok"});
+                            await p1
+                            this.loadData();$('#details-dialog').modal('hide')
+                            this.oktext="updated ok"
                         }
                     }
                     catch (err) {
@@ -298,20 +296,11 @@ export default {
 
                 } else {
                     try {
-                        let p1 = utils.ajax({
-                            data: JSON.stringify({
-                                username: this.username,
-                                password: this.passwordSet1,
-                                companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId()
-                            }),
-                            type: "POST",
-                            url: "/api/v1/company/admin/create",
-                            dataType: "json",
-                            contentType: "application/json",
-                            headers: auth.authHeader()
-                        });
-                        p1.then(() => {this.loadData(); $('#details-dialog').modal('hide');this.oktext="created ok"})
-                        return p1
+                        let p1 = this.adminCreate()
+                        await p1
+                        this.loadData()
+                        $('#details-dialog').modal('hide');
+                        this.oktext="created ok"
                     } catch (err) {
                         this.error = err;
                     }
@@ -323,9 +312,8 @@ export default {
             this.oktext = '';
         },
         toggleSave() {
-            if(this.currentUserId > 0 && !this.passwordSet1 && !this.passwordSet2) {
-                $("#save").prop("disabled",false)
-            } else if(this.passwordSet1 == this.passwordSet2 && this.passwordSet1 && this.passwordSet2) {
+            if((this.currentUserId > 0 && !this.passwordSet1 && !this.passwordSet2)
+                    || (this.passwordSet1 == this.passwordSet2 && this.passwordSet1 && this.passwordSet2)) {
                 $("#save").prop("disabled",false)
             } else {
                 $("#save").prop("disabled",true)
@@ -337,16 +325,14 @@ export default {
         dataSet : null,
         dataLookup: null,
         companies: null,
+        roles: null,
         passwordSet1: null,
         passwordSet2: null,
-        currentRowId: null,
         error: '',
         oktext: '',
         username: null,
         selectedCompany: null,
-        companies: null,
         selectedRole: null,
-        roles: null,
         currentUserId: -1
     }},
     watch: {
@@ -357,11 +343,11 @@ export default {
             this.toggleSave();
         },
         'dataSet': function (val, oldVal) {
-            table2.clear()
+            userTable.clear()
             if (val.length > 0) {
-                table2.rows.add(val)
+                userTable.rows.add(val)
             }
-            table2.draw()
+            userTable.draw()
         }
     }
   }
