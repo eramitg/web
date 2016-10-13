@@ -17,8 +17,12 @@
                                 <li class="">
                                     <router-link to="/"><i class="fa fa-home"></i>Dashboard</router-link>
                                 </li>
-                                <li v-if="authenticated">
+                                <li v-if="isAdminOrSuper">
                                     <router-link to="/user"><i class="fa fa-users"></i>User Management</router-link>
+                                </li>
+                                <li v-if="isAdminOrSuper">
+                                    <router-link to="/company"><i class="fa fa-users"></i>Company Management
+                                    </router-link>
                                 </li>
                             </ul>
                         </div>
@@ -60,9 +64,10 @@
             require("font-awesome-webpack");
             require("./assets/css/app.css")
         },
-        data: {
-            role: auth.role(),
-            authenticated: auth.token() != "n/a" && auth.role() !== 'USER'
+        data() {
+            return {
+                isAdminOrSuper: auth.token() && auth.role() === 'ADMIN' || auth.role() === 'SUPER'
+            }
         }
     }
 </script>

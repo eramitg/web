@@ -92,28 +92,30 @@
     var userTable;
 
 export default {
-    async beforeMount() {
+    async mounted() {
+        this.loadData() //this can be done in the background
+
         if(auth.role() === 'ADMIN') {
             //drop-down with one name
             this.companies = [{value: auth.companyId(), label: auth.companyName()}]
+            this.selectedCompany = auth.companyId()
         }
         if(auth.role() === 'SUPER') {
-            let tmp = await this.loadCompanies()
-            this.companies = tmp.map((obj) => {return {value: obj.ID, label: obj.name}})
+            this.loadCompanies().then(tmp => {
+                this.companies = tmp.map((obj) => {return {value: obj.ID, label: obj.name}})
+                this.selectedCompany = this.companies[0].value;
+            })
         }
-        this.selectedCompany = this.companies[0].value;
 
         this.roles = auth.roles()
         this.selectedRole = this.roles[0].value;
-
-        this.loadData()
 
         userTable = $('#table').DataTable({
             responsive: true,
             language: {
                 zeroRecords: 'zero_records'
             },
-            data: [],
+            data: this.dataSet,
             colReorder: true,
             "columns": [
                 {"title": "Name"},
@@ -238,7 +240,7 @@ export default {
                     companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
                 }),
                 type: "PUT",
-                url: "/api/v1/company/admin/update/" + this.currentUserId,
+                url: "/api/v1/company/admin/updateuser/" + this.currentUserId,
                 dataType: "json",
                 contentType: "application/json",
                 headers: auth.authHeader()
@@ -322,14 +324,14 @@ export default {
     },
 
     data() { return {
+        error: '',
+        oktext: '',
         dataSet : null,
         dataLookup: null,
         companies: null,
         roles: null,
         passwordSet1: null,
         passwordSet2: null,
-        error: '',
-        oktext: '',
         username: null,
         selectedCompany: null,
         selectedRole: null,

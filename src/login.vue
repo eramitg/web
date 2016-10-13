@@ -42,13 +42,13 @@
         data() {
             return {
                 credentials: {
-                    role: auth.role().charAt(0).toUpperCase() + auth.role().slice(1).toLowerCase(),
-                    username: auth.userName() != "n/a" ? auth.userName() : '',
+                    role: auth.role()? auth.role().charAt(0).toUpperCase() + auth.role().slice(1).toLowerCase() : '',
+                    username: auth.userName() ? auth.userName() : '',
                     password: '',
-                    company: auth.companyName()
+                    company: auth.companyName() ? auth.companyName() : ''
                 },
                 error: '',
-                authenticated: auth.token() != "n/a"
+                authenticated: auth.token()
             }
         },
         methods: {
@@ -60,7 +60,7 @@
                 try {
                     let result = await auth.login(credentials);
                     if (result.token) {
-                        this.authenticated = true;
+                        this.authenticated = result.token;
                         this.error = '';
                         this.$router.go('/')
                     } else {
