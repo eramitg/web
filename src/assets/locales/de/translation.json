@@ -13,5 +13,6 @@
   "show": "Zeigen",
   "status_bad": "Temperatur Überschreitung",
   "status_ok": "Gut",
-  "status_transit": "In Arbeit"
+  "status_transit": "In Arbeit",
+  "zero_records": "Keine Einträge gefunden"
 }
