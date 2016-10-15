@@ -86,17 +86,18 @@
                         <h4 class="modal-title">Details</h4>
                     </div>
                     <div class="modal-body row">
-                        <div class="col-sm-9">
+                        <div class="col-sm-10">
                             <div class="x_panel">
                                 <div class="x_title">
-                                    <h5>Temperature Measurements</h5>
+                                    <h5>{{ titleDetailsDialog }}</h5>
                                 </div>
                                 <div class="x_content">
-                                    <div ref="chart2" class="overview-graph"></div>
+                                    <!--<div ref="chart2" class="overview-graph"></div>-->
+                                    <canvas height="200" width="¨400" id="chartDetail2"></canvas>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="x_panel">
                                 <div class="x_title">
                                     <h5>Infos</h5>
@@ -149,6 +150,8 @@
     require("datatables.net");
     require("datatables.net-colreorder");
     require("jQuery.print/jQuery.print.js");
+    require("chart.js");
+    require("Chart.Zoom.js");
 
     var i18 = require("i18next/i18next.js")
     i18.init({
@@ -221,6 +224,50 @@
         width: 500
     };
 
+    var optionsDetail2 = {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    max: 40,
+                    min: 0,
+                    fixedStepSize: 3
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: '°C'
+                }
+            }],
+        },
+        legend: {
+            display: false
+        },
+        horizontalLine: [{
+            y: 25,
+            style: "#FFA100",
+        }, {
+            y: 15,
+            style: "#25A9E1",
+        }],
+        pan: {
+            // Boolean to enable panning
+            enabled: true,
+
+            // Panning directions. Remove the appropriate direction to disable
+            // Eg. 'y' would only allow panning in the y direction
+            mode: 'xy'
+        },
+
+        // Container for zoom options
+        zoom: {
+            // Boolean to enable zooming
+            enabled: true,
+
+            // Zooming directions. Remove the appropriate direction to disable
+            // Eg. 'y' would only allow zooming in the y direction
+            mode: 'xy'
+        }
+    };
+
     var Chartist = require("chartist")
 
     import auth from './auth.js'
@@ -263,10 +310,64 @@
                 }
                 that.updateTable()
                 that.updateChart()
-            })
+            });
 
 
             this.results = await this.parcels();
+
+            var canvas = document.getElementById("chartDetail2");
+            var ctx = canvas.getContext("2d");
+
+            var horizonalLinePlugin = {
+                beforeDraw: function(chartInstance) {
+                    var yScale = chartInstance.scales["y-axis-0"];
+                    var canvas = chartInstance.chart;
+                    var ctx = canvas.ctx;
+                    var index;
+                    var line;
+                    var style;
+
+                    if (chartInstance.options.horizontalLine) {
+                        for (index = 0; index < chartInstance.options.horizontalLine.length; index++) {
+                            line = chartInstance.options.horizontalLine[index];
+
+                            if (!line.style) {
+                                style = "rgba(169,169,169, .6)";
+                            } else {
+                                style = line.style;
+                            }
+
+                            var yValue = '';
+                            if (line.y) {
+                                yValue = yScale.getPixelForValue(line.y);
+                            } else {
+                                yValue = 0;
+                            }
+
+                            ctx.lineWidth = 3;
+
+                            if (yValue) {
+                                ctx.beginPath();
+                                ctx.moveTo(0, yValue);
+                                ctx.lineTo(canvas.width, yValue);
+                                ctx.strokeStyle = style;
+                                ctx.stroke();
+                            }
+                        }
+                        return;
+                    };
+                }
+            };
+            Chart.pluginService.register(horizonalLinePlugin);
+
+            this.chartDetail2 = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options: optionsDetail2
+            });
 
             this.updateChart();
             console.log(this.data)
@@ -297,7 +398,7 @@
                 height: 200
             });
 
-            this.chartDetail = new Chartist.Line(this.$refs.chart2, [], optionsDetail)
+            this.chartDetail = new Chartist.Line(this.$refs.chart2, [], optionsDetail);
 
             /*var barChartData = {
                 labels: this.data.labels,
@@ -389,11 +490,17 @@
                 let pid = row.data()[9]
 
                 var res = await that.parcelDetails(pid);
-                that.dataDetail = that.processDetail(res).data
+                console.log("res");
+                console.log(res);
+                that.dataDetail = that.processDetail(res).data;
+                that.dataDetail2 = that.processDetail2(res).data;
+                that.chartDetail2.data.labels = that.dataDetail2.labels;
+                that.chartDetail2.data.datasets = that.dataDetail2.datasets;
+                that.chartDetail2.options.horizontalLine[0].y = res.tempCategory.maxTemp;
+                that.chartDetail2.options.horizontalLine[1].y = res.tempCategory.minTemp;
+                that.chartDetail2.update();
                 $('#details-dialog').modal('show');
-            })
-
-
+            });
         },
         data() {
             return {
@@ -406,10 +513,13 @@
                 dataSet: '',
                 dataDetail: '',
                 dataPie: null,
+                dataDetail2: '',
                 table: '',
                 chart: '',
                 chartDetail: '',
                 chartPie: null,
+                chartDetail2: '',
+                titleDetailsDialog: i18.t('temperature_measurements'),
                 sending: true,
                 //senderNames: '',
                 //recipientNames: '',
@@ -423,7 +533,8 @@
                 totalNrOK: '',
                 totalNrOfFailures: '',
                 total: 0,
-                total_ok: 0,
+
+            total_ok: 0,
                 total_not_arrived: 0,
                 total_out_spec: 0,
                 parcelDetails: '',
@@ -468,6 +579,10 @@
                 console.log("dataDetail")
                 console.log(val)
                 this.chartDetail.update(val)
+            },
+            'dataDetail2': function (val, oldVal) {
+                console.log("dataDetail2")
+                console.log(val)
             },
             'start': function (val, oldVal) {
                 this.updateTable();
@@ -730,6 +845,52 @@
                 this.tempCategory = rawData.tempCategory;
                 this.statusDetails = !rawData.result.isFailed && !rawData.result.isSuccess ? "In Progress" : rawData.result.nrFailures > 0 ? "Out of Specification" : "Good";
                 console.log(result)
+                return result;
+            },
+            processDetail2(rawData) {
+                var result = {
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: i18.t('temperature'),
+                                fill: false,
+                                backgroundColor: "rgba(75,192,192,0.4)",
+                                borderColor: "rgba(75,192,192,1)",
+                                borderCapStyle: 'butt',
+                                borderDash: [],
+                                borderDashOffset: 0.0,
+                                borderJoinStyle: 'miter',
+                                pointBorderColor: "rgba(75,192,192,1)",
+                                pointBackgroundColor: "#fff",
+                                pointBorderWidth: 1,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                                pointHoverBorderColor: "rgba(220,220,220,1)",
+                                pointHoverBorderWidth: 2,
+                                pointRadius: 2,
+                                pointHitRadius: 10,
+                                data: []
+                            },
+                        ]
+                    }
+                };
+
+                if(rawData.measurements !== undefined) {
+                    let len = rawData.measurements.length;
+                    for (var i = 0, index = 0; i < len; i++) {
+                        let len2 = rawData.measurements[i].measurements.length;
+                        console.log("len3: " + len2)
+                        for (var j = 0; j < len2; j++) {
+                            let date = moment(rawData.measurements[i].measurements[j].timestamp);
+                            let label = date.format('DD.MM.YYYY hh:mm')
+                            result.data.labels[index] = rawData.measurements[i].measurements[j].timestamp;
+                            result.data.datasets[0].data[index] = rawData.measurements[i].measurements[j].temperature;
+                            index++;
+                        }
+
+                    }
+                }
                 return result;
             },
             processSenderNames(rawData) {
