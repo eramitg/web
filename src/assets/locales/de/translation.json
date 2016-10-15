@@ -11,6 +11,8 @@
   "status": "Status",
   "details": "Details",
   "show": "Zeigen",
+  "temperature": "Temperatur",
+  "temperature_measurements": "Temperaturmessungen",
   "status_bad": "Temperatur Überschreitung",
   "status_ok": "Gut",
   "status_transit": "In Arbeit",

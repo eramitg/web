@@ -11,6 +11,8 @@
   "status": "Status",
   "details": "Details",
   "show": "Show",
+  "temperature": "Temperature",
+  "temperature_measurements": "Temperature Measurements",
   "status_bad": "Out of Specification",
   "status_ok": "Good",
   "status_transit": "In Progress"
