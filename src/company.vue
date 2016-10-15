@@ -23,7 +23,7 @@
                         <option v-for="option in item.options" v-bind:value="option.value">{{ option.label }}</option>
                     </select>
                 </div>
-                <button class="btn btn-primary" @click="save()">Save</button>
+                <button id="save" class="btn btn-primary" @click="save()">Save</button>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Raw JSON <span class="caret"></span>
@@ -125,16 +125,13 @@
                     let tmp = null
                     try {
                         tmp = JSON.parse(val)
-                    } catch (err) {
-                        this.error ="invalid json 1"
-                    }
-                    if(tmp) {
                         this.json = tmp
+                        $("#save").prop("disabled",false)
+                        this.error = ''
+                    } catch (err) {
+                        this.error ="invalid json"
+                        $("#save").prop("disabled",true)
                     }
-                    else {
-                        this.error ="invalid json: "+tmp
-                    }
-
             },
             'json': {
                 handler: function (val, oldVal) {
