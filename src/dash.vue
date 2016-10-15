@@ -709,7 +709,10 @@
             },
 
             print() {
-                $.print('#details-dialog' /*, options*/);
+                var image = new Image();
+                image.src = $('#chartDetail2').get(0).toDataURL('image/png');
+                $('#chartDetail2').get(0).replaceWith(image);
+                $.print('#details-dialog', {timeout: 750});
             },
 
             printElement(elem, append, delimiter) {
