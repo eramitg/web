@@ -489,7 +489,7 @@
                 let row = tmp.row($(this).parents('tr'))
                 let pid = row.data()[9]
 
-                var res = await that.parcelDetails(pid);
+                var res = await that.getParcelDetails(pid);
                 console.log("res");
                 console.log(res);
                 that.dataDetail = that.processDetail(res).data;
@@ -533,8 +533,7 @@
                 totalNrOK: '',
                 totalNrOfFailures: '',
                 total: 0,
-
-            total_ok: 0,
+                total_ok: 0,
                 total_not_arrived: 0,
                 total_out_spec: 0,
                 parcelDetails: '',
@@ -635,7 +634,7 @@
                     headers: auth.authHeader()
                 });
             },
-            async parcelDetails(pid) {
+            async getParcelDetails(pid) {
                 return await utils.ajax({
                     type: "GET",
                     url: "/api/v2/parcels/details/" + pid,
@@ -709,10 +708,30 @@
             },
 
             print() {
+                this.replaceDetailChartCanvas();
+                $.print('#details-dialog', {timeout: 750});
+            },
+
+            replaceDetailChartCanvas() {
                 var image = new Image();
                 image.src = $('#chartDetail2').get(0).toDataURL('image/png');
-                $('#chartDetail2').get(0).replaceWith(image);
-                $.print('#details-dialog', {timeout: 750});
+                image.id = 'chartDetail2';
+                image.onmouseover = this.replaceDetailChartImage;
+                $('#chartDetail2').replaceWith(image);
+            },
+
+            replaceDetailChartImage() {
+                // Replace the image with a canvas
+                var canvas = $('<canvas>').attr('id', 'chartDetail2');
+                $("#chartDetail2").replaceWith(canvas);
+                var canvas = document.getElementById('chartDetail2');
+                var ctx = canvas.getContext("2d");
+                this.chartDetail2 = new Chart(ctx, {
+                    type: 'line',
+                    data: this.dataDetail2,
+                    options: optionsDetail2
+                });
+                this.chartDetail2.update();
             },
 
             printElement(elem, append, delimiter) {
@@ -1048,6 +1067,10 @@
 
     .orange {
         color: #ffa500;
+    }
+
+    dl, dd {
+        word-break: break-word;
     }
 
 </style>
