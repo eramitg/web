@@ -512,8 +512,7 @@
                 totalNrOK: '',
                 totalNrOfFailures: '',
                 total: 0,
-
-            total_ok: 0,
+                total_ok: 0,
                 total_not_arrived: 0,
                 total_out_spec: 0,
                 parcelDetails: '',
