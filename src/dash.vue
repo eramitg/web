@@ -122,7 +122,7 @@
                                     <dl>{{statusDetails}}</dl>
 
                                     <dd>Temperature Category</dd>
-                                    <dl>{{tempCategory.name}}</dl>
+                                    <dl>{{tempCategory}}</dl>
                                 </div>
                             </div>
                         </div>
@@ -194,34 +194,6 @@
             left: 10
         },
         height: 200
-    };
-
-    var optionsDetail = {
-        // Don't draw the line chart points
-        showPoint: true,
-        showArea: true,
-        fullWidth: true,
-        // Disable line smoothing
-        lineSmooth: false,
-        // X-Axis specific configuration
-        axisX: {
-            // We can disable the grid for this axis
-            //showGrid: false,
-            // and also don't show the label
-            showLabel: true,
-            labelInterpolationFnc: function skipLabels(value, index, labels) {
-                return index % Math.round(labels.length / 8) === 0 ? value : null;
-            }
-        },
-        axisY: {
-            //high: 40,
-            //low: -10,
-            labelInterpolationFnc: function skipLabels(value, index, labels) {
-                return value + '°C';
-            }
-        },
-        height: 600,
-        width: 500
     };
 
     var optionsDetail2 = {
@@ -398,20 +370,6 @@
                 height: 200
             });
 
-            this.chartDetail = new Chartist.Line(this.$refs.chart2, [], optionsDetail);
-
-            /*var barChartData = {
-                labels: this.data.labels,
-                series: [
-                    [5, 4, 3, 7, 5, 10, 3, 4, 8, 10, 6, 8],
-                ]
-            };
-
-
-            this.barChart = new Chartist.Bar(this.$refs.barChart, barChartData, {});*/
-
-            //this.dataSet = this.processTable(this.results, this.start, this.end)w
-            //this.updateParcelsOverview(this.senderCompany, this.results);
             this.updateTable();
             this.updatePie();
             this.table = $('#table').DataTable({
@@ -487,18 +445,40 @@
             var tmp = this.table
             $('#table tbody').on('click', 'button', async function () {
                 let row = tmp.row($(this).parents('tr'))
-                let pid = row.data()[9]
+                let pid = row.data()[7].pid
 
-                var res = await that.parcelDetails(pid);
+                var res = await that.getParcelDetails(pid);
                 console.log("res");
                 console.log(res);
-                that.dataDetail = that.processDetail(res).data;
                 that.dataDetail2 = that.processDetail2(res).data;
                 that.chartDetail2.data.labels = that.dataDetail2.labels;
                 that.chartDetail2.data.datasets = that.dataDetail2.datasets;
-                that.chartDetail2.options.horizontalLine[0].y = res.tempCategory.maxTemp;
-                that.chartDetail2.options.horizontalLine[1].y = res.tempCategory.minTemp;
+
+                that.parcelDetails = {
+                    tntNumber: row.data()[0],
+                    sender: row.data()[7].sender,
+                    senderCompany: row.data()[1],
+                    receiver: row.data()[7].receiver,
+                    receiverCompany: row.data()[2],
+                    dateSent: row.data()[3],
+                    dateReceived: row.data()[4]
+                }
+                that.tempCategory = row.data()[7].tempCategory
+
+                let data = row.data()[6]
+                if (data < 0) {
+                    that.statusDetails = i18.t('status_transit')
+                } else {
+                    var statusText = data === 0 ? i18.t('status_ok') : i18.t('status_bad');
+                    that.statusDetails = statusText;
+                }
+
+                console.log(row.data()[7].maxTemp)
+
+                that.chartDetail2.options.horizontalLine[0].y = row.data()[7].maxTemp;
+                that.chartDetail2.options.horizontalLine[1].y = row.data()[7].minTemp;
                 that.chartDetail2.update();
+
                 $('#details-dialog').modal('show');
             });
         },
@@ -511,7 +491,6 @@
                 message: '',
                 data: '',
                 dataSet: '',
-                dataDetail: '',
                 dataPie: null,
                 dataDetail2: '',
                 table: '',
@@ -635,7 +614,7 @@
                     headers: auth.authHeader()
                 });
             },
-            async parcelDetails(pid) {
+            async getParcelDetails(pid) {
                 return await utils.ajax({
                     type: "GET",
                     url: "/api/v2/parcels/details/" + pid,
@@ -686,10 +665,7 @@
                         console.log("not sender selected")
                         continue;
                     }
-                    //fragile, enforce id ordering from server or use a map!
-                    if (i > 0 && rawData[i - 1].id === rawData[i].id) {
-                        continue;
-                    }
+
                     result[index] = [];
                     result[index][0] = rawData[i].tntNumber
                     result[index][1] = rawData[i].senderCompany
@@ -698,10 +674,19 @@
                     result[index][4]= moment(rawData[i].dateReceived).valueOf()
                     result[index][5] = 'n/a'
                     //-1 means not finished yet
-                    result[index][6] = (!rawData[i].result.isFailed && !rawData[i].result.isSuccess) ? -1 : rawData[i].result.nrFailures
-                    result[index][7] = rawData[i].measurements
-                    result[index][8] = i
-                    result[index][9] = rawData[i].id
+                    result[index][6] = (!rawData[i].isFailed && !rawData[i].isSuccess) ? -1 : rawData[i].nrFailures
+                    result[index][7] = {
+                        nrFailures:rawData[i].nrFailures,
+                        nrMeasurements:rawData[i].nrMeasurements,
+                        maxTemp:rawData[i].maxTemp,
+                        minTemp:rawData[i].minTemp,
+                        tableId: i,
+                        pid:rawData[i].id,
+                        tempCategory:rawData[i].tempCategory,
+                        sender: rawData[i].sender,
+                        receiver: rawData[i].receiver
+                    }
+
                     index++
                 }
                 console.log("processed: " + result.length)
@@ -709,10 +694,30 @@
             },
 
             print() {
+                this.replaceDetailChartCanvas();
+                $.print('#details-dialog', {timeout: 750});
+            },
+
+            replaceDetailChartCanvas() {
                 var image = new Image();
                 image.src = $('#chartDetail2').get(0).toDataURL('image/png');
-                $('#chartDetail2').get(0).replaceWith(image);
-                $.print('#details-dialog', {timeout: 750});
+                image.id = 'chartDetail2';
+                image.onmouseover = this.replaceDetailChartImage;
+                $('#chartDetail2').replaceWith(image);
+            },
+
+            replaceDetailChartImage() {
+                // Replace the image with a canvas
+                var canvas = $('<canvas>').attr('id', 'chartDetail2');
+                $("#chartDetail2").replaceWith(canvas);
+                var canvas = document.getElementById('chartDetail2');
+                var ctx = canvas.getContext("2d");
+                this.chartDetail2 = new Chart(ctx, {
+                    type: 'line',
+                    data: this.dataDetail2,
+                    options: optionsDetail2
+                });
+                this.chartDetail2.update();
             },
 
             printElement(elem, append, delimiter) {
@@ -812,10 +817,10 @@
                     }*/
 
                     result.data.series[0][index]++
-                    this.total_ok += rawData[i].result.nrFailures > 0 ? 0 : 1
+                    this.total_ok += rawData[i].nrFailures > 0 ? 0 : 1
 
                     this.total_not_arrived += rawData[i].isReceived ? 0:1
-                    this.total_out_spec += rawData[i].result.nrFailures > 0 ? 1 : 0
+                    this.total_out_spec += rawData[i].nrFailures > 0 ? 1 : 0
                 }
 
                 //result.data.labels.reverse();
@@ -823,31 +828,6 @@
 
                 this.total_out_spec -= this.total_not_arrived;
                 console.log(rawData)
-                return result;
-            },
-            processDetail(rawData) {
-                console.log(rawData)
-                var result = {data: {labels: [], series: [[], [], []]}}
-                let len = rawData.measurements.length;
-                console.log("len: " + len)
-                for (var i = 0, index = 0; i < len; i++) {
-                    let len2 = rawData.measurements[i].measurements.length;
-                    console.log("len3: " + len2)
-                    for (var j = 0; j < len2; j++) {
-                        let date = moment(rawData.measurements[i].measurements[j].timestamp);
-                        let label = date.format('DD.MM.YYYY hh:mm')
-                        result.data.labels[index] = label
-                        result.data.series[0][index] = rawData.tempCategory.maxTemp;
-                        result.data.series[1][index] = rawData.tempCategory.minTemp;
-                        result.data.series[2][index] = rawData.measurements[i].measurements[j].temperature;
-                        index++;
-                    }
-
-                }
-                this.parcelDetails = rawData;
-                this.tempCategory = rawData.tempCategory;
-                this.statusDetails = !rawData.result.isFailed && !rawData.result.isSuccess ? "In Progress" : rawData.result.nrFailures > 0 ? "Out of Specification" : "Good";
-                console.log(result)
                 return result;
             },
             processDetail2(rawData) {
@@ -879,19 +859,14 @@
                     }
                 };
 
-                if(rawData.measurements !== undefined) {
-                    let len = rawData.measurements.length;
+                if(rawData !== undefined) {
+                    let len = rawData.length;
                     for (var i = 0, index = 0; i < len; i++) {
-                        let len2 = rawData.measurements[i].measurements.length;
-                        console.log("len3: " + len2)
-                        for (var j = 0; j < len2; j++) {
-                            let date = moment(rawData.measurements[i].measurements[j].timestamp);
-                            let label = date.format('DD.MM.YYYY hh:mm')
-                            result.data.labels[index] = rawData.measurements[i].measurements[j].timestamp;
-                            result.data.datasets[0].data[index] = rawData.measurements[i].measurements[j].temperature;
-                            index++;
-                        }
-
+                        let date = moment(rawData[i].timestamp);
+                        let label = date.format('DD.MM.YYYY hh:mm')
+                        result.data.labels[index] = rawData[i].timestamp;
+                        result.data.datasets[0].data[index] = rawData[i].temperature;
+                        index++;
                     }
                 }
                 return result;
@@ -938,12 +913,12 @@
                     if(element.isReceived == false) {
                         countTransit++;
                     }
-                    if(element.result != undefined) {
-                        if (element.result.nrFailures == 0) {
+                    if(element != undefined) {
+                        if (element.nrFailures == 0) {
                             countOK++;
                         }
                         else {
-                            countNrFailures += element.result.nrFailures;
+                            countNrFailures += element.nrFailures;
                         }
                     }
                     if(senderCompanies.includes(element.sender) && index == 0 || index > 0 && array[index - 1].id != element.id) {
@@ -958,7 +933,7 @@
             processPieChart(data) {
                 var result = {data: {series: [0, 0, 0], labels:[]}};
                 data.forEach(function (element) {
-                    var nrFailures = element[9];
+                    var nrFailures = element[7].nrFailures;
                     if(nrFailures > 0) {
                         result.data.series[0]++;
                     }
@@ -1048,6 +1023,10 @@
 
     .orange {
         color: #ffa500;
+    }
+
+    dl, dd {
+        word-break: break-word;
     }
 
 </style>
