@@ -14,14 +14,17 @@
                     <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                         <div class="menu_section active">
                             <ul class="nav side-menu" style="">
-                                <li class="">
+                                <li>
                                     <router-link to="/"><i class="fa fa-home"></i>Dashboard</router-link>
+                                </li>
+                                <li>
+                                    <router-link to="/shipment"><i class="fa fa-paper-plane"></i>Shipment</router-link>
                                 </li>
                                 <li v-if="isAdminOrSuper">
                                     <router-link to="/user"><i class="fa fa-users"></i>User Management</router-link>
                                 </li>
                                 <li v-if="isAdminOrSuper">
-                                    <router-link to="/company"><i class="fa fa-users"></i>Company Management
+                                    <router-link to="/company"><i class="fa fa-cog"></i>Company Management
                                     </router-link>
                                 </li>
                             </ul>
