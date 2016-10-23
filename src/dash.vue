@@ -483,7 +483,7 @@
 
                 console.log(row.data()[7].maxTemp)
 
-                that.chartDetail2.options.horizontalLine[0].y = row.data()[7].tempCategory.maxTemp;
+                that.chartDetail2.options.horizontalLine[0].y = row.data()[7].maxTemp;
                 that.chartDetail2.options.horizontalLine[1].y = row.data()[7].minTemp;
                 that.chartDetail2.update();
 
@@ -681,12 +681,12 @@
                     result[index][4]= moment(rawData[i].dateReceived).valueOf()
                     result[index][5] = 'n/a'
                     //-1 means not finished yet
-                    result[index][6] = (!rawData[i].result.isFailed && !rawData[i].result.isSuccess) ? -1 : rawData[i].result.nrFailures;
+                    result[index][6] = (!rawData[i].isFailed && !rawData[i].isSuccess) ? -1 : rawData[i].nrFailures;
                     result[index][7] = {
-                        nrFailures: rawData[i].result.nrFailures,
-                        nrMeasurements: rawData[i].result.nrMeasurements,
-                        maxTemp: rawData[i].tempCategory.maxTemp,
-                        minTemp: rawData[i].tempCategory.minTemp,
+                        nrFailures: rawData[i].nrFailures,
+                        nrMeasurements: rawData[i].nrMeasurements,
+                        maxTemp: rawData[i].maxTemp,
+                        minTemp: rawData[i].minTemp,
                         tableId: i,
                         pid:rawData[i].id,
                         tempCategory:rawData[i].tempCategory,
@@ -824,10 +824,10 @@
                     }*/
 
                     result.data.series[0][index]++
-                    this.total_ok += rawData[i].result.nrFailures > 0 ? 0 : 1
+                    this.total_ok += rawData[i].nrFailures > 0 ? 0 : 1
 
                     this.total_not_arrived += rawData[i].isReceived ? 0:1
-                    this.total_out_spec += rawData[i].result.nrFailures > 0 ? 1 : 0
+                    this.total_out_spec += rawData[i].nrFailures > 0 ? 1 : 0
                 }
 
                 //result.data.labels.reverse();
@@ -866,13 +866,13 @@
                     }
                 };
 
-                if(rawData.measurements !== undefined) {
-                    let len = rawData.measurements[0].measurements.length;
+                if(rawData) {
+                    let len = rawData.length;
                     for (var i = 0; i < len; i++) {
-                        let date = moment(rawData.measurements[0].measurements[i].timestamp);
+                        let date = moment(rawData[i].timestamp);
                         let label = date.format('DD.MM.YYYY hh:mm')
                         result.data.labels[i] = label;
-                        result.data.datasets[0].data[i] = rawData.measurements[0].measurements[i].temperature;
+                        result.data.datasets[0].data[i] = rawData[i].temperature;
                     }
                 }
                 return result;
