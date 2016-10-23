@@ -825,7 +825,7 @@
                 //result.data.labels.reverse();
                 //result.data.series.reverse();
 
-                this.total_out_spec -= this.total_not_arrived;
+                this.total_ok -= this.total_not_arrived;
                 console.log(rawData)
                 return result;
             },
