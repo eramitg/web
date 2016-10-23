@@ -152,7 +152,6 @@
     require("jQuery.print/jQuery.print.js");
     require("chart.js");
     require("Chart.Zoom.js");
-    require("./assets/js/datetime-moment.js")
 
     var i18 = require("i18next/i18next.js")
     i18.init({
@@ -373,7 +372,6 @@
 
             this.updateTable();
             this.updatePie();
-            $.fn.dataTable.moment( 'DD.MM.YYYY HH:mm' );
             this.table = $('#table').DataTable({
                 responsive: true,
                 language: {
