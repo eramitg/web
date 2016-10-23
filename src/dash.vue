@@ -86,18 +86,18 @@
                         <h4 class="modal-title">Details</h4>
                     </div>
                     <div class="modal-body row">
-                        <div class="col-sm-10">
+                        <div class="col-sm-9">
                             <div class="x_panel">
                                 <div class="x_title">
                                     <h5>{{ titleDetailsDialog }}</h5>
                                 </div>
                                 <div class="x_content">
                                     <!--<div ref="chart2" class="overview-graph"></div>-->
-                                    <canvas height="200" width="¨400" id="chartDetail2"></canvas>
+                                    <canvas id="chartDetail2"></canvas>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <div class="x_panel">
                                 <div class="x_title">
                                     <h5>Infos</h5>
@@ -152,6 +152,7 @@
     require("jQuery.print/jQuery.print.js");
     require("chart.js");
     require("Chart.Zoom.js");
+    require("./assets/js/datetime-moment.js")
 
     var i18 = require("i18next/i18next.js")
     i18.init({
@@ -372,6 +373,7 @@
 
             this.updateTable();
             this.updatePie();
+            $.fn.dataTable.moment( 'DD.MM.YYYY HH:mm' );
             this.table = $('#table').DataTable({
                 responsive: true,
                 language: {
@@ -396,17 +398,25 @@
                     {
                         "title": i18.t('date_sent'),
                         "render": function (data, type, full, meta) {
-                            let date = moment(data)
-                            if (date.valueOf() <= 0) return "n/a"
-                            return date.format('DD.MM.YYYY, HH:mm')
+                            if (type === 'display' || type === 'filter') {
+                                let date = moment(data)
+                                if (date.valueOf() <= 0) return "n/a"
+                                return date.format('DD.MM.YYYY, HH:mm')
+                            } else {
+                                return data;
+                            }
                         }
                     },
                     {
                         "title": i18.t('date_received'),
                         "render": function (data, type, full, meta) {
-                            let date = moment(data)
-                            if (date.valueOf() <= 0) return "n/a"
-                            return moment(data).format('DD.MM.YYYY, HH:mm')
+                            if (type === 'display' || type === 'filter') {
+                                let date = moment(data)
+                                if (date.valueOf() <= 0) return "n/a"
+                                return date.format('DD.MM.YYYY, HH:mm')
+                            } else {
+                                return data;
+                            }
                         }
                     },
                     {
@@ -475,7 +485,7 @@
 
                 console.log(row.data()[7].maxTemp)
 
-                that.chartDetail2.options.horizontalLine[0].y = row.data()[7].maxTemp;
+                that.chartDetail2.options.horizontalLine[0].y = row.data()[7].tempCategory.maxTemp;
                 that.chartDetail2.options.horizontalLine[1].y = row.data()[7].minTemp;
                 that.chartDetail2.update();
 
@@ -506,7 +516,7 @@
                 recipientCompanies: null,
                 senderCompany: null,
                 recipientCompany: null,
-                authenticated: auth.token() != "n/a",
+                authenticated: auth.token() != null,
                 totalNrSent: '',
                 totalNrTransit: '',
                 totalNrOK: '',
@@ -851,21 +861,20 @@
                                 pointHoverBorderColor: "rgba(220,220,220,1)",
                                 pointHoverBorderWidth: 2,
                                 pointRadius: 2,
-                                pointHitRadius: 10,
+                                pointHitRadius: 2,
                                 data: []
                             },
                         ]
                     }
                 };
 
-                if(rawData !== undefined) {
-                    let len = rawData.length;
-                    for (var i = 0, index = 0; i < len; i++) {
-                        let date = moment(rawData[i].timestamp);
+                if(rawData.measurements !== undefined) {
+                    let len = rawData.measurements[0].measurements.length;
+                    for (var i = 0; i < len; i++) {
+                        let date = moment(rawData.measurements[0].measurements[i].timestamp);
                         let label = date.format('DD.MM.YYYY hh:mm')
-                        result.data.labels[index] = rawData[i].timestamp;
-                        result.data.datasets[0].data[index] = rawData[i].temperature;
-                        index++;
+                        result.data.labels[i] = label;
+                        result.data.datasets[0].data[i] = rawData.measurements[0].measurements[i].temperature;
                     }
                 }
                 return result;
