@@ -1,24 +1,319 @@
 <template>
     <div>
-        <header-component/>
-        <div>this is template body</div>
-        <other-component/>
+
+        <div class="alert alert-danger" v-if="error">
+            <a href="#" class="close" v-on:click.prevent="dismissDialog()">&times;</a>
+            <p>{{ error }}</p>
+        </div>
+
+        <div class="alert alert-success" v-if="oktext">
+            <a href="#" class="close" v-on:click.prevent="dismissDialog()">&times;</a>
+            <p>{{ oktext }}</p>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Shipments</h2>
+                        <div class="col-sm-4">
+                            <button id="btn" data-toggle="modal" data-target="#new-shipment" class="btn btn-default" name="-1">
+                                + <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="table">
+                            <table id="table" ref="table" class="table dataTable table-responsive no-footer"></table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- Modal HTML -->
+            <div id="new-shipment" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Create/Edit Shipment</h4>
+                        </div>
+                        <div class="modal-body row">
+                            <div class="col-sm-12">
+
+                                <div class="form-group">
+                                    <input type="text" value="" placeholder="Track-and-trace" class="form-control"
+                                           v-model="tnt">
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <select class="form-control" v-model="selectedRecipient">
+                                            <option v-for="recipient in recipients" v-bind:value="recipient.value">{{ recipient.label }}</option>
+                                        </select>
+                                    </div> Recipient
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <select class="form-control" v-model="selectedTemperatureCategories">
+                                            <option v-for="temperatureCategory in temperatureCategories" v-bind:value="temperatureCategory.value">{{ temperatureCategory.label }}</option>
+                                        </select>
+                                    </div> Temperature Category
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <select class="form-control" v-model="selectedProductCategories">
+                                            <option v-for="productCategory in productCategories" v-bind:value="productCategory.value">{{ productCategory.label }}</option>
+                                        </select>
+                                    </div> Product Category
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <select class="form-control" v-model="selectedTransportMethod">
+                                            <option v-for="transportMethod in transportMethods" v-bind:value="transportMethod.value">{{ transportMethod.label }}</option>
+                                        </select>
+                                    </div> Transport Method
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <select class="form-control" v-model="selectedTransportCompany">
+                                            <option v-for="transportCompany in transportCompanies" v-bind:value="transportCompany.value">{{ transportCompany.label }}</option>
+                                        </select>
+                                    </div> Transport Method
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <select class="form-control" v-model="selectedDuration">
+                                            <option v-for="duration in durations" v-bind:value="duration.value">{{ duration.label }}</option>
+                                        </select>
+                                    </div> Transport Duration
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <select class="form-control" v-model="selectedInterval">
+                                            <option v-for="interval in intervals" v-bind:value="interval.value">{{ interval.label }}</option>
+                                        </select>
+                                    </div> Measurement Interval
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button id="save" type="button" class="btn btn-default" ref="save" data-dismiss="details-dialog" @click="createUpdate()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <style>
-    body{
-        background-color:#ff0000;
-    }
+
 </style>
 <script>
+    import auth from './auth.js'
+    import utils from './utils.js'
+    var shipmentTable;
 
     export default{
+
+        async mounted() {
+            shipmentTable = $('#table').DataTable({
+                responsive: true,
+                language: {
+                    zeroRecords: 'zero_records'
+                },
+                data: this.dataSet,
+                colReorder: true,
+                "columns": [
+                    {"title": "Track-and-trace"},
+                    {"title": "Recipient"},
+                    {"title": "Temperatures"},
+                    {
+                        "title": 'Edit',
+                        "render": function (data, type, full, meta) {
+                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button>' +
+                                    '<button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                        }
+                    }
+                ]
+            });
+
+            var that = this
+            $(document).on("click", "#btn", function () {
+                let shipmentId = parseInt($(this)[0].name)
+                that.currentShipmentId = shipmentId;
+                if(shipmentId && shipmentId > 0) {
+                    //TODO: set data
+                } else {
+                    //TODO: clear data
+                }
+            });
+            $(document).on("click", "#btnRemove", function () {
+                let shipmentId = parseInt($(this)[0].name)
+                if(shipmentId && shipmentId > 0) {
+                    that.remove(userId)
+                }
+            });
+        },
+
         data(){
             return{
-                msg:'hello vue'
+                error: '',
+                oktext: '',
+                tnt: null,
+                recipients: [{"label":"Modum.io", "value":1}],
+                selectedRecipient: 1,
+                temperatureCategories: [{"label":"5-12", "value":1}],
+                selectedTemperatureCategories: 1,
+                productCategories: [{"label":"Pills", "value":1}],
+                selectedProductCategories: 1,
+                transportMethods: [{"label":"Coldchain", "value":1}],
+                selectedTransportMethod: 1,
+                transportCompanies: [{"label":"DPD", "value":1}],
+                selectedTransportCompany: 1,
+                durations: [{"label":"8h", "value":1}],
+                selectedDuration: 1,
+                intervals: [{"label":"10min", "value":1}],
+                selectedInterval: 1,
+                dataSet: null,
+                currentShipmentId: -1,
+                currentJSON: null
             }
         },
-        components:{
+        methods:{
+            async loadData() {
+                let asyncData = null;
+                if(auth.role() === 'ADMIN') {
+                    asyncData = this.loadCompanyShipments()
+                } else if(auth.role() === 'SUPER') {
+                    asyncData = this.loadAllShipments()
+                }
+                if(asyncData) {
+                    let rawData = await asyncData
+
+                    this.dataLookup = []
+                    this.dataSet = rawData.map(row => {
+                        var result = []
+                        //create an additional lookup table
+                        this.dataLookup[row.ID] = [];
+                        this.dataLookup[row.ID]['name'] = result[0] = row.name
+                        this.dataLookup[row.ID]['companyName'] = result[1] = row.company.name
+                        this.dataLookup[row.ID]['role'] = result[2] = row.role
+                        this.dataLookup[row.ID]['company'] = result[3] = row.company.ID
+                        result[4] = row.ID
+                        return result
+                    });
+                    return rawData
+                }
+                return []
+            },
+            async loadAllShipments() {
+                return utils.ajax({
+                    type: "GET",
+                    url: "/api/v1/shipment",
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+            },
+            async loadCompanyShipments() {
+                return utils.ajax({
+                    type: "GET",
+                    url: "/api/v1/shipment/admin",
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+            },
+            async shipmentUpdate() {
+                return utils.ajax({
+                    data: JSON.stringify({
+                        id: this.currentShipmentId,
+                        json: this.currentJSON,
+                        companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
+                    }),
+                    type: "PUT",
+                    url: "/api/v1/shipment/admin/update/" + this.currentShipmentId,
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+            },
+            async shipmentCreate() {
+                return utils.ajax({
+                    data: JSON.stringify({
+                        json: this.currentJSON,
+                        companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId()
+                    }),
+                    type: "POST",
+                    url: "/api/v1/shipment/admin/create",
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+            },
+            async createUpdate() {
+                console.log("update or insert new shipment: " + this.currentShipmentId)
+                if (this.currentShipmentId > 0) {
+                    try {
+                        let p1 = this.shipmentUpdate()
+                        await p1
+                        this.loadData();
+                        $('#details-dialog').modal('hide')
+                        this.oktext="updated ok"
+                    }
+                    catch (err) {
+                        this.error = err;
+                    }
+
+                } else {
+                    try {
+                        let p1 = this.shipmentCreate()
+                        await p1
+                        this.loadData()
+                        $('#details-dialog').modal('hide');
+                        this.oktext="created ok"
+                    } catch (err) {
+                        this.error = err;
+                    }
+                }
+
+            },
+            async remove(shipmentId) {
+                console.log("async call to remove shipment if > 0: " + shipmentId)
+                let data = this.dataSet.filter((item) => {
+                    return (item[4] !== shipmentId)
+                })
+
+                this.dataSet = data
+                if(shipmentId <= 0) {
+                    return
+                }
+
+                let p1= utils.ajax({
+                    type: "DELETE",
+                    url: "/api/v1/shipment/delete/"+shipmentId,
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+                await p1
+                this.oktext="shipment deleted ok"
+                this.loadData()
+            },
+            dismissDialog() {
+                this.error = '';
+                this.oktext = '';
+            }
         }
     }
 </script>

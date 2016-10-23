@@ -52,7 +52,7 @@
                                 <select class="form-control" v-model="selectedCompany">
                                     <option v-for="company in companies" v-bind:value="company.value">{{ company.label }}</option>
                                 </select>
-                            </div>
+                            </div> Company
                             </div>
 
                             <div class="form-group" v-if="currentUserId > 0">
@@ -60,7 +60,7 @@
                                 <select class="form-control" v-model="selectedRole">
                                     <option v-for="role in roles" v-bind:value="role.value">{{ role.label }}</option>
                                 </select>
-                            </div>
+                            </div> Role
                             </div>
 
                             <div class="form-group">
