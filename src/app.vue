@@ -27,6 +27,10 @@
                                     <router-link to="/company"><i class="fa fa-cog"></i>Company Management
                                     </router-link>
                                 </li>
+                                <li v-if="isSuper">
+                                    <router-link to="/blockchain"><i class="fa fa-book"></i>Blockchain Admin
+                                    </router-link>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -69,7 +73,8 @@
         },
         data() {
             return {
-                isAdminOrSuper: auth.token() && auth.role() === 'ADMIN' || auth.role() === 'SUPER'
+                isAdminOrSuper: auth.token() && (auth.role() === 'ADMIN' || auth.role() === 'SUPER'),
+                isSuper: auth.token() && auth.role() === 'SUPER'
             }
         }
     }
