@@ -8,6 +8,7 @@ import Dash from './dash.vue'
 import App from './app.vue'
 import Company from './company.vue'
 import Shipment from './shipment.vue'
+import Blockchain from './blockchain.vue'
 import VueRouter from 'vue-router'
 
 Vue.component('login', Login)
@@ -20,7 +21,8 @@ App.router = new VueRouter({
         {path: '/', component: Dash},
         {path: '/shipment', component: Shipment},
         {path: '/user', component: User},
-        {path: '/company', component: Company}
+        {path: '/company', component: Company},
+        {path: '/blockchain', component: Blockchain}
     ]
 })
 
