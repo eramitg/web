@@ -681,15 +681,15 @@
                     result[index][4]= moment(rawData[i].dateReceived).valueOf()
                     result[index][5] = 'n/a'
                     //-1 means not finished yet
-                    result[index][6] = (!rawData[i].isFailed && !rawData[i].isSuccess) ? -1 : rawData[i].nrFailures;
+                    result[index][6] = (!rawData[i].result.isFailed && !rawData[i].result.isSuccess) ? -1 : rawData[i].result.nrFailures;
                     result[index][7] = {
-                        nrFailures: rawData[i].nrFailures,
-                        nrMeasurements: rawData[i].nrMeasurements,
-                        maxTemp: rawData[i].maxTemp,
-                        minTemp: rawData[i].minTemp,
+                        nrFailures: rawData[i].result.nrFailures,
+                        nrMeasurements: rawData[i].result.nrMeasurements,
+                        maxTemp: rawData[i].tempCategory.maxTemp,
+                        minTemp: rawData[i].tempCategory.minTemp,
                         tableId: i,
-                        pid:rawData[i].id,
-                        tempCategory:rawData[i].tempCategory,
+                        pid: rawData[i].id,
+                        tempCategory: rawData[i].tempCategory,
                         sender: rawData[i].sender,
                         receiver: rawData[i].receiver
                     }
@@ -826,7 +826,7 @@
                     result.data.series[0][index]++
                     this.total_ok += rawData[i].nrFailures > 0 ? 0 : 1
 
-                    this.total_not_arrived += rawData[i].isReceived ? 0:1
+                    this.total_out_spec += rawData[i].result.nrFailures > 0 ? 1 : 0
                     this.total_out_spec += rawData[i].nrFailures > 0 ? 1 : 0
                 }
 
@@ -866,13 +866,13 @@
                     }
                 };
 
-                if(rawData) {
-                    let len = rawData.length;
+                if(rawData.measurements !== undefined) {
+                    let len = rawData.measurements[0].measurements.length;
                     for (var i = 0; i < len; i++) {
-                        let date = moment(rawData[i].timestamp);
+                        let date = moment(rawData.measurements[0].measurements[i].timestamp);
                         let label = date.format('DD.MM.YYYY hh:mm')
                         result.data.labels[i] = label;
-                        result.data.datasets[0].data[i] = rawData[i].temperature;
+                        result.data.datasets[0].data[i] = rawData.measurements[0].measurements[i].temperature;
                     }
                 }
                 return result;
