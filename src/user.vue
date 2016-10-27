@@ -17,7 +17,7 @@
             <div class="x_panel">
                 <div class="x_title">
                     <h2>Users</h2>
-                    <div class="col-sm-4">
+                    <div class="col-sm-2">
                         <button id="btn" data-toggle="modal" data-target="#details-dialog" class="btn btn-default" name="-1">
                             <i class="fa fa-user-plus" aria-hidden="true"></i>
                         </button>
@@ -137,8 +137,8 @@ export default {
                 {
                     "title": 'Edit',
                     "render": function (data, type, full, meta) {
-                        return '<button data-toggle="modal" data-target="#details-dialog" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button>' +
-                                '<button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                        return '<div class="col-sm-2"><button data-toggle="modal" data-target="#details-dialog" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button></div>' +
+                                '<div class="col-sm-2"><button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
                     }
                 }
             ]
