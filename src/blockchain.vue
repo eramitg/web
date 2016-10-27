@@ -16,10 +16,17 @@
                     <h2>Missing Contracts / TX</h2>
                     <div class="x_content">
                         <div class="table">
-                            <table id="table" ref="table" class="table dataTable table-responsive no-footer"></table>
+                            <table id="tableMissing" ref="tableMissing" class="table dataTable table-responsive no-footer"></table>
                         </div>
-
                     </div>
+
+                    <h2>Mined Contracts / TX</h2>
+                    <div class="x_content">
+                        <div class="table">
+                            <table id="tableMined" ref="tableMined" class="table dataTable table-responsive no-footer"></table>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -33,7 +40,8 @@
 
     import auth from './auth.js'
     import utils from './utils.js'
-    var blockchainTable;
+    var blockchainTableMissing;
+    var blockchainTableMined;
     var moment = require("moment/min/moment-with-locales.js")
     var locale = window.navigator.userLanguage || window.navigator.language; //returns e.g. en-US
     moment.locale(locale)
@@ -42,7 +50,7 @@
 
         async mounted() {
 
-            blockchainTable = $('#table').DataTable({
+            blockchainTableMissing = $('#tableMissing').DataTable({
                 responsive: true,
                 language: {
                     zeroRecords: 'zero_records'
@@ -66,52 +74,121 @@
                     {
                         "title": "TX Hash",
                         "render": function (data, type, full, meta) {
-                            return '<a href="https://etherscan.io/tx/'+data+'">'+data.substr( 0, 32 ) +'…'+'</a>'
+                            let pre = ''
+                            if(data) {
+                                pre = '<a href="https://etherscan.io/tx/'+data+'">'+data.substr( 0, 32 ) +'…'+'</a>'
+                            }
+                            return  pre + '<button name="'+full[4]+'/'+full[5]+'" type="button" id="tx_hash" class="btn btn-default" autocomplete="off">Report Temp.</button>'
                         }
                     },
                     {"title": "Contract Hash",
                         "render": function (data, type, full, meta) {
-                            return '<a href="https://etherscan.io/address/'+data+'">'+data.substr( 0, 32 ) +'…'+'</a>'
+                            if(data) {
+                                return '<a href="https://etherscan.io/address/'+data+'">'+data.substr( 0, 32 ) +'…'+'</a>'
+                            } else {
+                                return '<button name="'+full[4]+'/'+full[5]+'" type="button" id="contract" class="btn btn-default" autocomplete="off">Create Contract</button>'
+                            }
                         }},
                     {
-                        "title": 'Edit',
+                        "title": 'Cache Result',
                         "render": function (data, type, full, meta) {
-                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button>' +
-                                    '<button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                            return '<button name="'+full[4]+'/'+full[5]+'" type="button" id="mined" class="btn btn-default" autocomplete="off">Check Mined</button>';
                         }
                     }
                 ]
             });
 
+            blockchainTableMined = $('#tableMined').DataTable({
+                responsive: true,
+                language: {
+                    zeroRecords: 'zero_records'
+                },
+                data: this.dataSet,
+                colReorder: true,
+                "columns": [
+                    {"title": "Track-and-trace"},
+                    {
+                        "title": "Date Sent",
+                        "render": function (data, type, full, meta) {
+                            if (type === 'display' || type === 'filter') {
+                                let date = moment(data)
+                                if (date.valueOf() <= 0) return "n/a"
+                                return date.format('DD.MM.YYYY, HH:mm')
+                            } else {
+                                return data;
+                            }
+                        }
+                    },
+                    {
+                        "title": "TX Hash",
+                        "render": function (data, type, full, meta) {return '<a href="https://etherscan.io/tx/'+data+'">'+data.substr( 0, 32 ) +'…'+'</a>'}
+                    },
+                    {
+                        "title": "Contract Hash",
+                        "render": function (data, type, full, meta) {return '<a href="https://etherscan.io/address/'+data+'">'+data.substr( 0, 32 ) +'…'+'</a>'}
+                    }
+                ]
+            });
+
             var that = this
-            $(document).on("click", "#btn", function () {
-                let parcelId = parseInt($(this)[0].name)
-                that.currentParcelId = parcelId;
-                if(parcelId && parcelId > 0) {
-                    console.log("id:"+parcelId)
-                } else {
-                    //TODO: clear data
+            $(document).on("click", "#tx_hash", async function () {
+                let arr = ($(this)[0].name).split("/")
+                let parcelId = parseInt(arr[0])
+                let groupId = parseInt(arr[1])
+
+                console.log("tx_hash id:"+parcelId+"/"+groupId)
+                try {
+                    that.oktext = await that.contract(parcelId, groupId, "tx")
+                } catch (err) {
+                    that.error = err
                 }
             });
-            $(document).on("click", "#btnRemove", function () {
-                let parcelId = parseInt($(this)[0].name)
-                if(parcelId && parcelId > 0) {
-                    console.log("id:"+parcelId)
+            $(document).on("click", "#contract", async function () {
+                let arr = ($(this)[0].name).split("/")
+                let parcelId = parseInt(arr[0])
+                let groupId = parseInt(arr[1])
+
+                console.log("contract id:"+parcelId+"/"+groupId)
+                try {
+                    that.oktext = await that.contract(parcelId, groupId, "contract")
+                } catch (err) {
+                    that.error = err
+                }
+            });
+            $(document).on("click", "#mined", async function () {
+                let arr = ($(this)[0].name).split("/")
+                let parcelId = parseInt(arr[0])
+                let groupId = parseInt(arr[1])
+
+                console.log("mined id:"+parcelId+"/"+groupId)
+                try {
+                    that.oktext = await that.contract(parcelId, groupId, "mined")
+                } catch (err) {
+                    that.error = err
                 }
             });
 
-            let rawData = await this.loadData()
-
-            this.dataLookup = []
-            this.dataSet = rawData.map(row => {
+            let rawDataMissing = await this.loadMissingData()
+            this.dataSetMissing = rawDataMissing.map(row => {
                 var result = []
-                //create an additional lookup table
-                this.dataLookup[row.id] = [];
-                this.dataLookup[row.id]['tntNumber'] = result[0] = row.tntNumber
-                this.dataLookup[row.id]['dateSent'] = result[1] = row.dateSent
-                this.dataLookup[row.id]['transaction_hash'] = result[2] = row.transaction_hash
-                this.dataLookup[row.id]['contract_address'] = result[3] = row.contract_address
+                result[0] = row.tntNumber
+                result[1] = row.dateSent
+                result[2] = row.transaction_hash
+                result[3] = row.contract_address
                 result[4] = row.id
+                result[5] = row.gid
+                return result
+            });
+
+            let rawDataMined = await this.loadMinedData()
+            this.dataSetMined = rawDataMined.map(row => {
+                var result = []
+                result[0] = row.tntNumber
+                result[1] = row.dateSent
+                result[2] = row.transaction_hash
+                result[3] = row.contract_address
+                result[4] = row.id
+                result[5] = row.gid
                 return result
             });
         },
@@ -120,13 +197,12 @@
             return{
                 error: '',
                 oktext: '',
-                dataLookup: null,
-                dataSet: null,
-                currentParcelId: null
+                dataSetMissing: null,
+                dataSetMined: null
             }
         },
         methods: {
-            async loadData() {
+            async loadMissingData() {
                 return utils.ajax({
                     type: "GET",
                     url: "/api/v1/contract/missing",
@@ -134,15 +210,44 @@
                     contentType: "application/json",
                     headers: auth.authHeader()
                 });
+            },
+            async loadMinedData() {
+                return utils.ajax({
+                    type: "GET",
+                    url: "/api/v1/contract/mined",
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+            },
+            async contract(pid, gid, type) {
+                return utils.ajax({
+                    type: "GET",
+                    url: "/api/v1/contract/type/"+pid+"/"+gid+"/"+type,
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+            },
+            dismissDialog() {
+                this.error = '';
+                this.oktext = '';
             }
         },
         watch: {
-            'dataSet': function (val, oldVal) {
-                blockchainTable.clear()
+            'dataSetMissing': function (val, oldVal) {
+                blockchainTableMissing.clear()
                 if (val.length > 0) {
-                    blockchainTable.rows.add(val)
+                    blockchainTableMissing.rows.add(val)
                 }
-                blockchainTable.draw()
+                blockchainTableMissing.draw()
+            },
+            'dataSetMined': function (val, oldVal) {
+                blockchainTableMined.clear()
+                if (val.length > 0) {
+                    blockchainTableMined.rows.add(val)
+                }
+                blockchainTableMined.draw()
             }
         }
     }
