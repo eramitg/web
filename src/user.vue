@@ -42,34 +42,47 @@
                     </div>
                     <div class="modal-body row">
                         <div class="col-sm-12">
-                            <div class="form-group">
-                                <input type="text" value="" placeholder="Username" class="form-control"
-                                       v-model="username">
-                            </div>
+                            <div class="form-horizontal form-label-left">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3">Username</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control"
+                                               v-model="username">
+                                    </div>
+                                </div>
 
-                            <div class="form-group">
-                            <div class="btn-group">
-                                <select class="form-control" v-model="selectedCompany">
-                                    <option v-for="company in companies" v-bind:value="company.value">{{ company.label }}</option>
-                                </select>
-                            </div> Company
-                            </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3">Company</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control" v-model="selectedCompany">
+                                            <option v-for="company in companies" v-bind:value="company.value">{{ company.label }}</option>
+                                        </select>
+                                    </div>
+                                </div>
 
-                            <div class="form-group" v-if="currentUserId > 0">
-                            <div class="btn-group">
-                                <select class="form-control" v-model="selectedRole">
-                                    <option v-for="role in roles" v-bind:value="role.value">{{ role.label }}</option>
-                                </select>
-                            </div> Role
-                            </div>
+                                <div class="form-group" v-if="currentUserId > 0">
+                                    <label class="control-label col-sm-3"></label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control" v-model="selectedRole">
+                                            <option v-for="role in roles" v-bind:value="role.value">{{ role.label }}</option>
+                                        </select>
+                                    </div>
+                                </div>
 
-                            <div class="form-group">
-                                <input type="password" value="" placeholder="Password" class="form-control"
-                                       v-model="passwordSet1">
-                            </div>
-                            <div class="form-group">
-                                <input type="password" value="" placeholder="Password" class="form-control"
-                                       v-model="passwordSet2">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3">Password</label>
+                                    <div class="col-sm-9">
+                                        <input type="password" value="" placeholder="Password" class="form-control"
+                                               v-model="passwordSet1">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-3">Repeat Password</label>
+                                    <div class="col-sm-9">
+                                        <input type="password" value="" placeholder="Password" class="form-control"
+                                               v-model="passwordSet2">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
