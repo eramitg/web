@@ -83,11 +83,11 @@
                     },
                     {"title": "Contract Hash",
                         "render": function (data, type, full, meta) {
+                            let pre = ''
                             if(data) {
-                                return '<a href="https://etherscan.io/address/'+data+'">'+data.substr( 0, 32 ) +'…'+'</a>'
-                            } else {
-                                return '<button name="'+full[4]+'/'+full[5]+'" type="button" id="contract" class="btn btn-default" autocomplete="off">Create Contract</button>'
+                                pre = '<a href="https://etherscan.io/address/'+data+'">'+data.substr( 0, 32 ) +'…'+'</a>'
                             }
+                            return pre + '<button name="'+full[4]+'/'+full[5]+'" type="button" id="contract" class="btn btn-default" autocomplete="off">Create Contract</button>'
                         }},
                     {
                         "title": 'Cache Result',
