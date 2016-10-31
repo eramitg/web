@@ -39,10 +39,10 @@
                         <div class="col-sm-2 col-xs-12">
                             <div class="btn-group">
                                 <select class="form-control" v-model="selected">
-                                    <option v-if="sending" v-for="recipientCompany in recipientCompanies"
+                                    <option v-if="!sending" v-for="recipientCompany in recipientCompanies"
                                             @click="filter()">{{ recipientCompany }}
                                     </option>
-                                    <option v-if="!sending" v-for="senderCompany in senderCompanies"
+                                    <option v-if="sending" v-for="senderCompany in senderCompanies"
                                             @click="filter()">{{ senderCompany }}
                                     </option>
                                 </select>
