@@ -11,7 +11,6 @@
             <p>{{ oktext }}</p>
         </div>
 
-
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
@@ -177,6 +176,8 @@
                 })
                 .catch(err => console.log(err))
 
+            this.loadData();
+
             var that = this
             $(document).on("click", "#btn", function () {
                 let shipmentId = parseInt($(this)[0].name)
@@ -201,9 +202,9 @@
                 oktext: '',
                 tnt: null,
                 recipients: [{"label":"Modum.io", "value":1}],
-                selectedRecipient: 1,
+                selectedRecipient: null,
                 temperatureCategories: [{"label":"5-12", "value":1}],
-                selectedTemperatureCategories: 1,
+                selectedTemperatureCategories: null,
                 productCategories: [{"label":"Pills", "value":1}],
                 selectedProductCategories: 1,
                 transportMethods: [{"label":"Coldchain", "value":1}],
@@ -216,14 +217,35 @@
                 selectedInterval: 1,
                 dataSet: null,
                 currentShipmentId: -1,
-                currentJSON: null
             }
+        },
+        computed: {
+          currentJSON: function(){
+            return {
+              tnt: this.tnt,
+              recipient: this.selectedRecipient,
+              temperatureCategories: this.selectedTemperatureCategories
+            }
+          }
+        },
+        watch: {
+          dataSet: function (val, oldVal) {
+            console.log("dataSet")
+            console.log(val)
+            if (shipmentTable) {
+              shipmentTable.clear()
+              if (val.length > 0) {
+                shipmentTable.rows.add(val)
+              }
+              shipmentTable.draw()
+            }
+          }
         },
         methods:{
             async loadData() {
                 let asyncData = null;
                 if(auth.role() === 'ADMIN') {
-                    asyncData = this.loadCompanyShipments()
+                    asyncData = this.loadAllShipments()
                 } else if(auth.role() === 'SUPER') {
                     asyncData = this.loadAllShipments()
                 }
@@ -235,11 +257,11 @@
                         var result = []
                         //create an additional lookup table
                         this.dataLookup[row.ID] = [];
-                        this.dataLookup[row.ID]['name'] = result[0] = row.name
-                        this.dataLookup[row.ID]['companyName'] = result[1] = row.company.name
-                        this.dataLookup[row.ID]['role'] = result[2] = row.role
-                        this.dataLookup[row.ID]['company'] = result[3] = row.company.ID
-                        result[4] = row.ID
+                        this.dataLookup[row.ID]['tnt'] = result[0] = row.tnt
+                        this.dataLookup[row.ID]['receiver'] = result[1] = row.receiver
+                        this.dataLookup[row.ID]['tempCategory'] = result[2] = `Temperature Range: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
+                        this.dataLookup[row.ID]['edit'] = result[3] = 1
+                        //result[4] = row.ID
                         return result
                     });
                     return rawData
@@ -249,7 +271,7 @@
             async loadAllShipments() {
                 return utils.ajax({
                     type: "GET",
-                    url: "/api/v1/shipment",
+                    url: "/api/preparedshipments",
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
@@ -280,15 +302,17 @@
             },
             async shipmentCreate() {
                 return utils.ajax({
-                    data: JSON.stringify({
-                        json: this.currentJSON,
-                        companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId()
-                    }),
-                    type: "POST",
-                    url: "/api/v1/shipment/admin/create",
-                    dataType: "json",
-                    contentType: "application/json",
-                    headers: auth.authHeader()
+                  data: JSON.stringify({
+                    sender: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
+                    receiver: parseInt(this.selectedRecipient),
+                    tnt: this.tnt,
+                    tempCategory: this.selectedTemperatureCategories
+                  }),
+                  type: "POST",
+                  url: "/api/preparedshipments",
+                  dataType: "json",
+                  contentType: "application/json",
+                  headers: auth.authHeader()
                 });
             },
             async createUpdate() {
