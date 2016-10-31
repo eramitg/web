@@ -52,6 +52,7 @@
             <!-- page content -->
             <div class="right_col" role="main">
                 <router-view></router-view>
+                <notifications />
             </div>
             <!-- /page content -->
             <!-- footer content -->
@@ -64,7 +65,12 @@
 </template>
 <script>
     import auth from './auth.js'
+    import Notifications from './components/Notifications.vue';
+
     export default {
+        components: {
+            Notifications
+        },
         mounted() {
             require("./assets/gentelella/js/custom.js");
             require("./assets/gentelella/css/custom.css");
