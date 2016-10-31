@@ -43,7 +43,60 @@
         </div>
 
         <div v-if="isSuper">
-            add/remove/change companies
+            <!-- add/remove/change companies -->
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Company</h2>
+                            <div class="col-sm-2">
+                                <button id="btn" data-toggle="modal" data-target="#details-dialog" class="btn btn-default" name="-1">
+                                    +<i class="fa fa-cog" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="table">
+                                <table id="table" ref="table" class="table dataTable table-responsive no-footer"></table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal HTML -->
+                <div id="details-dialog" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Create/Edit Company</h4>
+                            </div>
+                            <div class="modal-body row">
+                                <div class="col-sm-12">
+                                    <div class="form-horizontal form-label-left">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-3">Name of the Company</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control"
+                                                       v-model="companyName">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button id="save" type="button" class="btn btn-default" ref="save" data-dismiss="details-dialog" @click="createUpdate()">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
 
     </div>
@@ -52,14 +105,14 @@
 <script>
     import auth from './auth.js'
     import utils from './utils.js'
+
+    var companyTable;
+
     export default {
         async mounted() {
             try {
                 if(this.isSuper) {
-                    this.loadCompanies().then(tmp => {
-                        this.companies = tmp.map((obj) => {console.log(obj.info); return {"value": obj.ID, "label": obj.name, "info": obj.info}})
-                        this.selectedCompany = this.companies[0].value;
-                    })
+                    this.load()
                 } else {
                     let rawData = await this.loadCompany()
                     console.log(rawData)
@@ -70,7 +123,49 @@
            } catch (err) {
                 console.log(err)
                 this.error = err
-            }
+           }
+
+            companyTable = $('#table').DataTable({
+                responsive: true,
+                language: {
+                    zeroRecords: 'zero_records'
+                },
+                data: this.companies,
+                colReorder: true,
+                "columns": [
+                    {"title": "Name",
+                        "render": function (data, type, full, meta) {
+                            return full.label;
+                        }
+                    },
+                    {
+                        "title": 'Edit',
+                        "render": function (data, type, full, meta) {
+                            return '<div class="col-sm-2"><button data-toggle="modal" data-target="#details-dialog" name="'+full.value+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button></div>' +
+                                    '<div class="col-sm-2"><button name="'+full.value+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                        }
+                    }
+                ]
+            });
+
+            var that = this
+            $(document).on("click", "#btn", function () {
+                that.companyId = parseInt($(this)[0].name)
+                if(that.companyId && that.companyId > 0) {
+                    for(var i=0;i<that.companies.length;i++) {
+                        if(that.companies[i].value === that.companyId) {
+                            that.companyName = that.companies[i].label
+                        }
+                    }
+                }
+
+            });
+            $(document).on("click", "#btnRemove", function () {
+                let companyId = parseInt($(this)[0].name)
+                if(companyId && companyId > 0) {
+                    that.remove(companyId)
+                }
+            });
         },
         data () {
             return {
@@ -81,10 +176,47 @@
                 json: null,
                 jsonstring: null,
                 companies: null,
-                selectedCompany: null
+                selectedCompany: null,
+                companyName: null,
+                companyId: null
             }
         },
         methods: {
+            async createUpdate() {
+                let p1
+                if(this.companyId <= 0) {
+                    p1 = utils.ajax({
+                        data: JSON.stringify(
+                                {"name": this.companyName,
+                                 "info": window.btoa("[]")}
+                        ),
+                        type: "POST",
+                        url: "/api/v1/company",
+                        dataType: "json",
+                        contentType: "application/json",
+                        headers: auth.authHeader()
+                    });
+                } else {
+                    p1 = utils.ajax({
+                        data: JSON.stringify(
+                                {"name": this.companyName}
+                        ),
+                        type: "PUT",
+                        url: "/api/v1/company/update/" + this.companyId,
+                        dataType: "json",
+                        contentType: "application/json",
+                        headers: auth.authHeader()
+                    });
+                }
+                $('#details-dialog').modal('hide');
+                await p1
+                this.load()
+            },
+            async load() {
+                let tmp = await this.loadCompanies()
+                this.companies = tmp.map((obj) => {console.log(obj.info); return {"value": obj.ID, "label": obj.name, "info": obj.info}})
+                this.selectedCompany = this.companies[0].value;
+            },
             dismissDialog() {
                 this.error = ''
                 this.oktext = ''
@@ -97,6 +229,16 @@
                     contentType: "application/json",
                     headers: auth.authHeader()
                 });
+            },
+            async remove(companyId) {
+                await utils.ajax({
+                    type: "DELETE",
+                    url: "/api/v1/company/delete/"+companyId,
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+                this.load()
             },
             async loadCompany() {
                 return utils.ajax({
@@ -151,6 +293,14 @@
                 } catch (err) {
                     this.error = err
                 }
+            },
+            'companies': function (val, oldVal) {
+                companyTable.clear()
+                if (val.length > 0) {
+                    companyTable.rows.add(val)
+                }
+                companyTable.draw()
+                this.companyName = ''
             }
         }
     }
