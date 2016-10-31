@@ -161,6 +161,22 @@
                 ]
             });
 
+            this.loadCompany()
+                .then(res => {
+                    let decoded = JSON.parse(window.atob(res.info))
+
+                    decoded.forEach(item => {
+                        if(item.name == 'recipients'){
+                            this.recipients = item.options
+                        }
+
+                        if(item.name == 'temperatureCategory'){
+                            this.temperatureCategories = item.options
+                        }
+                    })
+                })
+                .catch(err => console.log(err))
+
             var that = this
             $(document).on("click", "#btn", function () {
                 let shipmentId = parseInt($(this)[0].name)
@@ -301,6 +317,15 @@
                     }
                 }
 
+            },
+            loadCompany() {
+                return utils.ajax({
+                    type: "GET",
+                    url: "/api/v1/company/admin/company",
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
             },
             async remove(shipmentId) {
                 console.log("async call to remove shipment if > 0: " + shipmentId)
