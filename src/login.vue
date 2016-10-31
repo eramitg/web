@@ -38,6 +38,7 @@
 </template>
 <script>
     import auth from './auth.js'
+    import notification from './stores/notification';
     export default {
         data() {
             return {
@@ -53,6 +54,7 @@
         },
         methods: {
             async submit() {
+                notification.addNotification('Test');
                 var credentials = {
                     username: this.credentials.username,
                     password: this.credentials.password
