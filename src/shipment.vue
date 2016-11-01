@@ -138,7 +138,7 @@
             $(document).on("click", "#btnRemove", function () {
                 let shipmentId = parseInt($(this)[0].name)
                 if(shipmentId && shipmentId > 0) {
-                    that.remove(userId)
+                    that.remove(shipmentId)
                 }
             });
         },
@@ -208,7 +208,7 @@
                         this.dataLookup[row.ID]['receiver'] = result[1] = row.receiver.name
                         this.dataLookup[row.ID]['tempCategory'] = result[2] = `Temperature Range: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
                         this.dataLookup[row.ID]['createdAt'] = result[3] = row.CreatedAt
-                        this.dataLookup[row.ID]['edit'] = result[4] = 1
+                        this.dataLookup[row.ID]['edit'] = result[4] = row.ID
                         //result[4] = row.ID
                         return result
                     });
@@ -314,7 +314,7 @@
 
                 let p1= utils.ajax({
                     type: "DELETE",
-                    url: "/api/v1/shipment/delete/"+shipmentId,
+                    url: "/api/preparedshipments/"+shipmentId,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
