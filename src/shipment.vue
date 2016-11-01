@@ -68,51 +68,6 @@
                                             </select>
                                         </div>
                                     </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Product Category</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedProductCategories">
-                                                <option v-for="productCategory in productCategories" v-bind:value="productCategory.value">{{ productCategory.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Transport Method</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedTransportMethod">
-                                                <option v-for="transportMethod in transportMethods" v-bind:value="transportMethod.value">{{ transportMethod.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Transport Company</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedTransportCompany">
-                                                <option v-for="transportCompany in transportCompanies" v-bind:value="transportCompany.value">{{ transportCompany.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Transport Duration</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedDuration">
-                                                <option v-for="duration in durations" v-bind:value="duration.value">{{ duration.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Measurement Interval</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedInterval">
-                                                <option v-for="interval in intervals" v-bind:value="interval.value">{{ interval.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
                                 </div>
 
 
