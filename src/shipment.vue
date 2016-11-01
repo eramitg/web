@@ -117,17 +117,8 @@
 
             this.loadCompany()
                 .then(res => {
-                    let decoded = JSON.parse(window.atob(res.info))
-
-                    decoded.forEach(item => {
-                        if(item.name == 'recipients'){
-                            this.recipients = item.options
-                        }
-
-                        if(item.name == 'temperatureCategory'){
-                            this.temperatureCategories = item.options
-                        }
-                    })
+                    this.recipients = res.recipients;
+                    this.temperatureCategories = res.temperatureCategories;
                 })
                 .catch(err => console.log(err))
 
@@ -258,8 +249,7 @@
             async shipmentCreate() {
                 return utils.ajax({
                   data: JSON.stringify({
-                    sender: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
-                    receiver: parseInt(this.selectedRecipient),
+                    receiverID: parseInt(this.selectedRecipient),
                     tnt: this.tnt,
                     tempCategory: this.selectedTemperatureCategories
                   }),
@@ -300,7 +290,8 @@
             loadCompany() {
                 return utils.ajax({
                     type: "GET",
-                    url: "/api/v1/company/admin/company",
+                    //url: "/api/v1/company/admin/company",
+                    url: "/api/v1/company/defaults",
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
