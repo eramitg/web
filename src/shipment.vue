@@ -130,9 +130,13 @@
                 let shipmentId = parseInt($(this)[0].name)
                 that.currentShipmentId = shipmentId;
                 if(shipmentId && shipmentId > 0) {
-                    //TODO: set data
+                    that.selectedRecipient = that.dataLookup[shipmentId].selectedRecipient
+                    that.tnt = that.dataLookup[shipmentId].tnt
+                    that.selectedTemperatureCategories = that.dataLookup[shipmentId].selectedTemperatureCategories
                 } else {
-                    //TODO: clear data
+                    that.selectedRecipient = ''
+                    that.tnt = ''
+                    that.selectedTemperatureCategories = null
                 }
             });
             $(document).on("click", "#btnRemove", function () {
@@ -209,6 +213,9 @@
                         this.dataLookup[row.ID]['tempCategory'] = result[2] = `Temperature Range: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
                         this.dataLookup[row.ID]['createdAt'] = result[3] = row.CreatedAt
                         this.dataLookup[row.ID]['edit'] = result[4] = row.ID
+                        this.dataLookup[row.ID]['selectedRecipient'] = row.receiver.ID
+                        //TODO: the ID is not the correct one! we need 1 or 2 but not e.g., 94
+                        this.dataLookup[row.ID]['selectedTemperatureCategories'] = row.tempCategory.ID
                         //result[4] = row.ID
                         return result
                     });
@@ -237,12 +244,14 @@
             async shipmentUpdate() {
                 return utils.ajax({
                     data: JSON.stringify({
-                        id: this.currentShipmentId,
-                        json: this.currentJSON,
-                        companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
+                        receiverID: parseInt(this.selectedRecipient),
+                        tnt: this.tnt,
+                        tempCategory: {"name": this.selectedTemperatureCategories.name,
+                            "minTemp": this.selectedTemperatureCategories.tempLow,
+                            "maxTemp": this.selectedTemperatureCategories.tempHigh}
                     }),
                     type: "PUT",
-                    url: "/api/v1/shipment/admin/update/" + this.currentShipmentId,
+                    url: "/api/preparedshipments/" + this.currentShipmentId,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
