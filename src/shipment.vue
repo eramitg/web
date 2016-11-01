@@ -204,7 +204,7 @@
                         //create an additional lookup table
                         this.dataLookup[row.ID] = [];
                         this.dataLookup[row.ID]['tnt'] = result[0] = row.tnt
-                        this.dataLookup[row.ID]['receiver'] = result[1] = row.receiver
+                        this.dataLookup[row.ID]['receiver'] = result[1] = row.receiver.name
                         this.dataLookup[row.ID]['tempCategory'] = result[2] = `Temperature Range: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
                         this.dataLookup[row.ID]['edit'] = result[3] = 1
                         //result[4] = row.ID
