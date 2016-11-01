@@ -105,6 +105,7 @@
                     {"title": "Track-and-trace"},
                     {"title": "Recipient"},
                     {"title": "Temperatures"},
+                    {"title": "Created"},
                     {
                         "title": 'Edit',
                         "render": function (data, type, full, meta) {
@@ -206,7 +207,8 @@
                         this.dataLookup[row.ID]['tnt'] = result[0] = row.tnt
                         this.dataLookup[row.ID]['receiver'] = result[1] = row.receiver.name
                         this.dataLookup[row.ID]['tempCategory'] = result[2] = `Temperature Range: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
-                        this.dataLookup[row.ID]['edit'] = result[3] = 1
+                        this.dataLookup[row.ID]['createdAt'] = result[3] = row.CreatedAt
+                        this.dataLookup[row.ID]['edit'] = result[4] = 1
                         //result[4] = row.ID
                         return result
                     });
