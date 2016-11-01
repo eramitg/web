@@ -251,7 +251,9 @@
                   data: JSON.stringify({
                     receiverID: parseInt(this.selectedRecipient),
                     tnt: this.tnt,
-                    tempCategory: this.selectedTemperatureCategories
+                    tempCategory: {"name": this.selectedTemperatureCategories.name,
+                        "minTemp": this.selectedTemperatureCategories.tempLow,
+                        "maxTemp": this.selectedTemperatureCategories.tempHigh}
                   }),
                   type: "POST",
                   url: "/api/preparedshipments",
