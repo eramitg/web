@@ -16,12 +16,16 @@
                 <div class="form-group" v-for="item in json">
 
                     <label v-if="item.type == 'text'">
-                        {{item.name}}
+                        {{item.label}}
                         <input type="text" value="" class="form-control" v-model="item.value">
                     </label>
-                    <select class="btn-control" v-model="item.value" v-if="item.type == 'select'">
-                        <option v-for="option in item.options" v-bind:value="option.value">{{ option.label }}</option>
-                    </select>
+
+                    <label v-if="item.type == 'select'">
+                        {{item.label}}
+                        <select class="btn-control" v-model="item.value">
+                            <option v-for="option in item.options" v-bind:value="option.value">{{ option.label }}</option>
+                        </select>
+                    </label>
                 </div>
                 <button id="save" class="btn btn-primary" @click="save()">Save</button>
                 <div class="btn-group">
