@@ -51,6 +51,7 @@
         async mounted() {
 
             blockchainTableMissing = $('#tableMissing').DataTable({
+                order: [[ 1, "desc" ]],
                 responsive: true,
                 language: {
                     zeroRecords: 'zero_records'
