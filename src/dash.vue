@@ -373,6 +373,7 @@
             this.updateTable();
             this.updatePie();
             this.table = $('#table').DataTable({
+                order: [[ 3, "desc" ]],
                 responsive: true,
                 language: {
                     zeroRecords: i18.t('zero_records')

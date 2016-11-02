@@ -96,6 +96,7 @@
 
         async mounted() {
             shipmentTable = $('#table').DataTable({
+                order: [[ 3, "desc" ]],
                 responsive: true,
                 language: {
                     zeroRecords: 'zero_records'
