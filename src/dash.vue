@@ -252,7 +252,7 @@
         },
         async mounted() {
             var that = this
-            this.start = moment().subtract(3, 'month');
+            this.start = moment().subtract(29, 'days'); // moment().subtract(3, 'month');
             this.end = moment();
             $('input[name="daterange"]').daterangepicker({
                         startDate: that.start,
