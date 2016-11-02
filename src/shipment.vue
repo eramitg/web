@@ -122,8 +122,8 @@
                     {
                         "title": 'Edit',
                         "render": function (data, type, full, meta) {
-                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off" disabled><li class="fa fa-cog" aria-hidden="true"></li></button>' +
-                                    '<button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn-ship" class="btn btn-default" autocomplete="off" disabled><li class="fa fa-cog" aria-hidden="true"></li></button>' +
+                                    '<button name="'+full[4]+'" type="button" id="btn-remove-ship" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
                         }
                     }
                 ]
@@ -139,7 +139,7 @@
             this.loadData();
 
             var that = this
-            $(document).on("click", "#btn", function () {
+            $(document).on("click", "#btn-ship", function () {
                 let shipmentId = parseInt($(this)[0].name)
                 that.currentShipmentId = shipmentId;
                 if(shipmentId && shipmentId > 0) {
@@ -154,7 +154,7 @@
                     that.selectedTemperatureCategories = null
                 }
             });
-            $(document).on("click", "#btnRemove", function () {
+            $(document).on("click", "#btn-remove-ship", function () {
                 let shipmentId = parseInt($(this)[0].name)
                 if(shipmentId && shipmentId > 0) {
                     that.remove(shipmentId)
