@@ -11,7 +11,6 @@
             <p>{{ oktext }}</p>
         </div>
 
-
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
@@ -52,7 +51,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" v-if="recipients">
                                         <label class="control-label col-lg-3">Recipient</label>
                                         <div class="col-lg-9">
                                             <select class="form-control" v-model="selectedRecipient">
@@ -66,51 +65,6 @@
                                         <div class="col-lg-9">
                                             <select class="form-control" v-model="selectedTemperatureCategories">
                                                 <option v-for="temperatureCategory in temperatureCategories" v-bind:value="temperatureCategory.value">{{ temperatureCategory.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Product Category</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedProductCategories">
-                                                <option v-for="productCategory in productCategories" v-bind:value="productCategory.value">{{ productCategory.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Transport Method</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedTransportMethod">
-                                                <option v-for="transportMethod in transportMethods" v-bind:value="transportMethod.value">{{ transportMethod.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Transport Company</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedTransportCompany">
-                                                <option v-for="transportCompany in transportCompanies" v-bind:value="transportCompany.value">{{ transportCompany.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Transport Duration</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedDuration">
-                                                <option v-for="duration in durations" v-bind:value="duration.value">{{ duration.label }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3">Measurement Interval</label>
-                                        <div class="col-lg-9">
-                                            <select class="form-control" v-model="selectedInterval">
-                                                <option v-for="interval in intervals" v-bind:value="interval.value">{{ interval.label }}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -135,12 +89,14 @@
 <script>
     import auth from './auth.js'
     import utils from './utils.js'
+    import moment from 'moment/min/moment-with-locales.js'
     var shipmentTable;
 
     export default{
 
         async mounted() {
             shipmentTable = $('#table').DataTable({
+                order: [[ 3, "desc" ]],
                 responsive: true,
                 language: {
                     zeroRecords: 'zero_records'
@@ -151,30 +107,57 @@
                     {"title": "Track-and-trace"},
                     {"title": "Recipient"},
                     {"title": "Temperatures"},
+                    {"title": "Created",
+                    "render": function (data, type, full, meta) {
+                            if (type === 'display' || type === 'filter') {
+                                let date = moment(data)
+                                if (date.valueOf() <= 0) return "n/a"
+                                return date.format('DD.MM.YYYY, HH:mm')
+                            } else {
+                                return data;
+                            }
+                        }
+
+                    },
                     {
                         "title": 'Edit',
                         "render": function (data, type, full, meta) {
-                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button>' +
-                                    '<button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn-ship" class="btn btn-default" autocomplete="off" disabled><li class="fa fa-cog" aria-hidden="true"></li></button>' +
+                                    '<button name="'+full[4]+'" type="button" id="btn-remove-ship" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
                         }
                     }
                 ]
             });
 
+            this.loadCompany()
+                .then(res => {
+                    this.recipients = res.recipients;
+                    this.temperatureCategories = res.temperatureCategories;
+                })
+                .catch(err => console.log(err))
+
+            this.loadData();
+
             var that = this
-            $(document).on("click", "#btn", function () {
+            $(document).on("click", "#btn-ship", function () {
                 let shipmentId = parseInt($(this)[0].name)
                 that.currentShipmentId = shipmentId;
                 if(shipmentId && shipmentId > 0) {
-                    //TODO: set data
+                    console.log(that.dataLookup[shipmentId]);
+                    that.selectedRecipient = that.dataLookup[shipmentId].selectedRecipient
+                    that.tnt = that.dataLookup[shipmentId].tnt
+                    that.selectedTemperatureCategories = that.dataLookup[shipmentId].selectedTemperatureCategories
+                    console.log(that.dataLookup[shipmentId].selectedTemperatureCategories)
                 } else {
-                    //TODO: clear data
+                    that.selectedRecipient = ''
+                    that.tnt = ''
+                    that.selectedTemperatureCategories = null
                 }
             });
-            $(document).on("click", "#btnRemove", function () {
+            $(document).on("click", "#btn-remove-ship", function () {
                 let shipmentId = parseInt($(this)[0].name)
                 if(shipmentId && shipmentId > 0) {
-                    that.remove(userId)
+                    that.remove(shipmentId)
                 }
             });
         },
@@ -184,10 +167,10 @@
                 error: '',
                 oktext: '',
                 tnt: null,
-                recipients: [{"label":"Modum.io", "value":1}],
-                selectedRecipient: 1,
+                recipients: null,
+                selectedRecipient: null,
                 temperatureCategories: [{"label":"5-12", "value":1}],
-                selectedTemperatureCategories: 1,
+                selectedTemperatureCategories: null,
                 productCategories: [{"label":"Pills", "value":1}],
                 selectedProductCategories: 1,
                 transportMethods: [{"label":"Coldchain", "value":1}],
@@ -200,17 +183,38 @@
                 selectedInterval: 1,
                 dataSet: null,
                 currentShipmentId: -1,
-                currentJSON: null
             }
+        },
+        computed: {
+          currentJSON: function(){
+            return {
+              tnt: this.tnt,
+              recipient: this.selectedRecipient,
+              temperatureCategories: this.selectedTemperatureCategories
+            }
+          }
+        },
+        watch: {
+          dataSet: function (val, oldVal) {
+            console.log("dataSet")
+            console.log(val)
+            if (shipmentTable) {
+              shipmentTable.clear()
+              if (val.length > 0) {
+                shipmentTable.rows.add(val)
+              }
+              shipmentTable.draw()
+            }
+          }
         },
         methods:{
             async loadData() {
-                let asyncData = null;
-                if(auth.role() === 'ADMIN') {
-                    asyncData = this.loadCompanyShipments()
+                let asyncData = this.loadAllShipments();
+                /*if(auth.role() === 'ADMIN') {
+                    asyncData = this.loadAllShipments()
                 } else if(auth.role() === 'SUPER') {
                     asyncData = this.loadAllShipments()
-                }
+                }*/
                 if(asyncData) {
                     let rawData = await asyncData
 
@@ -219,11 +223,15 @@
                         var result = []
                         //create an additional lookup table
                         this.dataLookup[row.ID] = [];
-                        this.dataLookup[row.ID]['name'] = result[0] = row.name
-                        this.dataLookup[row.ID]['companyName'] = result[1] = row.company.name
-                        this.dataLookup[row.ID]['role'] = result[2] = row.role
-                        this.dataLookup[row.ID]['company'] = result[3] = row.company.ID
-                        result[4] = row.ID
+                        this.dataLookup[row.ID]['tnt'] = result[0] = row.tnt
+                        this.dataLookup[row.ID]['receiver'] = result[1] = row.receiver.name
+                        this.dataLookup[row.ID]['tempCategory'] = result[2] = `${row.tempCategory.name}: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
+                        this.dataLookup[row.ID]['createdAt'] = result[3] = row.CreatedAt
+                        this.dataLookup[row.ID]['edit'] = result[4] = row.ID
+                        this.dataLookup[row.ID]['selectedRecipient'] = row.receiver.ID
+                        //TODO: the ID is not the correct one! we need 1 or 2 but not e.g., 94
+                        this.dataLookup[row.ID]['selectedTemperatureCategories'] = row.tempCategory.ID
+                        //result[4] = row.ID
                         return result
                     });
                     return rawData
@@ -233,7 +241,7 @@
             async loadAllShipments() {
                 return utils.ajax({
                     type: "GET",
-                    url: "/api/v1/shipment",
+                    url: "/api/preparedshipments",
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
@@ -251,12 +259,14 @@
             async shipmentUpdate() {
                 return utils.ajax({
                     data: JSON.stringify({
-                        id: this.currentShipmentId,
-                        json: this.currentJSON,
-                        companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
+                        receiverID: parseInt(this.selectedRecipient),
+                        tnt: this.tnt,
+                        tempCategory: {"name": this.selectedTemperatureCategories.name,
+                        "minTemp": this.selectedTemperatureCategories.tempLow,
+                        "maxTemp": this.selectedTemperatureCategories.tempHigh}
                     }),
                     type: "PUT",
-                    url: "/api/v1/shipment/admin/update/" + this.currentShipmentId,
+                    url: "/api/preparedshipments/" + this.currentShipmentId,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
@@ -264,15 +274,18 @@
             },
             async shipmentCreate() {
                 return utils.ajax({
-                    data: JSON.stringify({
-                        json: this.currentJSON,
-                        companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId()
-                    }),
-                    type: "POST",
-                    url: "/api/v1/shipment/admin/create",
-                    dataType: "json",
-                    contentType: "application/json",
-                    headers: auth.authHeader()
+                  data: JSON.stringify({
+                    receiverID: parseInt(this.selectedRecipient),
+                    tnt: this.tnt,
+                    tempCategory: {"name": this.selectedTemperatureCategories.name,
+                        "minTemp": this.selectedTemperatureCategories.tempLow,
+                        "maxTemp": this.selectedTemperatureCategories.tempHigh}
+                  }),
+                  type: "POST",
+                  url: "/api/preparedshipments",
+                  dataType: "json",
+                  contentType: "application/json",
+                  headers: auth.authHeader()
                 });
             },
             async createUpdate() {
@@ -302,6 +315,16 @@
                 }
 
             },
+            loadCompany() {
+                return utils.ajax({
+                    type: "GET",
+                    //url: "/api/v1/company/admin/company",
+                    url: "/api/v1/company/defaults",
+                    dataType: "json",
+                    contentType: "application/json",
+                    headers: auth.authHeader()
+                });
+            },
             async remove(shipmentId) {
                 console.log("async call to remove shipment if > 0: " + shipmentId)
                 let data = this.dataSet.filter((item) => {
@@ -315,7 +338,7 @@
 
                 let p1= utils.ajax({
                     type: "DELETE",
-                    url: "/api/v1/shipment/delete/"+shipmentId,
+                    url: "/api/preparedshipments/"+shipmentId,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()

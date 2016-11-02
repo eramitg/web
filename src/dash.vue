@@ -39,10 +39,10 @@
                         <div class="col-sm-2 col-xs-12">
                             <div class="btn-group">
                                 <select class="form-control" v-model="selected">
-                                    <option v-if="sending" v-for="recipientCompany in recipientCompanies"
+                                    <option v-if="!sending" v-for="recipientCompany in recipientCompanies"
                                             @click="filter()">{{ recipientCompany }}
                                     </option>
-                                    <option v-if="!sending" v-for="senderCompany in senderCompanies"
+                                    <option v-if="sending" v-for="senderCompany in senderCompanies"
                                             @click="filter()">{{ senderCompany }}
                                     </option>
                                 </select>
@@ -252,7 +252,7 @@
         },
         async mounted() {
             var that = this
-            this.start = moment().subtract(3, 'month');
+            this.start = moment().subtract(29, 'days'); // moment().subtract(3, 'month');
             this.end = moment();
             $('input[name="daterange"]').daterangepicker({
                         startDate: that.start,
@@ -373,6 +373,7 @@
             this.updateTable();
             this.updatePie();
             this.table = $('#table').DataTable({
+                order: [[ 3, "desc" ]],
                 responsive: true,
                 language: {
                     zeroRecords: i18.t('zero_records')
