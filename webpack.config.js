@@ -22,6 +22,11 @@ module.exports = {
     	    {test: /.js$/, exclude: /node_modules/, loader : 'babel'}
 	    ]
     },
+    vue: {
+      loaders: {
+        scss: 'style!css!sass'
+      }
+    },
     babel: {
         presets: ['es2015','es2017'],
         plugins: ['transform-runtime']
