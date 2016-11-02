@@ -89,6 +89,7 @@
 <script>
     import auth from './auth.js'
     import utils from './utils.js'
+    import moment from 'moment/min/moment-with-locales.js'
     var shipmentTable;
 
     export default{
@@ -105,11 +106,22 @@
                     {"title": "Track-and-trace"},
                     {"title": "Recipient"},
                     {"title": "Temperatures"},
-                    {"title": "Created"},
+                    {"title": "Created",
+                    "render": function (data, type, full, meta) {
+                            if (type === 'display' || type === 'filter') {
+                                let date = moment(data)
+                                if (date.valueOf() <= 0) return "n/a"
+                                return date.format('DD.MM.YYYY, HH:mm')
+                            } else {
+                                return data;
+                            }
+                        }
+
+                    },
                     {
                         "title": 'Edit',
                         "render": function (data, type, full, meta) {
-                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button>' +
+                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off" disabled><li class="fa fa-cog" aria-hidden="true"></li></button>' +
                                     '<button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
                         }
                     }
@@ -130,9 +142,11 @@
                 let shipmentId = parseInt($(this)[0].name)
                 that.currentShipmentId = shipmentId;
                 if(shipmentId && shipmentId > 0) {
+                    console.log(that.dataLookup[shipmentId]);
                     that.selectedRecipient = that.dataLookup[shipmentId].selectedRecipient
                     that.tnt = that.dataLookup[shipmentId].tnt
                     that.selectedTemperatureCategories = that.dataLookup[shipmentId].selectedTemperatureCategories
+                    console.log(that.dataLookup[shipmentId].selectedTemperatureCategories)
                 } else {
                     that.selectedRecipient = ''
                     that.tnt = ''
@@ -210,7 +224,7 @@
                         this.dataLookup[row.ID] = [];
                         this.dataLookup[row.ID]['tnt'] = result[0] = row.tnt
                         this.dataLookup[row.ID]['receiver'] = result[1] = row.receiver.name
-                        this.dataLookup[row.ID]['tempCategory'] = result[2] = `Temperature Range: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
+                        this.dataLookup[row.ID]['tempCategory'] = result[2] = `${row.tempCategory.name}: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
                         this.dataLookup[row.ID]['createdAt'] = result[3] = row.CreatedAt
                         this.dataLookup[row.ID]['edit'] = result[4] = row.ID
                         this.dataLookup[row.ID]['selectedRecipient'] = row.receiver.ID
@@ -247,8 +261,8 @@
                         receiverID: parseInt(this.selectedRecipient),
                         tnt: this.tnt,
                         tempCategory: {"name": this.selectedTemperatureCategories.name,
-                            "minTemp": this.selectedTemperatureCategories.tempLow,
-                            "maxTemp": this.selectedTemperatureCategories.tempHigh}
+                        "minTemp": this.selectedTemperatureCategories.tempLow,
+                        "maxTemp": this.selectedTemperatureCategories.tempHigh}
                     }),
                     type: "PUT",
                     url: "/api/preparedshipments/" + this.currentShipmentId,
