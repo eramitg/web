@@ -51,7 +51,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" v-if="recipients">
                                         <label class="control-label col-lg-3">Recipient</label>
                                         <div class="col-lg-9">
                                             <select class="form-control" v-model="selectedRecipient">
@@ -167,7 +167,7 @@
                 error: '',
                 oktext: '',
                 tnt: null,
-                recipients: [{"label":"Modum.io", "value":1}],
+                recipients: null,
                 selectedRecipient: null,
                 temperatureCategories: [{"label":"5-12", "value":1}],
                 selectedTemperatureCategories: null,
