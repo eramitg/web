@@ -194,12 +194,12 @@
         },
         methods:{
             async loadData() {
-                let asyncData = null;
-                if(auth.role() === 'ADMIN') {
+                let asyncData = this.loadAllShipments();
+                /*if(auth.role() === 'ADMIN') {
                     asyncData = this.loadAllShipments()
                 } else if(auth.role() === 'SUPER') {
                     asyncData = this.loadAllShipments()
-                }
+                }*/
                 if(asyncData) {
                     let rawData = await asyncData
 
