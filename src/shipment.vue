@@ -51,7 +51,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" v-if="recipients">
                                         <label class="control-label col-lg-3">Recipient</label>
                                         <div class="col-lg-9">
                                             <select class="form-control" v-model="selectedRecipient">
@@ -89,12 +89,14 @@
 <script>
     import auth from './auth.js'
     import utils from './utils.js'
+    import moment from 'moment/min/moment-with-locales.js'
     var shipmentTable;
 
     export default{
 
         async mounted() {
             shipmentTable = $('#table').DataTable({
+                order: [[ 3, "desc" ]],
                 responsive: true,
                 language: {
                     zeroRecords: 'zero_records'
@@ -105,11 +107,23 @@
                     {"title": "Track-and-trace"},
                     {"title": "Recipient"},
                     {"title": "Temperatures"},
+                    {"title": "Created",
+                    "render": function (data, type, full, meta) {
+                            if (type === 'display' || type === 'filter') {
+                                let date = moment(data)
+                                if (date.valueOf() <= 0) return "n/a"
+                                return date.format('DD.MM.YYYY, HH:mm')
+                            } else {
+                                return data;
+                            }
+                        }
+
+                    },
                     {
                         "title": 'Edit',
                         "render": function (data, type, full, meta) {
-                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button>' +
-                                    '<button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                            return '<button data-toggle="modal" data-target="#new-shipment" name="'+full[4]+'" type="button" id="btn-ship" class="btn btn-default" autocomplete="off" disabled><li class="fa fa-cog" aria-hidden="true"></li></button>' +
+                                    '<button name="'+full[4]+'" type="button" id="btn-remove-ship" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
                         }
                     }
                 ]
@@ -125,19 +139,25 @@
             this.loadData();
 
             var that = this
-            $(document).on("click", "#btn", function () {
+            $(document).on("click", "#btn-ship", function () {
                 let shipmentId = parseInt($(this)[0].name)
                 that.currentShipmentId = shipmentId;
                 if(shipmentId && shipmentId > 0) {
-                    //TODO: set data
+                    console.log(that.dataLookup[shipmentId]);
+                    that.selectedRecipient = that.dataLookup[shipmentId].selectedRecipient
+                    that.tnt = that.dataLookup[shipmentId].tnt
+                    that.selectedTemperatureCategories = that.dataLookup[shipmentId].selectedTemperatureCategories
+                    console.log(that.dataLookup[shipmentId].selectedTemperatureCategories)
                 } else {
-                    //TODO: clear data
+                    that.selectedRecipient = ''
+                    that.tnt = ''
+                    that.selectedTemperatureCategories = null
                 }
             });
-            $(document).on("click", "#btnRemove", function () {
+            $(document).on("click", "#btn-remove-ship", function () {
                 let shipmentId = parseInt($(this)[0].name)
                 if(shipmentId && shipmentId > 0) {
-                    that.remove(userId)
+                    that.remove(shipmentId)
                 }
             });
         },
@@ -147,7 +167,7 @@
                 error: '',
                 oktext: '',
                 tnt: null,
-                recipients: [{"label":"Modum.io", "value":1}],
+                recipients: null,
                 selectedRecipient: null,
                 temperatureCategories: [{"label":"5-12", "value":1}],
                 selectedTemperatureCategories: null,
@@ -189,12 +209,12 @@
         },
         methods:{
             async loadData() {
-                let asyncData = null;
-                if(auth.role() === 'ADMIN') {
+                let asyncData = this.loadAllShipments();
+                /*if(auth.role() === 'ADMIN') {
                     asyncData = this.loadAllShipments()
                 } else if(auth.role() === 'SUPER') {
                     asyncData = this.loadAllShipments()
-                }
+                }*/
                 if(asyncData) {
                     let rawData = await asyncData
 
@@ -205,8 +225,12 @@
                         this.dataLookup[row.ID] = [];
                         this.dataLookup[row.ID]['tnt'] = result[0] = row.tnt
                         this.dataLookup[row.ID]['receiver'] = result[1] = row.receiver.name
-                        this.dataLookup[row.ID]['tempCategory'] = result[2] = `Temperature Range: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
-                        this.dataLookup[row.ID]['edit'] = result[3] = 1
+                        this.dataLookup[row.ID]['tempCategory'] = result[2] = `${row.tempCategory.name}: ${row.tempCategory.minTemp}-${row.tempCategory.maxTemp} °C`
+                        this.dataLookup[row.ID]['createdAt'] = result[3] = row.CreatedAt
+                        this.dataLookup[row.ID]['edit'] = result[4] = row.ID
+                        this.dataLookup[row.ID]['selectedRecipient'] = row.receiver.ID
+                        //TODO: the ID is not the correct one! we need 1 or 2 but not e.g., 94
+                        this.dataLookup[row.ID]['selectedTemperatureCategories'] = row.tempCategory.ID
                         //result[4] = row.ID
                         return result
                     });
@@ -235,12 +259,14 @@
             async shipmentUpdate() {
                 return utils.ajax({
                     data: JSON.stringify({
-                        id: this.currentShipmentId,
-                        json: this.currentJSON,
-                        companyId: auth.role() === 'SUPER' ? this.selectedCompany : auth.companyId(),
+                        receiverID: parseInt(this.selectedRecipient),
+                        tnt: this.tnt,
+                        tempCategory: {"name": this.selectedTemperatureCategories.name,
+                        "minTemp": this.selectedTemperatureCategories.tempLow,
+                        "maxTemp": this.selectedTemperatureCategories.tempHigh}
                     }),
                     type: "PUT",
-                    url: "/api/v1/shipment/admin/update/" + this.currentShipmentId,
+                    url: "/api/preparedshipments/" + this.currentShipmentId,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()
@@ -312,7 +338,7 @@
 
                 let p1= utils.ajax({
                     type: "DELETE",
-                    url: "/api/v1/shipment/delete/"+shipmentId,
+                    url: "/api/preparedshipments/"+shipmentId,
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()

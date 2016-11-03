@@ -51,7 +51,7 @@
                     </div>
                     <div class="col-sm-9 col-xs-12">
                         <div ref="chart" class="overview-graph"></div>
-                    </div>
+                        <canvas id="barChart2" height="60"></canvas></div>
                     <div class="col-md-3 col-sm-3 col-xs-12">
                         <div ref="chartPie" class=""></div>
                     </div>
@@ -197,6 +197,7 @@
     };
 
     var optionsDetail2 = {
+        responsive: true,
         scales: {
             yAxes: [{
                 ticks: {
@@ -240,6 +241,42 @@
         }
     };
 
+    var optionsBarChart2 = {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    max: 50,
+                    min: 0,
+                    fixedStepSize: 10
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Shipments'
+                }
+            }],
+        },
+        legend: {
+            display: false
+        },
+        pan: {
+            // Boolean to enable panning
+            enabled: true,
+            // Panning directions. Remove the appropriate direction to disable
+            // Eg. 'y' would only allow panning in the y direction
+            mode: 'xy'
+        },
+
+        // Container for zoom options
+        zoom: {
+            // Boolean to enable zooming
+            enabled: true,
+
+                    // Zooming directions. Remove the appropriate direction to disable
+                    // Eg. 'y' would only allow zooming in the y direction
+                    mode: 'xy'
+        }
+    }
+
     var Chartist = require("chartist")
 
     import auth from './auth.js'
@@ -252,7 +289,7 @@
         },
         async mounted() {
             var that = this
-            this.start = moment().subtract(3, 'month');
+            this.start = moment().subtract(29, 'days'); // moment().subtract(3, 'month');
             this.end = moment();
             $('input[name="daterange"]').daterangepicker({
                         startDate: that.start,
@@ -370,9 +407,20 @@
                 height: 200
             });
 
+            var canvas2 = document.getElementById("barChart2");
+            var ctx2 = canvas2.getContext("2d");
+            this.updateBarChart2();
+            this.barChart2 = new Chart(ctx2, {
+                    type: 'bar',
+                    data: this.dataBarChart2,
+                    options: optionsBarChart2
+                }
+            );
+
             this.updateTable();
             this.updatePie();
             this.table = $('#table').DataTable({
+                order: [[ 3, "desc" ]],
                 responsive: true,
                 language: {
                     zeroRecords: i18.t('zero_records')
@@ -503,9 +551,11 @@
                 dataDetail2: '',
                 table: '',
                 chart: '',
+                barChart2: '',
                 chartDetail: '',
                 chartPie: null,
                 chartDetail2: '',
+                dataBarChart2: '',
                 titleDetailsDialog: i18.t('temperature_measurements'),
                 sending: true,
                 //senderNames: '',
@@ -573,10 +623,12 @@
             'start': function (val, oldVal) {
                 this.updateTable();
                 this.updateChart();
+                this.updateBarChart2()
             },
             'end': function (val, oldVal) {
                 this.updateTable();
                 this.updateChart();
+                this.updateBarChart2()
             },
             'sending': function (val, oldVal) {
                 this.updateTable();
@@ -610,6 +662,14 @@
                         {value: this.total_ok, name: "Sendungen Ok", className: "piechart-ok"},
                         {value: this.total_out_spec, name: "Out of Specification", className: "piechart-outspec"},
                         {value: this.total_not_arrived, name: "Nicht Angekommen", className: "piechart-notarrived"}],
+                }
+            },
+            updateBarChart2() {
+                this.dataBarChart2 = this.processBarChart2(this.results, this.start, this.end, this.sending, this.selected)
+                if (this.barChart2) {
+                    this.barChart2.data.labels = this.dataBarChart2.labels;
+                    this.barChart2.data.datasets = this.dataBarChart2.datasets;
+                    this.barChart2.update();
                 }
             },
             async parcels() {
@@ -957,7 +1017,91 @@
                     result.data.labels.push(Math.round(element / result.data.series.reduce(sum) * 100) + '%');
                 });
                 return result;
-            }
+            },
+            processBarChart2(rawData, start, end, sending, selectedCompany) {
+                this.total_ok = 0;
+                this.total_out_spec = 0;
+                this.total_not_arrived = 0;
+                var result = {labels: [], datasets: [{label: '', backgroundColor: '#25a9e1', data: []}]}
+                let len = rawData.length;
+
+                var tmp = []
+                for (var i = 0; i < len; i++) {
+                    tmp.push(rawData[i]);
+                }
+                tmp.sort(function(a, b) {
+                    return sending ? moment(a.dateSent).isAfter(moment(b.dateSent)) : moment(a.dateReceived).isAfter(moment(b.dateReceived))
+                });
+                rawData = tmp
+
+                let isSuperuser = auth.role() === 'SUPER';
+                for (var i = 0, index = -1; i < len; i++) {
+                    if (start && moment(rawData[i].dateSent).isBefore(start)) {
+                        console.log("before")
+                        continue;
+                    }
+                    if (end && moment(rawData[i].dateSent).isAfter(end)) {
+                        console.log("after")
+                        continue;
+                    }
+                    if (sending && (rawData[i].senderCompany !== auth.companyName() && !isSuperuser)) {
+                        console.log("not sender")
+                        continue;
+                    }
+                    if (!sending && (rawData[i].receiverCompany !== auth.companyName()) && !isSuperuser) {
+                        console.log("not receiver")
+                        continue;
+                    }
+                    if (!sending && selectedCompany && selectedCompany !== '-' && (selectedCompany !== rawData[i].receiverCompany)) {
+                        console.log("not receiver selected / " + selectedCompany)
+                        continue;
+                    }
+                    if (sending && selectedCompany && selectedCompany !== '-' && (selectedCompany !== rawData[i].senderCompany)) {
+                        console.log("not sender selected")
+                        continue;
+                    }
+
+                    //fragile, enforce id ordering from server or use a map!
+                    if (i > 0 && rawData[i - 1].id === rawData[i].id) {
+                        continue;
+                    }
+
+                    let date = null
+                    if(this.sending) {
+                        date = moment(rawData[i].dateSent)
+                    } else {
+                        date = moment(rawData[i].dateReceived)
+                    }
+
+                    //let date = rawData[i].dateSent.split('T')[0];
+                    let dateString = date.format('DD.MMM')
+                    if (result.labels[index] !== dateString) {
+                        index++;
+                        result.labels[index] = dateString
+                    }
+
+                    if (!result.datasets[0].data[index]) {
+                        result.datasets[0].data[index] = 0;
+                    }
+
+                    /*if (!result.data.series[1][index]) {
+                     result.data.series[1][index] = 0;
+                     }*/
+
+                    result.datasets[0].data[index]++
+                    this.total_ok += rawData[i].nrFailures > 0 ? 0 : 1
+
+                    this.total_not_arrived += rawData[i].isReceived ? 0:1
+                    this.total_out_spec += rawData[i].nrFailures > 0 ? 1 : 0
+                }
+
+                //result.data.labels.reverse();
+                //result.data.series.reverse();
+
+                this.total_ok -= this.total_not_arrived;
+                console.log(rawData)
+                return result;
+            },
         }
     }
 </script>

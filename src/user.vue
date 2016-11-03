@@ -137,15 +137,15 @@ export default {
                 {
                     "title": 'Edit',
                     "render": function (data, type, full, meta) {
-                        return '<div class="col-sm-2"><button data-toggle="modal" data-target="#details-dialog" name="'+full[4]+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button></div>' +
-                                '<div class="col-sm-2"><button name="'+full[4]+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                        return '<div class="col-sm-2"><button data-toggle="modal" data-target="#details-dialog" name="'+full[4]+'" type="button" id="btn-user" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button></div>' +
+                                '<div class="col-sm-2"><button name="'+full[4]+'" type="button" id="btn-user-remove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
                     }
                 }
             ]
         });
 
         var that = this
-        $(document).on("click", "#btn", function () {
+        $(document).on("click", "#btn-user", function () {
             let userId = parseInt($(this)[0].name)
             that.currentUserId = userId;
             if(userId && userId > 0) {
@@ -159,7 +159,7 @@ export default {
             }
             that.toggleSave();
         });
-        $(document).on("click", "#btnRemove", function () {
+        $(document).on("click", "#btn-user-remove", function () {
             let userId = parseInt($(this)[0].name)
             if(userId && userId > 0) {
                 that.remove(userId)

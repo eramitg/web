@@ -15,5 +15,7 @@
   "temperature_measurements": "Temperature Measurements",
   "status_bad": "Out of Specification",
   "status_ok": "Good",
-  "status_transit": "In Progress"
+  "status_transit": "In Progress",
+  "zero_records": "No records found",
+  "shipments": "Shipments"
 }

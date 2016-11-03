@@ -145,15 +145,15 @@
                     {
                         "title": 'Edit',
                         "render": function (data, type, full, meta) {
-                            return '<div class="col-sm-2"><button data-toggle="modal" data-target="#details-dialog" name="'+full.value+'" type="button" id="btn" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button></div>' +
-                                    '<div class="col-sm-2"><button name="'+full.value+'" type="button" id="btnRemove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
+                            return '<div class="col-sm-2"><button data-toggle="modal" data-target="#details-dialog" name="'+full.value+'" type="button" id="btn-comp" class="btn btn-default" autocomplete="off"><li class="fa fa-cog" aria-hidden="true"></li></button></div>' +
+                                    '<div class="col-sm-2"><button name="'+full.value+'" type="button" id="btn-comp-remove" class="btn btn-default" autocomplete="off"><li class="fa fa-times text-danger"></li></button>';
                         }
                     }
                 ]
             });
 
             var that = this
-            $(document).on("click", "#btn", function () {
+            $(document).on("click", "#btn-comp", function () {
                 that.companyId = parseInt($(this)[0].name)
                 if(that.companyId && that.companyId > 0) {
                     for(var i=0;i<that.companies.length;i++) {
@@ -164,7 +164,7 @@
                 }
 
             });
-            $(document).on("click", "#btnRemove", function () {
+            $(document).on("click", "#btn-comp-remove", function () {
                 let companyId = parseInt($(this)[0].name)
                 if(companyId && companyId > 0) {
                     that.remove(companyId)
