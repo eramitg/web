@@ -4,6 +4,7 @@
   "description": "Temperature Logging Web View for modum.io",
   "main": "app.js",
   "scripts": {
+    "start": "webpack-dev-server --port 8000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "modum.io",
@@ -15,6 +16,7 @@
     "babel-plugin-transform-runtime": "^6.15.0",
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-es2017": "^6.14.0",
+    "babel-preset-stage-2": "^6.18.0",
     "bootstrap-webpack": "0.0.5",
     "css-loader": "^0.24.0",
     "exports-loader": "^0.6.3",

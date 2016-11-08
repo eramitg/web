@@ -21,7 +21,6 @@
                 <button @click.prevent="onSubmit" type="submit" class="button is-primary is-fullwidth" :class="{'is-loading': loading}">Login</button>
               </p>
             </form>
-            {{token}}
           </div>
         </div>
       </div>
@@ -30,8 +29,6 @@
 </template>
 
 <script>
-  import auth from '../stores/auth';
-
   export default {
     data() {
       return {
@@ -52,6 +49,11 @@
           username: this.username,
           password: this.password
         })
+          .then(res => {
+            const {redirect} = this.$route.query
+            this.$router.push(redirect);
+          })
+          .catch(err => console.log(err))
         this.loading = false;
       },
       reset(){

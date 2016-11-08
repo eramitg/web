@@ -27,11 +27,6 @@ module.exports = {
         scss: 'style!css!sass'
       }
     },
-    babel: {
-        presets: ['es2015','es2017'],
-        plugins: ['transform-runtime']
-    },
-
     devServer: {
         hot: true,
         proxy: {

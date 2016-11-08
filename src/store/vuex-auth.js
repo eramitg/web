@@ -7,6 +7,12 @@ const state = {
   role: null,
 }
 
+const getters = {
+  isAuthenticated(state){
+    return state.token != null
+  }
+}
+
 const mutations = {
   setToken(state, token){
     state.token = token
@@ -33,6 +39,7 @@ const actions = {
 
 export default {
   state,
+  getters,
   mutations,
   actions
 }
