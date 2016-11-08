@@ -51,7 +51,7 @@
         })
           .then(res => {
             const {redirect} = this.$route.query
-            this.$router.push(redirect);
+            this.$router.push(redirect || '/');
           })
           .catch(err => console.log(err))
         this.loading = false;

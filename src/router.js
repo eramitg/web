@@ -12,7 +12,7 @@ const router = new VueRouter({
   base: __dirname,
   routes: [
     {path: '/', component: Layout, meta: {requiresAuth: true}, children: [
-      {path: '/', component: Dash},
+      {path: '/', name: 'Dashboard', component: Dash, meta: {icon: 'fa-home'}},
      //{path: '/shipment', component: Shipment},
      //{path: '/user', component: User},
      //{path: '/company', component: Company},

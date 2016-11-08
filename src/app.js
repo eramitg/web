@@ -4,6 +4,10 @@ import App from './app.vue';
 import store from './store';
 import router from './router';
 
+import VueTables from 'vue-tables-2';
+
+Vue.use(VueTables.client);
+
 // check authentication
 router.beforeEach((to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)){
