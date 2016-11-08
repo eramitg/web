@@ -7,24 +7,57 @@
             <h1 class="title">
               Login
             </h1>
-            <div class="box">
+            <form class="box">
               <label class="label">Email</label>
               <p class="control">
-                <input class="input" type="text" placeholder="jsmith@example.org">
+                <input v-model="username" class="input" type="text" placeholder="username">
               </p>
               <label class="label">Password</label>
               <p class="control">
-                <input class="input" type="password" placeholder="●●●●●●●">
+                <input v-model="password" class="input" type="password" placeholder="password">
               </p>
               <hr>
               <p class="control">
-                <button class="button is-primary">Login</button>
-                <button class="button is-default">Cancel</button>
+                <button @click.prevent="onSubmit" type="submit" class="button is-primary is-fullwidth" :class="{'is-loading': loading}">Login</button>
               </p>
-            </div>
+            </form>
+            {{token}}
           </div>
         </div>
       </div>
     </div>
   </section>
 </template>
+
+<script>
+  import auth from '../stores/auth';
+
+  export default {
+    data() {
+      return {
+        username: '',
+        password: '',
+        loading: false
+      }
+    },
+    computed: {
+      token(){
+        return this.$store.state.auth.token
+      }
+    },
+    methods: {
+      async onSubmit(){
+        this.loading = true;
+        await this.$store.dispatch('login', {
+          username: this.username,
+          password: this.password
+        })
+        this.loading = false;
+      },
+      reset(){
+        this.username = '';
+        this.password = '';
+      }
+    }
+  }
+</script>

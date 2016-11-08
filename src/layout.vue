@@ -7,3 +7,10 @@
     @import "variables";
     @import '~bulma';
 </style>
+
+<script>
+  import store from './stores'
+  export default {
+    store
+  }
+</script>
