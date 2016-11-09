@@ -28,7 +28,9 @@ export default {
         if(!jsonStr) {
             return null
         }
-        return JSON.parse(jsonStr).userName
+        //http://stackoverflow.com/questions/13356493/decode-utf-8-with-javascript
+        //we get utf, but javascript cannot handle it: ü is Ã¼
+        return decodeURIComponent(escape(JSON.parse(jsonStr).userName))
     },
     userId() {
         let jsonStr = localStorage.getItem('user-profile')
@@ -49,7 +51,9 @@ export default {
         if(!jsonStr) {
             return null
         }
-        return JSON.parse(jsonStr).companyName
+        //http://stackoverflow.com/questions/13356493/decode-utf-8-with-javascript
+        //we get utf, but javascript cannot handle it: ü is Ã¼
+        return decodeURIComponent(escape(JSON.parse(jsonStr).companyName))
     },
     role() {
         let jsonStr = localStorage.getItem('user-profile')
