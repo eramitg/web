@@ -1,12 +1,11 @@
 <template>
   <div>
     <navbar></navbar>
-    <div class="columns">
-      <sidebar class="column is-2"/>
-      <div class="column is-10 content">
+    <section class="section">
+      <div class="container">
         <router-view></router-view>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -20,9 +19,3 @@
     }
   }
 </script>
-
-<style lang="scss" scoped>
-  .content{
-    padding: 30px;
-  }
-</style>

@@ -10,6 +10,7 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({
   base: __dirname,
+  linkActiveClass: 'is-active',
   routes: [
     {path: '/', component: Layout, meta: {requiresAuth: true}, children: [
       {path: '/', name: 'Dashboard', component: Dash, meta: {icon: 'fa-home'}},
