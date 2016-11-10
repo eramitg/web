@@ -1,10 +1,8 @@
 <template>
   <div>
     <navbar></navbar>
-    <section class="section">
-      <div class="container is-fluid">
-        <router-view></router-view>
-      </div>
+    <section class="section app">
+      <router-view></router-view>
     </section>
   </div>
 </template>
@@ -19,3 +17,11 @@
     }
   }
 </script>
+
+<style lang="scss" scoped>
+  @import "../variables";
+
+  .app{
+    background-color: $light
+  }
+</style>

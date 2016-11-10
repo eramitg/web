@@ -5,7 +5,7 @@
 <style lang="scss">
   @import '~animate.css';
   .animated {
-    animation-duration: .377s;
+    animation-duration: .5s;
   }
 
   @import "~bulma/sass/utilities/functions.sass";

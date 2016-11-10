@@ -3,19 +3,19 @@
     <nav class="level">
       <div class="level-item has-text-centered">
         <p class="heading">Total Sendungen verschickt</p>
-        <p class="title">{{totalParcels}}</p>
+        <p class="title count">{{totalParcels}}</p>
       </div>
       <div class="level-item has-text-centered">
         <p class="heading">Total Sendungen OK</p>
-        <p class="title">{{totalOk}}</p>
+        <p class="title success">{{totalOk}}</p>
       </div>
       <div class="level-item has-text-centered">
         <p class="heading">Anzahl Abweichungen</p>
-        <p class="title">{{totalNotArrived}}</p>
+        <p class="title danger">{{totalNotArrived}}</p>
       </div>
       <div class="level-item has-text-centered">
         <p class="heading"># Sendungen unterwegs</p>
-        <p class="title">{{totalOnWay}}</p>
+        <p class="title info">{{totalOnWay}}</p>
       </div>
     </nav>
 
@@ -45,21 +45,7 @@
   import Chart from '../components/Chart.vue';
   import DataTable from '../components/DataTable.vue';
   import axios from 'axios';
-
-  var locale = window.navigator.userLanguage || window.navigator.language; //returns e.g. en-US
-  var i18 = require("i18next/i18next.js")
-  i18.init({
-    debug: 'false',
-    lng: locale,
-    fallbackLng: 'en',
-    keySeparator: false,
-    nsSeparator: false,
-    saveMissing: true,
-    resources: {
-        'de': {'translation': require("../assets/locales/de/translation.json")},
-        'en': {'translation': require("../assets/locales/en/translation.json")}
-    }
-  });
+  import i18 from '../i18';
 
   export default {
     components: {
@@ -104,10 +90,9 @@
           }
         },
         backgroundColor: [
-          '#1fc8db',
-          '#fce473',
-          '#42afe3',
-          '#ed6c63'
+          '#23D160',
+          '#FF3860',
+          '#FFDD57'
         ],
        }
     },
@@ -135,5 +120,25 @@
         },
     }
   }
-
 </script>
+
+<style lang="scss" scoped>
+  @import "../variables";
+
+  .count{
+    font-weight: 600;
+  }
+
+  .success{
+    @extend .count;
+    color: $success;
+  }
+  .danger{
+    @extend .count;
+    color: $danger;
+  }
+  .info{
+    @extend .count;
+    color: $yellow;
+  }
+</style>
