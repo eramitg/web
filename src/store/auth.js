@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import axios from 'axios';
 
 export default {
   state: {
@@ -8,10 +8,10 @@ export default {
   },
   async login(username, password){
     try{
-      let {data} = await Vue.http.post('/api/login', {username, password});
+      let {data} = await axios.post('/api/login', {username, password});
       if (data.token){
         this.state.token = data.token;
-        Vue.http.headers.common['Authorization'] = `Bearer ${data.token}`;
+        axios.default.headers.common['Authorization'] = `Bearer ${data.token}`;
       }
     } catch (e){
       console.log(e.data.message)

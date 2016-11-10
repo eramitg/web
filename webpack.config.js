@@ -42,5 +42,8 @@ module.exports = {
         compress: {warnings: false}
       })
     ] : []
+  },
+  alias: {
+    assets: 'assets/image'
   }
 }

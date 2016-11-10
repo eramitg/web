@@ -10,7 +10,7 @@
         </div>
         <div class="nav-center">
           <a class="nav-item hero-brand" href="/">
-            <img src="assets/image/logo.svg">
+            <img src="../assets/images/logo.svg">
           </a>
         </div>
         <div class="nav-right is-flex"></div>
