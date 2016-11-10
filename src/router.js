@@ -4,6 +4,10 @@ import VueRouter from 'vue-router';
 import Layout from './layout/layout.vue';
 
 import Dash from './views/dash.vue';
+import Shipment from './views/shipment.vue';
+import User from './views/user.vue';
+import Company from './views/company.vue';
+import Blockchain from './views/blockchain.vue';
 import Login from './views/login.vue';
 
 Vue.use(VueRouter);
@@ -14,10 +18,10 @@ const router = new VueRouter({
   routes: [
     {path: '/', component: Layout, meta: {requiresAuth: true}, children: [
       {path: '/', name: 'Dashboard', component: Dash, meta: {icon: 'fa-home'}},
-     //{path: '/shipment', component: Shipment},
-     //{path: '/user', component: User},
-     //{path: '/company', component: Company},
-     //{path: '/blockchain', component: Blockchain},
+      {path: '/shipment', name: 'Shipment', component: Shipment, meta: {icon: 'fa-paper-plane'}},
+      {path: '/user', name: 'User', component: User, meta: {icon: 'fa-users'}},
+      {path: '/company', name: 'Company Management', component: Company, meta: {icon: 'fa-cog'}},
+      {path: '/blockchain', name: 'Blockchain', component: Blockchain, meta:{icon: 'fa-book'}},
     ]},
     {path: '/login', component: Login}
   ]

@@ -1,5 +1,5 @@
 <template>
-  <section class="hero is-medium4">
+  <section class="hero is-light is-bold">
     <!-- Hero header: will stick at the top -->
     <div class="hero-head">
       <nav class="nav has-shadow">
@@ -20,9 +20,9 @@
     </div>
     <!-- Hero footer: will stick at the bottom -->
     <div class="hero-foot">
-      <nav class="tabs is-centered">
+      <nav class="tabs is-centered is-fullwidth is-boxed">
         <ul>
-          <router-link v-for="route in routes" tag="li" :to="route.path">
+          <router-link v-for="route in routes" tag="li" :to="route.path" exact>
             <a>
               <span class="icon is-small" v-if="route.meta && route.meta.icon"><i :class="['fa', route.meta.icon]"></i></span>
               <span>{{route.meta.label || route.name}}</span>

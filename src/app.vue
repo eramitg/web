@@ -3,6 +3,11 @@
 </template>
 
 <style lang="scss">
+  @import '~animate.css';
+  .animated {
+    animation-duration: .377s;
+  }
+
   @import "~bulma/sass/utilities/functions.sass";
   @import "variables";
   @import '~bulma';

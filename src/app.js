@@ -5,10 +5,9 @@ import store from './store';
 import router from './router';
 
 import VueTables from 'vue-tables-2';
-import axios from 'axios';
 
-Vue.prototype.$http = axios;
 Vue.use(VueTables.client);
+
 
 // check authentication
 router.beforeEach((to, from, next) => {
