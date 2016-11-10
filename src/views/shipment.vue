@@ -20,6 +20,9 @@
       <button slot="footer" class="button is-danger">Save changes</button>
     </modal>
   </div>
+  <div v-else>
+    Make sure you have an internet connection
+  </div>
 </template>
 
 <script>

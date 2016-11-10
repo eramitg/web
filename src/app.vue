@@ -1,6 +1,18 @@
 <template>
-  <router-view></router-view>
+  <div>
+    <router-view></router-view>
+    <notifications></notifications>
+  </div>
 </template>
+
+<script>
+  import Notifications from './layout/notifications.vue';
+  export default {
+    components: {
+      Notifications
+    }
+  }
+</script>
 
 <style lang="scss">
   @import '~animate.css';

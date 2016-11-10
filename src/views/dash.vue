@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <nav class="level">
+  <div v-if="parcels">
+    <nav class="level" v-if="parcels">
       <div class="level-item has-text-centered">
         <p class="heading">Total Sendungen verschickt</p>
         <p class="title count">{{totalParcels}}</p>
@@ -39,6 +39,9 @@
       </div>
     </div>
   </div>
+  <div v-else>
+    Make sure you have an internet connection
+  </div>
 </template>
 
 <script>
@@ -71,7 +74,7 @@
             },
             templates: {
               details: function(h, row) {
-                return <button id={row.id} class="button">Zeigen</button>
+                return <button id={row.id} class="button is-primary">Zeigen</button>
               }
             }
           }

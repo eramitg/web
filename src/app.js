@@ -3,11 +3,11 @@ import App from './app.vue';
 
 import store from './store';
 import router from './router';
+import axios from 'axios';
 
 import VueTables from 'vue-tables-2';
 
 Vue.use(VueTables.client);
-
 
 // check authentication
 router.beforeEach((to, from, next) => {
@@ -21,6 +21,17 @@ router.beforeEach((to, from, next) => {
   }
   next()
 });
+
+// handle connection errors
+axios.interceptors.response.use(res => (res), (error) => {
+  let {response} = error;
+  if (response.data && response.data.message){
+    store.dispatch('addNotification', {text: response.data.message, color: 'danger'});
+  } else if(response.data){
+    store.dispatch('addNotification', {text: response.data, color: 'danger'});
+  }
+  return error
+})
 
 const app = {
   router,

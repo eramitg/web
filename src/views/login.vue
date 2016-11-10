@@ -44,17 +44,18 @@
     },
     methods: {
       async onSubmit(){
-        this.loading = true;
-        await this.$store.dispatch('login', {
-          username: this.username,
-          password: this.password
-        })
-          .then(res => {
-            const {redirect} = this.$route.query
-            this.$router.push(redirect || '/');
+        try {
+          this.loading = true;
+          await this.$store.dispatch('login', {
+            username: this.username,
+            password: this.password
           })
-          .catch(err => console.log(err))
-        this.loading = false;
+          const {redirect} = this.$route.query
+          this.$router.push(redirect || '/');
+          this.loading = false;
+        } catch({response}){
+          this.loading = false;
+        }
       },
       reset(){
         this.username = '';

@@ -19,9 +19,9 @@ const router = new VueRouter({
     {path: '/', component: Layout, meta: {requiresAuth: true}, children: [
       {path: '/', name: 'Dashboard', component: Dash, meta: {icon: 'fa-home'}},
       {path: '/shipment', name: 'Shipment', component: Shipment, meta: {icon: 'fa-paper-plane'}},
-      {path: '/user', name: 'User', component: User, meta: {icon: 'fa-users'}},
-      {path: '/company', name: 'Company Management', component: Company, meta: {icon: 'fa-cog'}},
-      {path: '/blockchain', name: 'Blockchain', component: Blockchain, meta:{icon: 'fa-book'}},
+      {path: '/user', name: 'User', component: User, meta: {icon: 'fa-users', role: 'ADMIN'}},
+      {path: '/company', name: 'Company Management', component: Company, meta: {icon: 'fa-cog', role: 'ADMIN'}},
+      {path: '/blockchain', name: 'Blockchain', component: Blockchain, meta:{icon: 'fa-book', role: 'SUPER'}},
     ]},
     {path: '/login', component: Login}
   ]

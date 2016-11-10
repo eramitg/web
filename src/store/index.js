@@ -4,11 +4,13 @@ import axios from 'axios';
 
 Vue.use(Vuex)
 
-import auth from './vuex-auth';
+import auth from './auth';
+import notification from './notification';
 
 const store = new Vuex.Store({
   modules: {
-    auth
+    auth,
+    notification
   }
 });
 

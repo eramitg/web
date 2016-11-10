@@ -1,17 +1,31 @@
+const state = {
+  list: []
+}
 
+const mutations = {
+  addNotification(state, notification){
+    state.list.push(notification);
+  },
+  removeNotification(state, notification){
+    let index = state.list.indexOf(notification);
+    state.list.splice(index, 1);
+  }
+}
+
+const actions = {
+  addNotification({commit}, notification){
+    commit('addNotification', notification);
+    let {timeout, delay} = notification;
+
+    if (timeout || (timeout == null)){
+      setTimeout(() => commit('removeNotification', notification), delay || 3000);
+    }
+
+  }
+}
 
 export default {
-  state: [{text: 'danger', type: 'danger'}, {text: 'something'}],
-  addNotification: function (text, type="info", timeout=true, delay=2000) {
-    let notification = {text, type};
-    this.state.push(notification);
-
-    if (timeout){
-      setTimeout(() => this.removeNotification(notification), delay);
-    }
-  },
-  removeNotification: function (notification) {
-    let index = this.state.indexOf(notification);
-    this.state.splice(index, 1);
-  }
+  state,
+  mutations,
+  actions
 }
