@@ -215,7 +215,7 @@
             async loadMinedData() {
                 return utils.ajax({
                     type: "GET",
-                    url: "/api/v1/contract/mined",
+                        url: "/api/v1/contract/mined",
                     dataType: "json",
                     contentType: "application/json",
                     headers: auth.authHeader()

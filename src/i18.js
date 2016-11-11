@@ -1,5 +1,6 @@
-let locale = window.navigator.userLanguage || window.navigator.language; //returns e.g. en-US
 import i18 from 'i18next/i18next';
+
+export const locale = window.navigator.userLanguage || window.navigator.language; //returns e.g. en-US
 
 i18.init({
   debug: 'false',

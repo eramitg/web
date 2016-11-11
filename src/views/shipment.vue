@@ -45,11 +45,17 @@
         shipments: null,
         showModal: false,
         table: {
-          columns: ['tnt', 'receiver', 'tempCategory', 'created'],
+          columns: ['tnt', 'receiver', 'tempCategory', 'created', 'delete'],
           options: {
             headings: {
               tnt: i18.t('tnt'),
               receiver: i18.t('rcv_comp')
+            },
+            templates: {
+              delete: function(h, row) {
+                console.log(row);
+                return <button id={row.id} class="button is-danger"><i class="fa fa-trash"></i></button>
+              }
             }
           }
         }

@@ -34,7 +34,7 @@
     <div class="tile is-ancestor" v-if="parcels">
       <div class="tile is-parent is-12">
         <article class="tile is-child box">
-          <data-table :data="parcels" :columns="table.columns" :options="table.options"></data-table>
+          <data-table :data="momentParcels" :columns="table.columns" :options="table.options"></data-table>
         </article>
       </div>
     </div>
@@ -48,7 +48,9 @@
   import Chart from '../components/Chart.vue';
   import DataTable from '../components/DataTable.vue';
   import axios from 'axios';
-  import i18 from '../i18';
+  import i18, {locale} from '../i18';
+  import moment from 'moment';
+  moment.locale(locale)
 
   export default {
     components: {
@@ -65,6 +67,10 @@
         table: {
           columns: ['tntNumber', 'senderCompany', 'receiverCompany', 'dateSent', 'dateReceived', 'details'],
           options: {
+            dateColumns: ['dateSent', 'dateReceived'],
+            orderBy: {
+              column: 'dateSent',
+            },
             headings: {
               tntNumber: i18.t('tnt'),
               senderCompany: i18.t('send_comp'),
@@ -76,7 +82,7 @@
               details: function(h, row) {
                 return <button id={row.id} class="button is-primary">Zeigen</button>
               }
-            }
+            },
           }
         },
         labels: ['Sleeping', 'Designing', 'Coding', 'Cycling'],
@@ -111,6 +117,15 @@
       },
       totalOnWay(){
         return this.parcels ? this.parcels.filter(parcel => parcel.isSent && !parcel.isReceived).length : 0;
+      },
+      momentParcels(){
+        return this.parcels ?
+        this.parcels.map(item => {
+          item.dateSent = moment(item.dateSent).format('DD.MM.YYYY, HH:mm');
+          item.dateReceived = moment(item.dateReceived).format('DD.MM.YYYY, HH:mm');
+          return item
+        })
+        : []
       },
       pieData () {
         return {
