@@ -30,12 +30,6 @@
 
 <script>
   export default {
-    props: {
-      active: {
-        type: Boolean,
-        required: true
-      }
-    },
     computed: {
       deferred () {
         return this.$store.state.confirm.deferred;

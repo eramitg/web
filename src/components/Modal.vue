@@ -5,7 +5,7 @@
       <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp">
         <div class="modal-card" v-show="active">
           <header class="modal-card-head">
-            <p class="modal-card-title">Modal title</p>
+            <p class="modal-card-title">{{title}}</p>
             <button class="delete" @click="close"></button>
           </header>
           <section class="modal-card-body">
@@ -27,6 +27,10 @@
         type: Boolean,
         required: true
       },
+      title: {
+        type: String,
+        required: true
+      }
     },
     methods: {
       close: function (event){

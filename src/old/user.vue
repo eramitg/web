@@ -114,7 +114,7 @@ export default {
             this.selectedCompany = auth.companyId()
         }
         if(auth.role() === 'SUPER') {
-            this.loadCompanies().then(tmp => {
+                this.loadCompanies().then(tmp => {
                 this.companies = tmp.map((obj) => {return {value: obj.ID, label: obj.name}})
                 this.selectedCompany = this.companies[0].value;
             })
