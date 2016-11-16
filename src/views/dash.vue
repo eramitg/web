@@ -157,6 +157,6 @@
   }
   .info{
     @extend .count;
-    color: $yellow;
+    color: $warning;
   }
 </style>

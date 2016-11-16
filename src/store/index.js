@@ -2,14 +2,16 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 import auth from './auth';
+import confirm from './confirm';
 import notification from './notification';
 
 const store = new Vuex.Store({
   modules: {
     auth,
+    confirm,
     notification
   }
 });

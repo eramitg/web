@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var path = require('path');
 var PROD = JSON.parse(process.env.PROD_ENV || '0');
 
 module.exports = {
@@ -26,6 +27,11 @@ module.exports = {
     loaders: {
       scss: 'style!css!sass'
     }
+  },
+  sassLoader: {
+    includePaths: [
+      path.resolve(__dirname, 'src', 'variables.sass')
+    ]
   },
   devServer: {
     hot: true,

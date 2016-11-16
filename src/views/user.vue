@@ -11,7 +11,7 @@
           </h1>
         </div>
         <hr>
-        <data-table :data="flatShipments" :columns="table.columns" :options="table.options"></data-table>
+        <data-table :data="flatUsers" :columns="table.columns" :options="table.options"></data-table>
       </article>
     </div>
   </div>
@@ -22,6 +22,7 @@
   import Modal from '../components/Modal.vue';
   import axios from 'axios';
   import i18 from '../i18';
+  import store from '../store';
 
   export default {
     components: {
@@ -29,31 +30,35 @@
       Modal
     },
     async beforeRouteEnter(to, from, next){
-      let {data} = await axios.get('/api/preparedshipments');
-      next(vm => vm.$data.shipments = data)
+      let role = store.getters.user.role;
+      if(role == 'ADMIN'){
+        let {data} = await axios.get('/api/v1/company/admin');
+        next(vm => vm.$data.users = data)
+      } else if(role == 'SUPER'){
+        let {data} = await axios.get('/api/v1/company/admin');
+        next(vm => vm.$data.users = data)
+      }
+      next();
     },
     data(){
       return {
-        shipments: null,
+        users: null,
         showModal: false,
         table: {
-          columns: ['tnt', 'receiver', 'tempCategory', 'created'],
+          columns: ['name', 'companyName', 'role'],
           options: {
-            headings: {
-              tnt: i18.t('tnt'),
-              receiver: i18.t('rcv_comp')
-            }
+
           }
         }
       }
     },
     computed: {
-      flatShipments(){
-        return this.shipments ? this.shipments.map(item => ({
-          tnt: item.tnt,
-          receiver: item.receiver.name,
-          tempCategory: `${item.tempCategory.name}: ${item.tempCategory.minTemp}-${item.tempCategory.maxTemp} °C`,
-          created: item.CreatedAt
+      flatUsers(){
+        return this.users ? this.users.map(user => ({
+          name: user.name,
+          companyName: user.company.name,
+          role: user.role,
+          companyId: user.company.ID
         })) : [];
       }
     },

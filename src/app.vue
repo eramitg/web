@@ -15,14 +15,14 @@
 </script>
 
 <style lang="scss">
+  @import "./variables";
+  @import '~bulma';
+
   @import '~animate.css';
   .animated {
     animation-duration: .5s;
   }
 
-  @import "~bulma/sass/utilities/functions.sass";
-  @import "variables";
-  @import '~bulma';
 
   $fa-font-path: '~font-awesome/fonts/';
   @import '~font-awesome/scss/font-awesome';
