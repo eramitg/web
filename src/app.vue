@@ -8,7 +8,7 @@
 
 <script>
   import Snackbar from './layout/Snackbar.vue';
-  import Confirm from './components/Confirm.vue';
+  import Confirm from './layout/Confirm.vue';
   export default {
     components: {
       Confirm,
