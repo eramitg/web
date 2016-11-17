@@ -83,7 +83,7 @@
           columns: ['tntNumber', 'dateSent', 'transaction_hash', 'contract_address'],
           options: {
             headings:{
-              tntNumber: i18.t('tnt')
+              tntNumber: this.$t('tnt')
             },
             templates: {
               transaction_hash: function(h, row) {

@@ -3,7 +3,7 @@ var path = require('path');
 var PROD = JSON.parse(process.env.PROD_ENV || '0');
 
 module.exports = {
-  entry: ['./src/app.js', './src/auth.js', './src/utils.js'],
+  entry: ['./src/app.js'],
   output: {
     path: './bin',
     publicPath: "assets/",
