@@ -4,7 +4,7 @@
             enter-active-class="animated slideInUp"
             leave-active-class="animated slideOutDown"
             name="list" tag="p">
-      <Notification v-for="notification in list" @close="remove(notification)" :color="notification.color" :key="notification">
+      <Notification v-for="notification in list" @close="remove(notification)" :color="notification.type" :key="notification">
         {{notification.text}}
       </Notification>
     </transition-group>
@@ -20,7 +20,7 @@
     },
     computed: {
       list(){
-        return this.$store.state.notification.list;
+        return this.$store.state.snackbar.list;
       }
     },
     methods: {

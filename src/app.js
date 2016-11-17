@@ -26,9 +26,9 @@ router.beforeEach((to, from, next) => {
 axios.interceptors.response.use(res => (res), (error) => {
   let {response} = error;
   if (response.data && response.data.message){
-    store.dispatch('addNotification', {text: response.data.message, color: 'danger'});
+    store.dispatch('notify', {text: response.data.message, type: 'danger'});
   } else if(response.data){
-    store.dispatch('addNotification', {text: response.data, color: 'danger'});
+    store.dispatch('notify', {text: response.data, type: 'danger'});
   }
   return error
 })

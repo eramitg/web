@@ -6,14 +6,14 @@ Vue.use(Vuex);
 
 import auth from './auth';
 import confirm from './confirm';
-import notification from './notification';
+import snackbar from './snackbar';
 import vuexI18n from 'vuex-i18n';
 
 const store = new Vuex.Store({
   modules: {
     auth,
     confirm,
-    notification,
+    snackbar,
     i18n: vuexI18n.store
   }
 });

@@ -1,18 +1,18 @@
 <template>
   <div>
     <router-view></router-view>
-    <notifications></notifications>
+    <snackbar></snackbar>
     <confirm></confirm>
   </div>
 </template>
 
 <script>
-  import Notifications from './layout/notifications.vue';
+  import Snackbar from './layout/Snackbar.vue';
   import Confirm from './components/Confirm.vue';
   export default {
     components: {
       Confirm,
-      Notifications
+      Snackbar
     }
   }
 </script>

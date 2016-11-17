@@ -108,7 +108,7 @@
           this.closeModal();
           if(data){
             this.users.push(data);
-            this.$store.dispatch('addNotification', {color: 'success', text: `Successfully created User ${data.name}`})
+            this.$store.dispatch('notify', {type: 'success', text: `Successfully created User ${data.name}`})
           }
         } catch(e){
         }
@@ -122,7 +122,7 @@
             if(index){
               this.users.splice(index, 1);
             }
-            this.$store.dispatch('addNotification', {color: 'success', text: `Successfully deleted User ${data.name}`})
+            this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted User ${data.name}`})
           }
         } catch(e){
           // Notification for exception is created globally
