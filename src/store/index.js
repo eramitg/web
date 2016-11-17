@@ -7,14 +7,25 @@ Vue.use(Vuex);
 import auth from './auth';
 import confirm from './confirm';
 import notification from './notification';
+import vuexI18n from 'vuex-i18n';
 
 const store = new Vuex.Store({
   modules: {
     auth,
     confirm,
-    notification
+    notification,
+    i18n: vuexI18n.store
   }
 });
+
+Vue.use(vuexI18n.plugin, store);
+import translationEn from '../assets/locales/en';
+import translationDe from '../assets/locales/de';
+Vue.i18n.add('en', translationEn);
+Vue.i18n.add('de', translationDe);
+
+Vue.i18n.set(window.navigator.userLanguage || window.navigator.language);
+
 
 // when the token is changed update HTTP and localStorage
 store.subscribe((mutation, state) => {

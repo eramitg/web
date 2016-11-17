@@ -64,7 +64,7 @@
     </div>
 </template>
 <script>
-    import auth from './auth.js'
+    //import auth from './auth.js'
     import Notifications from './components/Notifications.vue';
 
     export default {

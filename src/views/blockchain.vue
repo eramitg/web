@@ -31,7 +31,6 @@
 <script>
   import axios from 'axios';
   import DataTable from '../components/DataTable.vue';
-  import i18 from '../i18';
 
   export default {
     components: {
@@ -53,7 +52,7 @@
           columns: ['tntNumber', 'dateSent', 'transaction_hash', 'contract_address', 'cache_result'],
           options: {
             headings:{
-              tntNumber: i18.t('tnt')
+              tntNumber: this.$t('tnt')
             },
             templates: {
               transaction_hash: function(h, row) {

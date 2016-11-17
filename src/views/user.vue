@@ -27,7 +27,6 @@
   import Modal from '../components/Modal.vue';
   import UserForm from '../forms/UserForm.vue';
   import axios from 'axios';
-  import i18 from '../i18';
   import store from '../store';
 
   export default {

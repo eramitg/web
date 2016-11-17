@@ -14,7 +14,7 @@
         <data-table :data="flatShipments" :columns="table.columns" :options="table.options"></data-table>
       </article>
     </div>
-    <modal :active="showModal" @close="closeModal">
+    <modal :active="showModal" title="Create/Edit Shipment" @close="closeModal">
       <p>Test</p>
       <button slot="footer" class="button is-primary">Save changes</button>
       <button slot="footer" class="button is-danger">Save changes</button>
@@ -29,7 +29,6 @@
   import DataTable from '../components/DataTable.vue';
   import Modal from '../components/Modal.vue';
   import axios from 'axios';
-  import i18 from '../i18';
 
   export default {
     components: {
@@ -48,8 +47,8 @@
           columns: ['tnt', 'receiver', 'tempCategory', 'created', 'delete'],
           options: {
             headings: {
-              tnt: i18.t('tnt'),
-              receiver: i18.t('rcv_comp')
+              tnt: this.$t('tnt'),
+              receiver: this.$t('rcv_comp')
             },
             templates: {
               delete: function(h, row) {

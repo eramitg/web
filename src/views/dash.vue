@@ -48,9 +48,7 @@
   import Chart from '../components/Chart.vue';
   import DataTable from '../components/DataTable.vue';
   import axios from 'axios';
-  import i18, {locale} from '../i18';
   import moment from 'moment';
-  moment.locale(locale)
 
   export default {
     components: {
@@ -72,11 +70,11 @@
               column: 'dateSent',
             },
             headings: {
-              tntNumber: i18.t('tnt'),
-              senderCompany: i18.t('send_comp'),
-              receiverCompany: i18.t('rcv_comp'),
-              dateSent: i18.t('date_sent'),
-              dateReceived: i18.t('date_received')
+              tntNumber: this.$t('tnt'),
+              senderCompany: this.$t('send_comp'),
+              receiverCompany: this.$t('rcv_comp'),
+              dateSent: this.$t('date_sent'),
+              dateReceived: this.$t('date_received')
             },
             templates: {
               details: function(h, row) {

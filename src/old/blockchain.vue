@@ -38,8 +38,8 @@
 </style>
 <script>
 
-    import auth from './auth.js'
-    import utils from './utils.js'
+    //import auth from './auth.js'
+    //import utils from './utils.js'
     var blockchainTableMissing;
     var blockchainTableMined;
     var moment = require("moment/min/moment-with-locales.js")

@@ -1,0 +1,20 @@
+export default {
+  "send_comp": "Sender Firma",
+  "send_user": "Sender Benutzer",
+  "rcv_comp": "Empfänger Firma",
+  "rcv_user": "Empfänger Benutzer",
+  "date_sent": "Gesendet am",
+  "date_received": "Empfangen am",
+  "tnt": "Liefernummer",
+  "transit": "Lieferzeit",
+  "cat": "Temperatur Kategorie",
+  "status": "Status",
+  "details": "Details",
+  "show": "Zeigen",
+  "temperature": "Temperatur",
+  "temperature_measurements": "Temperaturmessungen",
+  "status_bad": "Temperatur Überschreitung",
+  "status_ok": "Gut",
+  "status_transit": "In Arbeit",
+  "zero_records": "Keine Einträge gefunden"
+}

@@ -20,7 +20,7 @@ module.exports = {
       {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml'},
       {test: /(.*)\.(png|jpeg|jpg|gif)$/, loader: 'url-loader?limit=8192'},
       {test: /\.json$/, loader: 'json-loader'},
-      {test: /\.jsx?$/, loader: 'babel', exclude: /node_modules(?!\/(vue-tables-2|vue-pagination-2))/},
+      {test: /\.jsx?$/, loader: 'babel', exclude: /node_modules(?!\/(vue-tables-2|vue-pagination-2|vuex-i18n))/},
     ]
   },
   vue: {
