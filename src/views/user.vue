@@ -53,7 +53,8 @@
         showModal: false,
         form: {
           username: '',
-          password: ''
+          password: '',
+          role: 'USER'
         },
         table: {
           columns: ['name', 'companyName', 'role', 'delete'],
@@ -86,7 +87,8 @@
         this.form = {
           id: null,
           username: '',
-          password: ''
+          password: '',
+          role: 'USER'
         }
       },
       formSave(){
