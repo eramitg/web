@@ -3,10 +3,10 @@
     <div class="modal is-active" v-show="active">
       <div class="modal-background" @click="close"></div>
       <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp">
-        <div class="modal-card" v-show="active">
+        <form class="modal-card" v-show="active" @submit.prevent="submit">
           <header class="modal-card-head">
             <p class="modal-card-title">{{title}}</p>
-            <button class="delete" @click="close"></button>
+            <button type="button" class="delete" @click.prevent="close"></button>
           </header>
           <section class="modal-card-body">
             <slot></slot>
@@ -14,7 +14,7 @@
           <footer class="modal-card-foot" v-if="$slots['footer']">
             <slot name="footer"></slot>
           </footer>
-        </div>
+        </form>
       </transition>
     </div>
   </transition>
@@ -30,11 +30,18 @@
       title: {
         type: String,
         required: true
+      },
+      form: {
+        type: Boolean,
+        default: false
       }
     },
     methods: {
       close: function (event){
         this.$emit('close', false)
+      },
+      submit(event){
+        this.$emit('submit')
       }
     },
   }

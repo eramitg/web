@@ -14,11 +14,11 @@
         <data-table :data="flatShipments" :columns="table.columns" :options="table.options"></data-table>
       </article>
     </div>
-    <modal :active="showModal" title="Create/Edit Shipment" @close="closeModal">
+    <modal-form :active="showModal" title="Create/Edit Shipment" @close="closeModal">
       <p>Test</p>
       <button slot="footer" class="button is-primary">Save changes</button>
       <button slot="footer" class="button is-danger">Save changes</button>
-    </modal>
+    </modal-form>
   </div>
   <div v-else>
     Make sure you have an internet connection
@@ -27,13 +27,13 @@
 
 <script>
   import DataTable from '../components/DataTable.vue';
-  import Modal from '../components/Modal.vue';
+  import ModalForm from '../components/ModalForm.vue';
   import axios from 'axios';
 
   export default {
     components: {
       DataTable,
-      Modal
+      ModalForm
     },
     async beforeRouteEnter(to, from, next){
       let {data} = await axios.get('/api/preparedshipments');

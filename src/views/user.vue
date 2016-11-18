@@ -14,26 +14,30 @@
         <data-table :data="flatUsers" :columns="table.columns" :options="table.options"></data-table>
       </article>
     </div>
-    <modal :active="showModal" title="Create/Edit User" @close="closeModal">
-      <user-form :user="form"></user-form>
+    <modal-form :active="showModal" title="Create/Edit User" @close="closeModal" @submit="formSave" form>
+      <form-input v-model="form.username" label="Username" placeholder="Name"/>
+      <form-input v-model="form.password" label="Password" placeholder="Password" type="password"/>
+      <form-select v-model="form.role" label="Role" :options="['USER', 'ADMIN']"/>
       <button slot="footer" type="submit" class="button is-primary" @click.prevent="formSave">Save changes</button>
-      <button slot="footer" class="button" @click="closeModal">Cancel</button>
-    </modal>
+      <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
+    </modal-form>
   </div>
 </template>
 
 <script>
+  import FormInput from '../components/FormInput.vue';
+  import FormSelect from '../components/FormSelect.vue';
   import DataTable from '../components/DataTable.vue';
-  import Modal from '../components/Modal.vue';
-  import UserForm from '../forms/UserForm.vue';
+  import ModalForm from '../components/ModalForm.vue';
   import axios from 'axios';
   import store from '../store';
 
   export default {
     components: {
       DataTable,
-      Modal,
-      UserForm
+      ModalForm,
+      FormInput,
+      FormSelect
     },
     async beforeRouteEnter(to, from, next){
       let role = store.getters.user.role;
