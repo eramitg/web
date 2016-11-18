@@ -6,8 +6,10 @@ import router from './router';
 import axios from 'axios';
 
 import VueTables from 'vue-tables-2';
+import VeeValidate from 'vee-validate';
 
 Vue.use(VueTables.client);
+Vue.use(VeeValidate);
 
 // check authentication
 router.beforeEach((to, from, next) => {

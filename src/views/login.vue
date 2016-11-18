@@ -4,17 +4,23 @@
       <div class="container">
         <div class="columns">
           <div class="column is-one-third is-offset-one-third">
-            <h1 class="title">
-              Login
-            </h1>
-            <form class="box">
-              <label class="label">Email</label>
-              <p class="control">
-                <input v-model="username" class="input" type="text" placeholder="username">
+            <div class="column is-half is-offset-one-quarter">
+              <figure class="image">
+                <img src="../assets/images/logo.svg">
+              </figure>
+            </div>
+            <form class="box" @submit="onSubmit">
+              <label class="label">Username</label>
+              <p class="control has-icon">
+                <input v-validate data-rules="required" name="username" v-model="username" class="input" :class="{'is-danger': errors.has('username')}" type="text" placeholder="username">
+                <i class="fa fa-user-circle"></i>
+                <span v-show="errors.has('username')" class="help is-danger">{{ errors.first('username') }}</span>
               </p>
               <label class="label">Password</label>
-              <p class="control">
-                <input v-model="password" class="input" type="password" placeholder="password">
+              <p class="control has-icon">
+                <input v-validate name="password" data-rules="required" v-model="password" class="input" :class="{'is-danger': errors.has('password')}" type="password" placeholder="password">
+                <i class="fa fa-lock"></i>
+                <span v-show="errors.has('password')" class="help is-danger">{{ errors.first('password') }}</span>
               </p>
               <hr>
               <p class="control">
@@ -29,11 +35,16 @@
 </template>
 
 <script>
+  import FormInput from '../components/FormInput.vue';
   export default {
+    components: {
+      FormInput
+    },
     data() {
       return {
         username: '',
         password: '',
+        usa: '',
         loading: false
       }
     },
@@ -44,17 +55,21 @@
     },
     methods: {
       async onSubmit(){
-        try {
-          this.loading = true;
-          await this.$store.dispatch('login', {
-            username: this.username,
-            password: this.password
-          })
-          const {redirect} = this.$route.query
-          this.$router.push(redirect || '/');
-          this.loading = false;
-        } catch({response}){
-          this.loading = false;
+        this.$validator.validateAll();
+
+        if(this.fields.valid()){
+          try {
+            this.loading = true;
+            await this.$store.dispatch('login', {
+              username: this.username,
+              password: this.password
+            })
+            const {redirect} = this.$route.query
+            this.$router.push(redirect || '/');
+            this.loading = false;
+          } catch({response}){
+            this.loading = false;
+          }
         }
       },
       reset(){
