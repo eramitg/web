@@ -1,10 +1,10 @@
 <template>
-  <section class="hero is-fullheight is-light is-bold">
+  <section class="hero is-fullheight is-dark">
     <div class="hero-body">
       <div class="container">
         <div class="columns">
           <div class="column is-one-third is-offset-one-third">
-            <div class="column is-half is-offset-one-quarter">
+            <div class="column is-12 spacer">
               <figure class="image">
                 <img src="../assets/images/logo.svg">
               </figure>
@@ -79,3 +79,9 @@
     }
   }
 </script>
+
+<style lang="scss" scoped>
+  .spacer{
+    margin-bottom: 20px;
+  }
+</style>

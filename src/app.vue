@@ -3,6 +3,7 @@
     <router-view></router-view>
     <snackbar></snackbar>
     <confirm></confirm>
+    <vue-progress-bar></vue-progress-bar>
   </div>
 </template>
 
@@ -13,6 +14,19 @@
     components: {
       Confirm,
       Snackbar
+    },
+    mounted () {
+      this.$Progress.finish()
+    },
+    created () {
+      this.$Progress.start()
+      this.$router.beforeEach((to, from, next) => {
+        this.$Progress.start()
+        next()
+      })
+      this.$router.afterEach((to, from) => {
+        this.$Progress.finish()
+      })
     }
   }
 </script>

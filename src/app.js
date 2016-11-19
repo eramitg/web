@@ -7,6 +7,14 @@ import axios from 'axios';
 
 import VueTables from 'vue-tables-2';
 import VeeValidate from 'vee-validate';
+import VueProgressBar from 'vue-progressbar'
+
+
+Vue.use(VueProgressBar, {
+  color: 'rgb(143, 255, 199)',
+  failedColor: 'red',
+  height: '2px'
+})
 
 Vue.use(VueTables.client);
 Vue.use(VeeValidate);
