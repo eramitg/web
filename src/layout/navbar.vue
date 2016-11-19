@@ -1,17 +1,21 @@
 <template>
-  <section class="hero is-light is-bold">
+  <section class="hero is-dark">
     <!-- Hero header: will stick at the top -->
     <div class="hero-head">
       <nav class="nav has-shadow">
         <div class="nav-left">
           <a class="nav-item hero-brand is-hidden-tablet is-flex" href="/">
-            <img src="../assets/images/logo.svg">
+            <div class="box">
+              <img src="../assets/images/logo.svg">
+            </div>
           </a>
         </div>
         <div class="nav-center">
-          <a class="nav-item hero-brand is-hidden-mobile" href="/">
-            <img src="../assets/images/logo.svg">
-          </a>
+            <a class="nav-item hero-brand is-hidden-mobile" href="/">
+              <div class="box">
+                <img src="../assets/images/logo.svg">
+              </div>
+            </a>
         </div>
         <div class="nav-right is-flex">
           <div class="nav-item">{{user.userName}}</div>

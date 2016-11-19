@@ -9,6 +9,7 @@
               <span class="fa fa-plus"></span>
             </button>
           </h1>
+          <h2 class="subtitle">Subtitle</h2>
         </div>
         <hr>
         <data-table :data="flatShipments" :columns="table.columns" :options="table.options"></data-table>

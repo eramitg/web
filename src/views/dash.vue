@@ -1,23 +1,31 @@
 <template>
   <div v-if="parcels">
-    <nav class="level" v-if="parcels">
-      <div class="level-item has-text-centered">
-        <p class="heading">Total Sendungen verschickt</p>
-        <p class="title count">{{totalParcels}}</p>
+    <div class="tile is-ancestor" v-if="parcels">
+      <div class="tile is-parent is-one-quarter">
+        <card class="tile is-child has-text-centered">
+          <p class="heading">Total Sendungen verschickt</p>
+          <p class="title">{{totalParcels}}</p>
+        </card>
       </div>
-      <div class="level-item has-text-centered">
-        <p class="heading">Total Sendungen OK</p>
-        <p class="title success">{{totalOk}}</p>
+      <div class="tile is-parent is-one-quarter">
+        <card type="success" class="tile is-child has-text-centered">
+          <p class="heading">Total Sendungen OK</p>
+          <p class="title">{{totalOk}}</p>
+        </card>
       </div>
-      <div class="level-item has-text-centered">
-        <p class="heading">Anzahl Abweichungen</p>
-        <p class="title danger">{{totalNotArrived}}</p>
+      <div class="tile is-parent is-one-quarter">
+        <card type="danger" class="tile is-child has-text-centered">
+          <p class="heading">Anzahl Abweichungen</p>
+          <p class="title">{{totalNotArrived}}</p>
+        </card>
       </div>
-      <div class="level-item has-text-centered">
-        <p class="heading"># Sendungen unterwegs</p>
-        <p class="title info">{{totalOnWay}}</p>
+      <div class="tile is-parent is-one-quarter">
+        <card type="warning" class="tile is-child has-text-centered">
+          <p class="heading"># Sendungen unterwegs</p>
+          <p class="title">{{totalOnWay}}</p>
+        </card>
       </div>
-    </nav>
+    </div>
 
     <div class="tile is-ancestor" v-if="parcels">
       <div class="tile is-parent is-6">
@@ -31,6 +39,7 @@
         </article>
       </div>
     </div>
+
     <div class="tile is-ancestor" v-if="parcels">
       <div class="tile is-parent is-12">
         <article class="tile is-child box">
@@ -45,6 +54,7 @@
 </template>
 
 <script>
+  import Card from '../components/Card.vue';
   import Chart from '../components/Chart.vue';
   import DataTable from '../components/DataTable.vue';
   import axios from 'axios';
@@ -52,6 +62,7 @@
 
   export default {
     components: {
+      Card,
       Chart,
       DataTable
     },
@@ -137,24 +148,3 @@
     }
   }
 </script>
-
-<style lang="scss" scoped>
-  @import "../variables";
-
-  .count{
-    font-weight: 600;
-  }
-
-  .success{
-    @extend .count;
-    color: $success;
-  }
-  .danger{
-    @extend .count;
-    color: $danger;
-  }
-  .info{
-    @extend .count;
-    color: $warning;
-  }
-</style>

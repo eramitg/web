@@ -4,7 +4,7 @@
             enter-active-class="animated slideInUp"
             leave-active-class="animated slideOutDown"
             name="list" tag="p">
-      <Notification v-for="notification in list" @close="remove(notification)" :color="notification.type" :key="notification">
+      <Notification v-for="notification in list" @close="remove(notification)" :type="notification.type" :key="notification" closeable>
         {{notification.text}}
       </Notification>
     </transition-group>

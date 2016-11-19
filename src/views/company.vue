@@ -1,15 +1,16 @@
 <template>
   <div>
-    <form-select v-model="test" label="Test" :options="['USER', 'ADMIN']"></form-select>
-    {{test}}
+    <card type="primary">
+
+    </card>
   </div>
 </template>
 
 <script>
-  import FormSelect from '../components/FormSelect.vue';
+  import Card from '../components/Card.vue';
   export default {
     components: {
-      FormSelect
+      Card
     },
     data(){
       return {

@@ -1,6 +1,6 @@
 <template>
   <div class="notification" :class="classObject">
-    <button class="delete" @click="close"></button>
+    <button class="delete" @click="close" v-if="closeable"></button>
     <slot></slot>
   </div>
 </template>
@@ -8,14 +8,18 @@
 <script>
   export default{
     props: {
-      color: {
+      type: {
         type: String,
-        default: ''
+        default: 'white'
+      },
+      closeable: {
+        type: Boolean,
+        default: false
       }
     },
     computed: {
       classObject(){
-        return this.color ? `is-${this.color}` : '';
+        return this.type ? `is-${this.type}` : '';
       }
     },
     methods: {

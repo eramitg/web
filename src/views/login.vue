@@ -4,12 +4,12 @@
       <div class="container">
         <div class="columns">
           <div class="column is-one-third is-offset-one-third">
-            <div class="column is-12 spacer">
+            <form class="box" @submit="onSubmit">
               <figure class="image">
                 <img src="../assets/images/logo.svg">
               </figure>
-            </div>
-            <form class="box" @submit="onSubmit">
+              <hr>
+
               <label class="label">Username</label>
               <p class="control has-icon">
                 <input v-validate data-rules="required" name="username" v-model="username" class="input" :class="{'is-danger': errors.has('username')}" type="text" placeholder="username">
