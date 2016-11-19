@@ -1,8 +1,9 @@
 <template>
-  <div class="control is-horizontal">
-    <div class="control-label" v-if="label">
+  <div class="control" :class="{'is-horizontal': horizontal}">
+    <div :class="{'control-label': horizontal}" v-if="horizontal && label">
       <label class="label">{{label}}</label>
     </div>
+    <label class="label" v-else v-if="label">{{label}}</label>
     <div class="control">
       <div class="select is-fullwidth">
         <select :value="value" @input="updateValue">
@@ -32,6 +33,10 @@
       placeholder: {
         type: String,
         default: ''
+      },
+      horizontal: {
+        type: Boolean,
+        default: false
       }
     },
     methods:{
