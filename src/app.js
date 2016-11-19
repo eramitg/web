@@ -27,10 +27,26 @@ router.beforeEach((to, from, next) => {
         path: '/login',
         query: {redirect: to.fullPath}
       })
+    } else {
+      next()
     }
+  } else {
+    next()
   }
-  next()
 });
+
+
+router.beforeEach(async (to, from, next) => {
+  let obj = to.matched.find(record => record.meta.role);
+  let role = obj ? obj.meta.role : null;
+  let access = await store.dispatch('checkAccess', role);
+  if(access){
+    next();
+  } else {
+    next({path: '/403'})
+  }
+});
+
 
 // handle connection errors
 axios.interceptors.response.use(res => (res), (error) => {

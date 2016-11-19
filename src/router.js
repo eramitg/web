@@ -9,6 +9,8 @@ import User from './views/user.vue';
 import Company from './views/company.vue';
 import Blockchain from './views/blockchain.vue';
 import Login from './views/login.vue';
+import NotFound from './views/404.vue';
+import Denied from './views/403.vue';
 
 Vue.use(VueRouter);
 
@@ -22,8 +24,11 @@ const router = new VueRouter({
       {path: '/user', name: 'User', component: User, meta: {icon: 'fa-users', role: 'ADMIN'}},
       {path: '/company', name: 'Company Management', component: Company, meta: {icon: 'fa-cog', role: 'ADMIN'}},
       {path: '/blockchain', name: 'Blockchain', component: Blockchain, meta:{icon: 'fa-book', role: 'SUPER'}},
+      //{path: '*', component: NotFound}
     ]},
-    {path: '/login', component: Login}
+    {path: '/login', component: Login},
+    {path: '/403', component: Denied},
+    {path: '*', component: NotFound},
   ]
 });
 

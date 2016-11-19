@@ -6,6 +6,7 @@ const initializeState = () => {
 
   return {
     token: token,
+    roles: ['USER', 'ADMIN', 'SUPER']
   }
 };
 
@@ -46,8 +47,22 @@ const actions = {
     } catch (e){
       return Promise.reject(e);
     }
+  },
+  checkAccess({getters}, role){
+    if(!role){
+      return true;
+    }
+    if(getters.user){
+      let userRole = getters.user.role;
+      if(userRole == 'SUPER') return true;
+      if(userRole == 'ADMIN' && role == 'ADMIN') return true;
+      if(userRole == 'USER'){
+        if(role == 'ADMIN' || role == 'SUPER') return false;
+      }
+    }
+    return false;
   }
-}
+};
 
 
 export default {
