@@ -3,14 +3,14 @@ import VueRouter from 'vue-router';
 
 import Layout from './layout/layout.vue';
 
-import Dash from './views/dash.vue';
-import Shipment from './views/shipment.vue';
-import User from './views/user.vue';
-import Company from './views/company.vue';
-import Blockchain from './views/blockchain.vue';
-import Login from './views/login.vue';
-import NotFound from './views/404.vue';
-import Denied from './views/403.vue';
+const Login = resolve => require(['./views/login.vue'], resolve);
+const Dash = resolve => require(['./views/dash.vue'], resolve);
+const Shipment = resolve => require(['./views/shipment.vue'], resolve);
+const User = resolve => require(['./views/user.vue'], resolve);
+const Company = resolve => require(['./views/company.vue'], resolve);
+const Blockchain = resolve => require(['./views/blockchain.vue'], resolve);
+const NotFound = resolve => require(['./views/404.vue'], resolve);
+const Denied = resolve => require(['./views/403.vue'], resolve);
 
 Vue.use(VueRouter);
 
