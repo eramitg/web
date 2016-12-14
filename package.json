@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "webpack-dev-server --port 8000",
+    "build": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "modum.io",
@@ -37,7 +38,7 @@
     "vue-hot-reload-api": "^1.2.0",
     "vue-loader": "^9.5.1",
     "vue-style-loader": "^1.0.0",
-    "webpack": "^1.13.2",
+    "webpack": "^2.1.0-beta.28",
     "webpack-dev-server": "^1.15.1"
   },
   "dependencies": {

@@ -1,55 +1,85 @@
-var webpack = require('webpack');
-var path = require('path');
-var PROD = JSON.parse(process.env.PROD_ENV || '0');
+const webpack = require('webpack');
+const path = require('path');
+const PROD = process.env.NODE_ENV === 'production';
 
 module.exports = {
-  entry: ['./src/app.js'],
+  entry: './src/app.js',
   output: {
-    path: './bin',
-    publicPath: "assets/",
+    path: path.resolve(__dirname, './bin'),
+    publicPath: 'assets/',
     filename: PROD ? 'app.min.bundle.js' : 'app.bundle.js'
   },
   module: {
-    loaders: [
-      //{test: /bootstrap\/js\//, loader: 'imports?jQuery=jquery'},
-      {test: /\.vue$/, loader: 'vue'},
-      {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
-      {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
-      {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file'},
-      {test: /\.css$/, loader: 'style-loader!css-loader'},
-      {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml'},
-      {test: /(.*)\.(png|jpeg|jpg|gif)$/, loader: 'url-loader?limit=8192'},
-      {test: /\.json$/, loader: 'json-loader'},
-      {test: /\.jsx?$/, loader: 'babel', exclude: /node_modules(?!\/(vue-tables-2|vue-pagination-2|vuex-i18n))/},
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            scss: 'style-loader!css-loader!sass-loader',
+            stylus: 'style-loader!css-loader!stylus-loader'
+          }
+        }
+      },
+      {test: /\.jsx?$/, loader: 'babel-loader', exclude: /node_modules(?!\/(vue-tables-2|vue-pagination-2|vuex-i18n))/},
+      {
+        test: /\.(png|jpg|gif|svg)$/,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]?[hash]'
+        }
+      },
+      {
+        test: /\.(scss|sass)$/,
+        loaders: ["style-loader", "css-loader", "sass-loader"]
+      },
+      {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff'},
+      {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/octet-stream'},
+      {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader'},
     ]
   },
-  vue: {
-    loaders: {
-      scss: 'style!css!sass'
-    }
-  },
-  sassLoader: {
-    includePaths: [
-      path.resolve(__dirname, 'src', 'variables.sass')
-    ]
+  resolve: {
+    alias: {
+      vue$: 'vue/dist/vue',
+      assets: 'assets/image'
+    },
+    extensions: [".webpack.js", ".web.js", ".js", ".vue"]
   },
   devServer: {
     hot: true,
     proxy: {
       '/api/**': {
-        target: 'http://192.168.1.47:8080', //target: 'http://127.0.0.1:8080',
+        target: 'http://127.0.0.1:8080',
         secure: false,
         changeOrigin: true,
         pathRewrite: {'^/api': ''}
       }
     },
-    plugins: PROD ? [
-      new webpack.optimize.UglifyJsPlugin({
-        compress: {warnings: false}
-      })
-    ] : []
   },
-  alias: {
-    assets: 'assets/image'
-  }
+  devtool: '#eval-source-map',
+  plugins: [
+    new webpack.LoaderOptionsPlugin({
+      minimize: PROD,
+      options: {
+        context: path.resolve(__dirname, '../src'),
+      }
+    })
+  ]
+};
+
+if(PROD){
+  module.exports.devtool = '#source-map';
+  // http://vue-loader.vuejs.org/en/workflow/production.html
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    })
+  ])
 }
