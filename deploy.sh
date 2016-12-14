@@ -3,7 +3,7 @@
 ENV=$1
 
 echo "Building webpage"
-PROD_ENV=0 webpack
+NODE_ENV=production webpack
 
 if [ "$ENV" == "prod" ] ; then
   HOST="ubuntu@core.modum.io"

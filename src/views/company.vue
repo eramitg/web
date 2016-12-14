@@ -8,24 +8,20 @@
         </button>
       </h1>
       <hr>
-      <div id="content">
-        <vuetable api-url="/api/users" :css="css" :fields="columns"
-                  paginationPath=""
-                  data-path="data"
-                  :sortOrder="sortOrder"
-        />
-        <vuetable-pagination></vuetable-pagination>
-      </div>
+        <data-table url="/api/users" :fields="columns" :sortOrder="sortOrder" />
     </article>
   </div>
 </template>
 
 <script>
+  import DataTable from '../components/Table'
   export default {
+    components: {
+      DataTable
+    },
     data(){
       return {
         columns: [{name: 'userName', sortField: 'userName'}, 'userRole', 'companyName'],
-        paginationComponent: 'vuetable-pagination',
         css: {
           tableClass: 'table is-striped',
           ascendingIcon: 'fa fa-chevron-up',
