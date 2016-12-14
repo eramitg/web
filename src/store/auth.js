@@ -1,8 +1,10 @@
 import axios from 'axios';
+import Vue from 'vue';
 
 const initializeState = () => {
   let token = localStorage.getItem('token');
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  //Vue.http.headers.common['Authorization'] = `Bearer ${token}`;
 
   return {
     token: token,

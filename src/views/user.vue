@@ -2,14 +2,12 @@
   <div class="tile is-ancestor" v-if="users">
     <div class="tile is-parent is-12">
       <article class="tile is-child box">
-        <div class="container">
-          <h1 class="title">
-            Users
-            <button class="button" @click="showModal = true">
-              <span class="fa fa-user-plus"></span>
-            </button>
-          </h1>
-        </div>
+        <h1 class="title">
+          Users
+          <button class="button" @click="showModal = true">
+            <span class="fa fa-user-plus"></span>
+          </button>
+        </h1>
         <hr>
         <data-table :data="flatUsers" :columns="table.columns" :options="table.options"></data-table>
       </article>
@@ -42,10 +40,10 @@
     async beforeRouteEnter(to, from, next){
       let role = store.getters.user.role;
       if(role == 'ADMIN'){
-        let {data} = await axios.get('/api/v1/company/admin');
+        let {data} = await axios.get('/api/users');
         next(vm => vm.$data.users = data)
       } else if(role == 'SUPER'){
-        let {data} = await axios.get('/api/v1/company/admin');
+        let {data} = await axios.get('/api/users');
         next(vm => vm.$data.users = data)
       }
       next();
@@ -108,7 +106,7 @@
       },
       async createUser(){
         try{
-          let {data} = await axios.post('/api/v1/company/admin/create', {...this.form});
+          let {data} = await axios.post('/api/users', {...this.form});
           this.closeModal();
           if(data){
             this.users.push(data);
@@ -121,7 +119,7 @@
         try{
           await this.$store.dispatch('confirm');
           if(user.id > 0){
-            let {data} = await axios.delete(`/api/v1/company/admin/delete/${user.id}`)
+            let {data} = await axios.delete(`/api/users/${user.id}`)
             let index = this.users.findIndex(u => u.ID === data.ID);
             if(index){
               this.users.splice(index, 1);

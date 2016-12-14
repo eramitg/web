@@ -4,25 +4,25 @@
       <div class="tile is-parent is-one-quarter">
         <card class="tile is-child has-text-centered">
           <p class="heading">Total Sendungen verschickt</p>
-          <p class="title">{{totalParcels}}</p>
+          <p class="title">{{parcels.totalSentParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="success" class="tile is-child has-text-centered">
           <p class="heading">Total Sendungen OK</p>
-          <p class="title">{{totalOk}}</p>
+          <p class="title">{{parcels.temperaturesOkSentParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="danger" class="tile is-child has-text-centered">
           <p class="heading">Anzahl Abweichungen</p>
-          <p class="title">{{totalNotArrived}}</p>
+          <p class="title">{{parcels.temperaturesNOkSentParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="warning" class="tile is-child has-text-centered">
           <p class="heading"># Sendungen unterwegs</p>
-          <p class="title">{{totalOnWay}}</p>
+          <p class="title">{{parcels.onTheWaySentParcel}}</p>
         </card>
       </div>
     </div>
@@ -36,14 +36,6 @@
       <div class="tile is-parent is-6" v-if="parcels">
         <article class="tile is-child box">
           <chart :type="'doughnut'" :data="pieData" :options="options"></chart>
-        </article>
-      </div>
-    </div>
-
-    <div class="tile is-ancestor" v-if="parcels">
-      <div class="tile is-parent is-12">
-        <article class="tile is-child box">
-          <data-table :data="momentParcels" :columns="table.columns" :options="table.options"></data-table>
         </article>
       </div>
     </div>
@@ -67,34 +59,13 @@
       DataTable
     },
     async beforeRouteEnter(to, from, next) {
-      let {data} = await axios.get("/api/v2/parcels/web");
+      let {data} = await axios.get("/api/statistics");
       next(vm => vm.$data.parcels = data);
     },
     data(){
       return {
         parcels: null,
-        table: {
-          columns: ['tntNumber', 'senderCompany', 'receiverCompany', 'dateSent', 'dateReceived', 'details'],
-          options: {
-            dateColumns: ['dateSent', 'dateReceived'],
-            orderBy: {
-              column: 'dateSent',
-            },
-            headings: {
-              tntNumber: this.$t('tnt'),
-              senderCompany: this.$t('send_comp'),
-              receiverCompany: this.$t('rcv_comp'),
-              dateSent: this.$t('date_sent'),
-              dateReceived: this.$t('date_received')
-            },
-            templates: {
-              details: function(h, row) {
-                return <button id={row.id} class="button is-primary">Zeigen</button>
-              }
-            },
-          }
-        },
-        labels: ['Sleeping', 'Designing', 'Coding', 'Cycling'],
+        labels: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
         data: [20, 40, 5, 35],
         options: {
           legend: {
@@ -116,16 +87,16 @@
     },
     computed: {
       totalParcels(){
-        return this.parcels ? this.parcels.length : 0;
+        return  0;
       },
       totalOk(){
-        return this.parcels ? this.parcels.filter(parcel => parcel.isSuccess).length : 0;
+        return  0;
       },
       totalNotArrived(){
-        return this.parcels ? this.parcels.filter(parcel => parcel.isFailed).length : 0;
+        return 0;
       },
       totalOnWay(){
-        return this.parcels ? this.parcels.filter(parcel => parcel.isSent && !parcel.isReceived).length : 0;
+        return 0;
       },
       momentParcels(){
         return this.parcels ?
@@ -140,7 +111,7 @@
         return {
           labels: this.labels,
           datasets: [{
-            data: [this.totalOk, this.totalNotArrived, this.totalOnWay],
+            data: [this.parcels.temperaturesOkSentParcels, this.parcels.temperaturesNOkSentParcels, this.parcels.onTheWaySentParcel],
             backgroundColor: this.backgroundColor
           }]
          }

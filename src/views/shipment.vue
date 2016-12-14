@@ -1,17 +1,17 @@
 <template>
-  <div class="tile is-ancestor" v-if="shipments">
+  <div class="tile is-ancestor" v-if="parcels">
     <div class="tile is-parent is-12">
       <article class="tile is-child box">
         <div class="container">
           <h1 class="title">
-            Shipments
+            Parcels
             <button class="button" @click.prevent="showModal = true">
               <span class="fa fa-plus"></span>
             </button>
           </h1>
         </div>
         <hr>
-        <data-table :data="flatShipments" :columns="table.columns" :options="table.options"></data-table>
+        <data-table :data="momentParcels" :columns="table.columns" :options="table.options"></data-table>
       </article>
     </div>
     <modal-form :active="showModal" title="Create/Edit Shipment" @close="closeModal">
@@ -29,6 +29,7 @@
   import DataTable from '../components/DataTable.vue';
   import ModalForm from '../components/ModalForm.vue';
   import axios from 'axios';
+  import moment from 'moment';
 
   export default {
     components: {
@@ -36,38 +37,45 @@
       ModalForm
     },
     async beforeRouteEnter(to, from, next){
-      let {data} = await axios.get('/api/preparedshipments');
-      next(vm => vm.$data.shipments = data)
+      let {data} = await axios.get('/api/parcels');
+      next(vm => vm.$data.parcels = data)
     },
     data(){
       return {
-        shipments: null,
+        parcels: null,
         showModal: false,
         table: {
-          columns: ['tnt', 'receiver', 'tempCategory', 'created', 'delete'],
+          columns: ['tntNumber', 'senderCompany', 'receiverCompany', 'dateSent', 'dateReceived', 'details'],
           options: {
+            dateColumns: ['dateSent', 'dateReceived'],
+            orderBy: {
+              column: 'dateSent',
+            },
             headings: {
-              tnt: this.$t('tnt'),
-              receiver: this.$t('rcv_comp')
+              tntNumber: this.$t('tnt'),
+              senderCompany: this.$t('send_comp'),
+              receiverCompany: this.$t('rcv_comp'),
+              dateSent: this.$t('date_sent'),
+              dateReceived: this.$t('date_received')
             },
             templates: {
-              delete: function(h, row) {
-                console.log(row);
-                return <button id={row.id} class="button is-danger"><i class="fa fa-trash"></i></button>
+              details: function(h, row) {
+                return <button id={row.id} class="button is-primary">Zeigen</button>
               }
-            }
+            },
           }
-        }
+        },
       }
     },
     computed: {
-      flatShipments(){
-        return this.shipments ? this.shipments.map(item => ({
-          tnt: item.tnt,
-          receiver: item.receiver.name,
-          tempCategory: `${item.tempCategory.name}: ${item.tempCategory.minTemp}-${item.tempCategory.maxTemp} °C`,
-          created: item.CreatedAt
-        })) : [];
+      momentParcels(){
+        return this.parcels ?
+        this.parcels.map(item => {
+          item.dateSent = moment(item.dateSent).format('DD.MM.YYYY, HH:mm');
+          item.dateReceived = moment(item.dateReceived).format('DD.MM.YYYY, HH:mm');
+          return item
+        })
+        : []
       }
     },
     methods: {

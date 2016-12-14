@@ -57,7 +57,7 @@
       async onSubmit(){
         this.$validator.validateAll();
 
-        if(this.fields.valid()){
+        if(this.formFields.valid()){
           try {
             this.loading = true;
             await this.$store.dispatch('login', {

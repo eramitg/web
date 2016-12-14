@@ -8,8 +8,17 @@ import axios from 'axios';
 import VueTables from 'vue-tables-2';
 import VeeValidate from 'vee-validate';
 import VueProgressBar from 'vue-progressbar'
+import Vuetable from 'vuetable-2/src/components/Vuetable.vue';
+import VuetablePagination from 'vuetable-2/src/components/VuetablePagination.vue';
+import VuetablePaginationDropdown  from 'vuetable-2/src/components/VuetablePaginationDropdown.vue';
+import VueResource from 'vue-resource';
+
+Vue.component('vuetable', Vuetable);
+Vue.component('vuetable-pagination', VuetablePagination)
+Vue.component('vuetable-pagination-dropdown', VuetablePaginationDropdown)
 
 
+Vue.use(VueResource);
 Vue.use(VueProgressBar, {
   color: 'rgb(143, 255, 199)',
   failedColor: 'red',
@@ -17,7 +26,8 @@ Vue.use(VueProgressBar, {
 })
 
 Vue.use(VueTables.client);
-Vue.use(VeeValidate);
+Vue.use(VeeValidate, {fieldsBagName: 'formFields'});
+
 
 // check authentication
 router.beforeEach((to, from, next) => {
