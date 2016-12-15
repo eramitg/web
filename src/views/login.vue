@@ -12,13 +12,13 @@
 
               <label class="label">Username</label>
               <p class="control has-icon">
-                <input v-validate data-rules="required" name="username" v-model="username" class="input" :class="{'is-danger': errors.has('username')}" type="text" placeholder="username">
+                <input v-validate data-vv-rules="required" name="username" v-model="username" class="input" :class="{'is-danger': errors.has('username')}" type="text" placeholder="username">
                 <i class="fa fa-user-circle"></i>
                 <span v-show="errors.has('username')" class="help is-danger">{{ errors.first('username') }}</span>
               </p>
               <label class="label">Password</label>
               <p class="control has-icon">
-                <input v-validate name="password" data-rules="required" v-model="password" class="input" :class="{'is-danger': errors.has('password')}" type="password" placeholder="password">
+                <input v-validate name="password" data-vv-rules="required" v-model="password" class="input" :class="{'is-danger': errors.has('password')}" type="password" placeholder="password">
                 <i class="fa fa-lock"></i>
                 <span v-show="errors.has('password')" class="help is-danger">{{ errors.first('password') }}</span>
               </p>
