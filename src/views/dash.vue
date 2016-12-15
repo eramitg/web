@@ -4,19 +4,19 @@
       <div class="tile is-parent is-one-quarter">
         <card class="tile is-child has-text-centered">
           <p class="heading">Total Sendungen verschickt</p>
-          <p class="title">{{parcels.totalParcels}}</p>
+          <p class="title">{{this.totalParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="success" class="tile is-child has-text-centered">
           <p class="heading">Total Sendungen OK</p>
-          <p class="title">{{parcels.okParcels}}</p>
+          <p class="title">{{this.okParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="danger" class="tile is-child has-text-centered">
           <p class="heading">Anzahl Abweichungen</p>
-          <p class="title">{{parcels.nokParcels}}</p>
+          <p class="title">{{this.nokParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
@@ -28,12 +28,12 @@
     </div>
 
     <div class="tile is-ancestor" v-if="parcels">
-      <div class="tile is-parent is-6">
+      <div class="tile is-parent is-8">
         <article class="tile is-child box">
           <chart :type="'bar'" :data="pieData" :options="options"></chart>
         </article>
       </div>
-      <div class="tile is-parent is-6" v-if="parcels">
+      <div class="tile is-parent is-4" v-if="parcels">
         <article class="tile is-child box">
           <chart :type="'doughnut'" :data="pieData" :options="options"></chart>
         </article>
@@ -50,7 +50,6 @@
   import Chart from '../components/Chart.vue';
   import DataTable from '../components/DataTable.vue';
   import axios from 'axios';
-  import moment from 'moment';
 
   export default {
     components: {
@@ -87,35 +86,26 @@
     },
     computed: {
       totalParcels(){
-        return  0;
+        return this.parcels ? this.parcels.totalParcels : 0;
       },
-      totalOk(){
-        return  0;
+      okParcels(){
+        return this.parcels ? this.parcels.okParcels : 0;
       },
-      totalNotArrived(){
-        return 0;
+      nokParcels(){
+        return this.parcels ? this.parcels.nokParcels : 0;
       },
-      totalOnWay(){
-        return 0;
-      },
-      momentParcels(){
-        return this.parcels ?
-        this.parcels.map(item => {
-          item.dateSent = moment(item.dateSent).format('DD.MM.YYYY, HH:mm');
-          item.dateReceived = moment(item.dateReceived).format('DD.MM.YYYY, HH:mm');
-          return item
-        })
-        : []
+      pendingParcels(){
+        return this.parcels ? this.parcels.pendingParcels : 0;
       },
       pieData () {
         return {
           labels: this.labels,
           datasets: [{
-            data: [this.parcels.temperaturesOkSentParcels, this.parcels.temperaturesNOkSentParcels, this.parcels.onTheWaySentParcel],
+            data: [this.okParcels, this.nokParcels, this.pendingParcels],
             backgroundColor: this.backgroundColor
           }]
-         }
-        },
+        }
+      },
     }
   }
 </script>
