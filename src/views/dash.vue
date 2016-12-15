@@ -4,25 +4,25 @@
       <div class="tile is-parent is-one-quarter">
         <card class="tile is-child has-text-centered">
           <p class="heading">Total Sendungen verschickt</p>
-          <p class="title">{{parcels.totalSentParcels}}</p>
+          <p class="title">{{parcels.totalParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="success" class="tile is-child has-text-centered">
           <p class="heading">Total Sendungen OK</p>
-          <p class="title">{{parcels.temperaturesOkSentParcels}}</p>
+          <p class="title">{{parcels.okParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="danger" class="tile is-child has-text-centered">
           <p class="heading">Anzahl Abweichungen</p>
-          <p class="title">{{parcels.temperaturesNOkSentParcels}}</p>
+          <p class="title">{{parcels.nokParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="warning" class="tile is-child has-text-centered">
           <p class="heading"># Sendungen unterwegs</p>
-          <p class="title">{{parcels.onTheWaySentParcel}}</p>
+          <p class="title">{{parcels.pendingParcels}}</p>
         </card>
       </div>
     </div>
