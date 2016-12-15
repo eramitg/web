@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "Chart.Zoom.js": "^0.2.0",
+    "animate.css": "^3.5.2",
     "axios": "^0.15.2",
     "bulma": "^0.2.3",
     "chart.js": "^2.3.0",
