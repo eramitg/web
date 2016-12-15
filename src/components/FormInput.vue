@@ -1,17 +1,20 @@
 <template>
   <div class="control" :class="{'is-horizontal': horizontal}">
-    <div :class="{'control-label': horizontal}" v-if="horizontal && label">
+    <div v-if="horizontal && label" :class="{'control-label': horizontal}">
       <label class="label">{{label}}</label>
     </div>
-    <label class="label" v-else v-if="label">{{label}}</label>
-    <div class="control">
-      <input :value="value" @input="updateValue" class="input" :type="type" :placeholder="placeholder">
+    <label v-else-if="label" class="label">{{label}}</label>
+    <div class="control" :class="{'has-icon': icon}">
+      <input :value="value" @input="updateValue" class="input" :class="{'is-danger': err}" :type="type" :placeholder="placeholder || label.toLowerCase()" :name="name">
+      <i v-if="icon" :class="icon"></i>
+      <span v-if="err" class="help is-danger">{{ err }}</span>
     </div>
   </div>
 </template>
 
 <script>
   export default{
+    name: "FormInput",
     props: {
       value: {
         type: String,
@@ -25,13 +28,24 @@
         type: String,
         default: ''
       },
+      name: {
+        type: String
+      },
       placeholder: {
         type: String,
         default: ''
       },
+      icon: {
+        type: String,
+        default: '',
+      },
       horizontal: {
         type: Boolean,
         default: false
+      },
+      err: {
+        type: String,
+        default: ''
       }
     },
     methods:{

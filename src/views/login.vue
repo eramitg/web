@@ -9,19 +9,25 @@
                 <img src="../assets/images/logo.svg">
               </figure>
               <hr>
+              <form-input
+                label="Username"
+                v-model="username"
+                icon="fa fa-user-circle"
+                v-validate
+                data-vv-rules="required"
+                name="username"
+                :err="errors.first('username')"
+              />
 
-              <label class="label">Username</label>
-              <p class="control has-icon">
-                <input v-validate data-vv-rules="required" name="username" v-model="username" class="input" :class="{'is-danger': errors.has('username')}" type="text" placeholder="username">
-                <i class="fa fa-user-circle"></i>
-                <span v-show="errors.has('username')" class="help is-danger">{{ errors.first('username') }}</span>
-              </p>
-              <label class="label">Password</label>
-              <p class="control has-icon">
-                <input v-validate name="password" data-vv-rules="required" v-model="password" class="input" :class="{'is-danger': errors.has('password')}" type="password" placeholder="password">
-                <i class="fa fa-lock"></i>
-                <span v-show="errors.has('password')" class="help is-danger">{{ errors.first('password') }}</span>
-              </p>
+              <form-input
+                label="Password"
+                v-model="password"
+                icon="fa fa-lock"
+                v-validate
+                data-vv-rules="required"
+                name="password"
+                :err="errors.first('password')"
+              />
               <hr>
               <p class="control">
                 <button @click.prevent="onSubmit" type="submit" class="button is-primary is-fullwidth" :class="{'is-loading': loading}">Login</button>
@@ -44,13 +50,7 @@
       return {
         username: '',
         password: '',
-        usa: '',
         loading: false
-      }
-    },
-    computed: {
-      token(){
-        return this.$store.state.auth.token
       }
     },
     methods: {
@@ -58,18 +58,18 @@
         this.$validator.validateAll();
 
         if(this.formFields.valid()){
+          this.loading = true;
           try {
-            this.loading = true;
             await this.$store.dispatch('login', {
               username: this.username,
               password: this.password
             })
             const {redirect} = this.$route.query
             this.$router.push(redirect || '/');
-            this.loading = false;
           } catch({response}){
-            this.loading = false;
+            // missing
           }
+          this.loading = false;
         }
       },
       reset(){
@@ -79,9 +79,3 @@
     }
   }
 </script>
-
-<style lang="scss" scoped>
-  .spacer{
-    margin-bottom: 20px;
-  }
-</style>

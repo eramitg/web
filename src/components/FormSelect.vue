@@ -1,9 +1,9 @@
 <template>
   <div class="control" :class="{'is-horizontal': horizontal}">
-    <div :class="{'control-label': horizontal}" v-if="horizontal && label">
+    <div v-if="horizontal && label" :class="{'control-label': horizontal}">
       <label class="label">{{label}}</label>
     </div>
-    <label class="label" v-else v-if="label">{{label}}</label>
+    <label v-else-if="label" class="label">{{label}}</label>
     <div class="control">
       <div class="select is-fullwidth">
         <select :value="value" @input="updateValue">
