@@ -6,7 +6,9 @@
     <label v-else-if="label" class="label">{{label}}</label>
     <div class="control" :class="{'has-icon': icon}">
       <input :value="value" @input="updateValue" class="input" :class="{'is-danger': err}" :type="type" :placeholder="placeholder || label.toLowerCase()" :name="name">
-      <i v-if="icon" :class="icon"></i>
+      <span v-if="icon" class="icon">
+        <i :class="icon"></i>
+      </span>
       <span v-if="err" class="help is-danger">{{ err }}</span>
     </div>
   </div>

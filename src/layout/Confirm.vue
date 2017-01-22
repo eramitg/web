@@ -1,31 +1,29 @@
 <template>
-  <div class="modal is-active" v-show="deferred">
-    <div class="modal-background" @click="onCancel"></div>
-    <transition enter-active-class="animated zoomIn" leave-active-class="animated bounceOut">
-    <div class="modal-content" v-show="deferred">
-      <div class="card is-fullwidth">
-        <header class="card-header">
-          <p class="card-header-title">
-            Confirm
-          </p>
-          <a class="card-header-icon">
-            <i class="fa fa-angle-down"></i>
-          </a>
-        </header>
-        <div class="card-content">
-          <div class="content">
-            Are you sure that oyu want to <strong>delete</strong> this item?
+  <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
+    <div class="modal is-active" v-show="deferred">
+      <div class="modal-background" @click="onCancel"></div>
+      <transition enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
+      <div class="modal-content" v-show="deferred">
+        <div class="card is-fullwidth">
+          <header class="card-header">
+            <p class="card-header-title">
+              Confirm
+            </p>
+          </header>
+          <div class="card-content">
+            <div class="content">
+              Are you sure that oyu want to <strong>delete</strong> this item?
+            </div>
           </div>
+          <footer class="card-footer">
+            <button class="button is-danger is-fullwidth borderless" @click="onConfirm">Delete</button>
+            <button class="button is-fullwidth borderless" @click="onCancel">Cancel</button>
+          </footer>
         </div>
-        <footer class="card-footer">
-          <button class="button is-danger is-fullwidth borderless" @click="onConfirm">Delete</button>
-          <button class="button is-fullwidth borderless" @click="onCancel">Cancel</button>
-        </footer>
       </div>
+      </transition>
     </div>
-    </transition>
-    <button class="modal-close" @click="onCancel"></button>
-  </div>
+  </transition>
 </template>
 
 <script>

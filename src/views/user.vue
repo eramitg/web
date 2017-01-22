@@ -1,5 +1,5 @@
 <template>
-  <div class="tile is-ancestor" v-if="users">
+  <div class="tile is-ancestor">
     <div class="tile is-parent is-12">
       <article class="tile is-child box">
         <h1 class="title">
@@ -9,26 +9,52 @@
           </button>
         </h1>
         <hr>
-        <data-table :data="flatUsers" :columns="table.columns" :options="table.options"></data-table>
+          <data-table url="/api/users" :fields="table.columns" :sortOrder="table.sortOrder" ref="table" />
       </article>
     </div>
-    <modal-form :active="showModal" title="Create/Edit User" @close="closeModal" @submit="formSave" form>
-      <form-input v-model="form.username" label="Username" placeholder="Name"/>
-      <form-input v-model="form.password" label="Password" placeholder="Password" type="password"/>
+    <modal-form :active="showModal" title="Create/Edit User" @close="closeModal" @submit="createUser" form>
+      <form-input v-model="form.username" label="Username" placeholder="Name" v-validate data-vv-rules="required" name="username" :err="errors.first('username')" />
+      <form-input v-model="form.password" label="Password" placeholder="Password" type="password" v-validate data-vv-rules="required" name="password" :err="errors.first('password')"/>
       <form-select v-model="form.role" label="Role" :options="['USER', 'ADMIN']"/>
-      <button slot="footer" type="submit" class="button is-primary" @click.prevent="formSave">Save changes</button>
+      <button slot="footer" type="submit" class="button is-primary" @click.prevent="createUser">Save changes</button>
       <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
     </modal-form>
   </div>
 </template>
 
 <script>
+  import DataTable from '../components/Table'
   import FormInput from '../components/FormInput.vue';
   import FormSelect from '../components/FormSelect.vue';
-  import DataTable from '../components/DataTable.vue';
   import ModalForm from '../components/ModalForm.vue';
-  import axios from 'axios';
-  import store from '../store';
+  import Vue from 'vue'
+
+  Vue.component('user-actions', {
+    template: '<button class="button is-danger" @click="deleteUser(rowData)"><i class="fa fa-trash"></button>',
+    props: {
+      rowData: {
+        type: Object,
+        required: true
+      },
+      rowIndex: {
+        type: Number
+      }
+    },
+    methods: {
+      async deleteUser ({userID, userName}) {
+        if (userID > 0) {
+          try{
+            await this.$store.dispatch('confirm');
+            let {data} = await this.$http.delete(`/api/users/${userID}`)
+            this.$parent.reload();
+            this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted User ${data.name}`})
+          } catch(e){
+            // Notification for exception is created globally
+          }
+        }
+      }
+    }
+  })
 
   export default {
     components: {
@@ -37,20 +63,8 @@
       FormInput,
       FormSelect
     },
-    async beforeRouteEnter(to, from, next){
-      let role = store.getters.user.role;
-      if(role == 'ADMIN'){
-        let {data} = await axios.get('/api/users');
-        next(vm => vm.$data.users = data)
-      } else if(role == 'SUPER'){
-        let {data} = await axios.get('/api/users');
-        next(vm => vm.$data.users = data)
-      }
-      next();
-    },
     data(){
       return {
-        users: null,
         showModal: false,
         form: {
           username: '',
@@ -58,26 +72,17 @@
           role: 'USER'
         },
         table: {
-          columns: ['name', 'companyName', 'role', 'delete'],
-          options: {
-            templates: {
-              delete: (h, row) => {
-                return <button class="button is-danger" on-click={() => this.deleteUser(row)}><i class="fa fa-trash"></i></button>
-              }
-            }
-          }
+          columns: [
+            {name: 'userName', title: 'Name', sortField: 'userName'},
+            {name: 'userRole', title: 'Role', sortField: 'userRole'},
+            {name: 'companyName', title: 'Company', sortField: 'companyName'},
+            {name: '__component:user-actions', title: 'Actions'}
+          ],
+          sortOrder: [{
+            field: 'userName',
+            direction: 'asc'
+          }]
         }
-      }
-    },
-    computed: {
-      flatUsers(){
-        return this.users ? this.users.map(user => ({
-          id: user.ID,
-          name: user.name,
-          companyName: user.company.name,
-          role: user.role,
-          companyId: user.company.ID
-        })) : [];
       }
     },
     methods: {
@@ -92,44 +97,22 @@
           role: 'USER'
         }
       },
-      formSave(){
-        try {
-          let index = this.users.findIndex(u => u.ID === this.form.id);
-          if (index !== -1){
+      async createUser () {
+        this.$validator.validateAll();
 
-          } else {
-            this.createUser();
-          }
-        } catch(e) {
-          // Notification for exception is created globally
-        }
-      },
-      async createUser(){
-        try{
-          let {data} = await axios.post('/api/users', {...this.form});
-          this.closeModal();
-          if(data){
-            this.users.push(data);
+        if(this.formFields.valid()){
+          try{
+            let {data} = await this.$http.post('/api/users', {...this.form});
+            this.$refs.table.reload();
             this.$store.dispatch('notify', {type: 'success', text: `Successfully created User ${data.name}`})
+            this.resetForm();
+          } catch (e) {
+            this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+            console.log(e);
           }
-        } catch(e){
+          this.closeModal();
         }
       },
-      async deleteUser(user){
-        try{
-          await this.$store.dispatch('confirm');
-          if(user.id > 0){
-            let {data} = await axios.delete(`/api/users/${user.id}`)
-            let index = this.users.findIndex(u => u.ID === data.ID);
-            if(index){
-              this.users.splice(index, 1);
-            }
-            this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted User ${data.name}`})
-          }
-        } catch(e){
-          // Notification for exception is created globally
-        }
-      }
     }
   }
 </script>

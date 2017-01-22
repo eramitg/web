@@ -6,7 +6,6 @@
         <form class="modal-card" v-show="active" @submit.prevent="submit">
           <header class="modal-card-head">
             <p class="modal-card-title">{{title}}</p>
-            <button type="button" class="delete" @click.prevent="close"></button>
           </header>
           <section class="modal-card-body">
             <slot></slot>
