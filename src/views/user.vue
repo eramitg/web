@@ -12,13 +12,13 @@
           <data-table url="/api/users" :fields="table.columns" :sortOrder="table.sortOrder" ref="table" />
       </article>
     </div>
-    <modal-form :active="showModal" title="Create/Edit User" @close="closeModal" @submit="createUser" form>
+    <modal :active="showModal" title="Create/Edit User" @close="closeModal" @submit="createUser" form>
       <form-input v-model="form.username" label="Username" placeholder="Name" v-validate data-vv-rules="required" name="username" :err="errors.first('username')" />
       <form-input v-model="form.password" label="Password" placeholder="Password" type="password" v-validate data-vv-rules="required" name="password" :err="errors.first('password')"/>
       <form-select v-model="form.role" label="Role" :options="['USER', 'ADMIN']"/>
       <button slot="footer" type="submit" class="button is-primary" @click.prevent="createUser">Save changes</button>
       <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
-    </modal-form>
+    </modal>
   </div>
 </template>
 
@@ -26,7 +26,7 @@
   import DataTable from '../components/Table'
   import FormInput from '../components/FormInput.vue';
   import FormSelect from '../components/FormSelect.vue';
-  import ModalForm from '../components/ModalForm.vue';
+  import Modal from '../components/Modal.vue';
   import Vue from 'vue'
 
   Vue.component('user-actions', {
@@ -59,7 +59,7 @@
   export default {
     components: {
       DataTable,
-      ModalForm,
+      Modal,
       FormInput,
       FormSelect
     },

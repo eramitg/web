@@ -27,6 +27,7 @@
 </template>
 
 <script>
+  import moment from 'moment';
   import Vuetable from 'vuetable-2/src/components/Vuetable.vue';
   import VuetablePagination from './TablePagination.vue';
   import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo';
@@ -51,7 +52,6 @@
       },
       sortOrder: {
         type: Array,
-        required: true
       },
       css: {
         type: Object,
@@ -100,7 +100,12 @@
       },
       reload() {
         this.$refs.vuetable.reload()
-      }
+      },
+      formatDate (value, fmt = 'DD.MM.YYYY, HH:mm') {
+        return (value == null)
+          ? ''
+          : moment(value).format(fmt)
+      },
     }
   }
 </script>

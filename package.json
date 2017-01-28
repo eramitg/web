@@ -4,7 +4,7 @@
   "description": "Temperature Logging Web View for modum.io",
   "main": "app.js",
   "scripts": {
-    "start": "webpack-dev-server --port 8000",
+    "dev": "webpack-dev-server --port 8000",
     "build": "NODE_ENV=production webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

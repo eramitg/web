@@ -7,6 +7,7 @@ Vue.use(Vuex);
 import auth from './auth';
 import confirm from './confirm';
 import snackbar from './snackbar';
+import shipment from './shipment';
 import vuexI18n from 'vuex-i18n';
 
 const store = new Vuex.Store({
@@ -14,6 +15,7 @@ const store = new Vuex.Store({
     auth,
     confirm,
     snackbar,
+    shipment,
     i18n: vuexI18n.store
   }
 });
