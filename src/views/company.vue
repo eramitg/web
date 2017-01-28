@@ -64,7 +64,7 @@
     methods: {
       async save() {
         try{
-          let {data} = await axios.put('/api/companies/admin/update', {...this.company});
+          let {data} = await axios.put('/api/v1/company/admin/update', {...this.company});
           this.$store.dispatch('notify', {type: 'success', text: 'Successfully updated Settings'})
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
