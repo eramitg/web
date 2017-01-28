@@ -3,7 +3,7 @@
     <div class="modal is-active" v-show="active">
       <div class="modal-background" @click="close"></div>
       <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp">
-        <form class="modal-card" v-show="active" @submit.prevent="submit">
+        <component :is="form ? 'form' : 'div'" class="modal-card" v-show="active" @submit.prevent="submit">
           <header class="modal-card-head">
             <p class="modal-card-title">{{title}}</p>
           </header>
@@ -13,7 +13,7 @@
           <footer class="modal-card-foot" v-if="$slots['footer']">
             <slot name="footer"></slot>
           </footer>
-        </form>
+        </component>
       </transition>
     </div>
   </transition>

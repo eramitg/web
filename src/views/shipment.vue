@@ -1,87 +1,119 @@
 <template>
-  <div class="tile is-ancestor" v-if="parcels">
+  <div class="tile is-ancestor">
     <div class="tile is-parent is-12">
       <article class="tile is-child box">
-        <div class="container">
-          <h1 class="title">
-            Parcels
-            <button class="button" @click.prevent="showModal = true">
-              <span class="fa fa-plus"></span>
-            </button>
-          </h1>
-        </div>
+        <h1 class="title">
+          Shipments
+        </h1>
         <hr>
-        <data-table :data="momentParcels" :columns="table.columns" :options="table.options"></data-table>
+          <data-table url="/api/v2/parcels/web" :fields="table.columns" :sortOrder="table.sortOrder" ref="table" />
       </article>
     </div>
-    <modal-form :active="showModal" title="Create/Edit Shipment" @close="closeModal">
-      <p>Test</p>
-      <button slot="footer" class="button is-primary">Save changes</button>
-      <button slot="footer" class="button is-danger">Save changes</button>
-    </modal-form>
-  </div>
-  <div v-else>
-    Make sure you have an internet connection
+    <modal :active="$store.getters.shipmentDetailActive" @close="closeModal" title="Details">
+      <chart
+        v-if="$store.getters.shipmentDetailActive"
+        :type="'line'"
+        :data="$store.getters.shipmentChart"
+        :options="chartOptions"
+      />
+      <button slot="footer" type="button" class="button" @click.prevent="closeModal">Close</button>
+    </modal>
   </div>
 </template>
 
 <script>
-  import DataTable from '../components/DataTable.vue';
-  import ModalForm from '../components/ModalForm.vue';
-  import axios from 'axios';
-  import moment from 'moment';
+import Vue from 'vue';
+import DataTable from '../components/Table';
+import Chart from '../components/Chart.vue';
+import Modal from '../components/Modal.vue';
 
-  export default {
-    components: {
-      DataTable,
-      ModalForm
+Vue.component('shipment-actions', {
+  template: '<button class="button is-primary" @click="info(rowData)">Zeigen</button>',
+  props: {
+    rowData: {
+      type: Object,
+      required: true
     },
-    async beforeRouteEnter(to, from, next){
-      let {data} = await axios.get('/api/parcels');
-      next(vm => vm.$data.parcels = data)
-    },
-    data(){
-      return {
-        parcels: null,
-        showModal: false,
-        table: {
-          columns: ['tntNumber', 'senderCompany', 'receiverCompany', 'dateSent', 'dateReceived', 'details'],
-          options: {
-            dateColumns: ['dateSent', 'dateReceived'],
-            orderBy: {
-              column: 'dateSent',
-            },
-            headings: {
-              tntNumber: this.$t('tnt'),
-              senderCompany: this.$t('send_comp'),
-              receiverCompany: this.$t('rcv_comp'),
-              dateSent: this.$t('date_sent'),
-              dateReceived: this.$t('date_received')
-            },
-            templates: {
-              details: function(h, row) {
-                return <button id={row.id} class="button is-primary">Zeigen</button>
-              }
-            },
-          }
-        },
-      }
-    },
-    computed: {
-      momentParcels(){
-        return this.parcels ?
-        this.parcels.map(item => {
-          item.dateSent = moment(item.dateSent).format('DD.MM.YYYY, HH:mm');
-          item.dateReceived = moment(item.dateReceived).format('DD.MM.YYYY, HH:mm');
-          return item
-        })
-        : []
-      }
-    },
-    methods: {
-      closeModal(){
-        this.showModal = false;
-      }
+    rowIndex: {
+      type: Number
+    }
+  },
+  methods: {
+    info ({id}) {
+      this.$store.dispatch('getShipmentDetail', id);
     }
   }
+})
+
+export default {
+  components: {
+    DataTable,
+    Modal,
+    Chart
+  },
+  data() {
+    return {
+      table: {
+        columns: [
+          {name: 'tntNumber', title: this.$t('tnt'), sortField: 'tntNumber'},
+          {name: 'senderCompany', title: this.$t('send_comp'), sortField: 'senderCompany'},
+          {name: 'receiverCompany', title: this.$t('rcv_comp'), sortField: 'receiverCompany'},
+          {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
+          {name: 'dateReceived', title: this.$t('date_received'), sortField: 'dateReceived', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
+          {name: '__component:shipment-actions', title: 'Actions'}
+        ],
+        sortOrder: [{
+          field: 'tntNumber',
+          direction: 'asc'
+        }]
+      },
+      chartOptions: {
+        responsive: true,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    max: 40,
+                    min: 0,
+                    fixedStepSize: 3
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: '°C'
+                }
+            }],
+        },
+        legend: {
+            display: false
+        },
+        horizontalLine: [{
+            y: 25,
+            style: "#FFA100",
+        }, {
+            y: 15,
+            style: "#25A9E1",
+        }],
+        pan: {
+            // Boolean to enable panning
+            enabled: true,
+            // Panning directions. Remove the appropriate direction to disable
+            // Eg. 'y' would only allow panning in the y direction
+            mode: 'xy'
+        },
+        // Container for zoom options
+        zoom: {
+            // Boolean to enable zooming
+            enabled: true,
+            // Zooming directions. Remove the appropriate direction to disable
+            // Eg. 'y' would only allow zooming in the y direction
+            mode: 'xy'
+        }
+      }
+    }
+  },
+  methods: {
+    closeModal() {
+      this.$store.commit('resetShipmentDetail');
+    }
+  }
+}
 </script>
