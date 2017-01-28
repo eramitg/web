@@ -15,7 +15,7 @@ const router = new VueRouter({
   routes: [
     {path: '/', component: Layout, meta: {requiresAuth: true}, children: [
       {path: '/', name: 'Dashboard', component: lazyLoad('dash'), meta: {icon: 'fa-home'}},
-      {path: '/shipment', name: 'Shipment', component: lazyLoad('shipment'), meta: {icon: 'fa-paper-plane'}},
+      {path: '/shipment', name: 'Shipment', component: () => System.import('./views/shipment'), meta: {icon: 'fa-paper-plane'}},
       {path: '/user', name: 'User', component: lazyLoad('user'), meta: {icon: 'fa-users', role: 'ADMIN'}},
       {path: '/company', name: 'Company Management', component: lazyLoad('company'), meta: {icon: 'fa-cog', role: 'ADMIN'}},
       {path: '/blockchain', name: 'Blockchain', component: lazyLoad('blockchain'), meta:{icon: 'fa-book', role: 'SUPER'}},

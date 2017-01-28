@@ -18,6 +18,8 @@
       :paginationPath="paginationPath"
       :data-path="dataPath"
       :sortOrder="sortOrder"
+      :detail-row-component="row"
+      @vuetable:cell-clicked="onCellClicked"
       @vuetable:pagination-data="onPaginationData"
     />
     <bulma-pagination ref="pagination"
@@ -88,6 +90,9 @@
           next: 'fa fa-angle-right',
           last: 'fa fa-angle-double-right'
         })
+      },
+      row: {
+        type: String
       }
     },
     methods: {
@@ -100,6 +105,9 @@
       },
       reload() {
         this.$refs.vuetable.reload()
+      },
+      onCellClicked (data, field, event) {
+        this.$refs.vuetable.toggleDetailRow(data.id)
       },
       formatDate (value, fmt = 'DD.MM.YYYY, HH:mm') {
         return (value == null)
