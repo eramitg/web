@@ -21,6 +21,7 @@
 
               <form-input
                 label="Password"
+                type="password"
                 v-model="password"
                 icon="fa fa-lock"
                 v-validate

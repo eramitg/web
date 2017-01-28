@@ -7,7 +7,7 @@
     <div class="control">
       <div class="select is-fullwidth">
         <select :value="value" @input="updateValue">
-          <option v-for="option in options">{{option}}</option>
+          <option v-for="option in finalOptions" :value="option.value">{{option.label}}</option>
         </select>
       </div>
     </div>
@@ -18,7 +18,6 @@
   export default{
     props: {
       value: {
-        type: String,
         required: true
       },
       options: {
@@ -37,6 +36,11 @@
       horizontal: {
         type: Boolean,
         default: false
+      }
+    },
+    computed: {
+      finalOptions() {
+        return this.options.map(item => (typeof item == "string" ? {label: item, value: item} : item))
       }
     },
     methods:{

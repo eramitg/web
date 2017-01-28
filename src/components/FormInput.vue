@@ -19,7 +19,6 @@
     name: "FormInput",
     props: {
       value: {
-        type: String,
         required: true
       },
       type: {
