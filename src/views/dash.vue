@@ -78,9 +78,9 @@
           }
         },
         backgroundColor: [
-          '#23D160',
-          '#FF3860',
-          '#FFDD57'
+          '#26BA9A',
+          '#D8544F',
+          '#EFAC4D'
         ],
        }
     },
