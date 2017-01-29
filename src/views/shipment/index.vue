@@ -16,8 +16,10 @@
 import Vue from 'vue';
 import DetailRow from './DetailRow';
 import DataTable from '../../components/Table';
+import Status from './Status';
 
 Vue.component('shipment-detail-row', DetailRow)
+Vue.component('shipment-status', Status)
 
 export default {
   components: {
@@ -32,7 +34,8 @@ export default {
           {name: 'senderCompany', title: this.$t('send_comp'), sortField: 'senderCompany'},
           {name: 'receiverCompany', title: this.$t('rcv_comp'), sortField: 'receiverCompany'},
           {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
-          {name: 'dateReceived', title: this.$t('date_received'), sortField: 'dateReceived', callback: 'formatDate|DD.MM.YYYY, HH:mm'}
+          {name: 'dateReceived', title: this.$t('date_received'), sortField: 'dateReceived', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
+          {name: '__component:shipment-status', title: this.$t('status'), dataClass: 'has-text-centered'}
         ],
         sortOrder: [{
           field: 'tntNumber',
