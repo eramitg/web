@@ -1,27 +1,17 @@
 import moment from 'moment';
 
 export default {
-  props: {
-    sortOrder: {
-      type: Array,
-    },
-    css: {
-      type: Object,
-      default: () => ({
+  data() {
+    return {
+      bulmaTableCss: {
         tableClass: 'table is-bordered is-stripe',
         ascendingIcon: 'fa fa-chevron-up',
         descendingIcon: 'fa fa-chevron-down',
         sortHandleIcon: 'fa fa-bars',
         loadingClass: 'fa fa-spinner fa-pulse fa-3x fa-fw'
-      })
-    },
-    paginationPath: {
-      type: String,
-      default: ''
-    },
-    dataPath: {
-      type: String,
-      default: 'data'
+      },
+      dataPath: 'data',
+      paginationPath: ''
     }
   },
   methods: {

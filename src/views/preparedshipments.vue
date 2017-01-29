@@ -22,7 +22,7 @@
         </nav>
         <vuetable ref="vuetable"
           api-url="/api/preparedshipments"
-          :css="css"
+          :css="bulmaTableCss"
           :fields="table.columns"
           :paginationPath="paginationPath"
           :data-path="dataPath"
@@ -44,18 +44,18 @@
 </template>
 
 <script>
-import tableMixin from '../components/Table/mixin';
+import dataTableMixin from '../mixins/dataTable';
 import Vuetable from 'vuetable-2/src/components/Vuetable.vue';
 import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo';
-import FilterBar from '../components/Table/FilterBar.vue';
-import BulmaPagination from '../components/Table/BulmaPagination.vue';
+import BulmaPagination from '../components/BulmaPagination.vue';
+import FilterBar from '../components/FilterBar.vue';
 
 import FormInput from '../components/FormInput.vue';
 import FormSelect from '../components/FormSelect.vue';
 import Modal from '../components/Modal.vue';
 
 export default {
-  mixins: [tableMixin],
+  mixins: [dataTableMixin],
   components: {
     Vuetable,
     BulmaPagination,
