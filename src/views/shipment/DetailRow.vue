@@ -26,13 +26,39 @@
           <label><b>{{$t('send_comp')}}</b>: </label>
           <span>{{rowData.senderCompany}}</span>
         </div>
+        <div class="inline field">
+          <label><b>{{$t('send_user')}}</b>: </label>
+          <span>{{rowData.sender}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>{{$t('rcv_comp')}}</b>: </label>
+          <span>{{rowData.receiverCompany}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>{{$t('send_user')}}</b>: </label>
+          <span>{{rowData.receiver}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>{{$t('date_sent')}}</b>: </label>
+          <span>{{rowData.dateSent | formatDate}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>{{$t('date_received')}}</b>: </label>
+          <span>{{rowData.dateReceived | formatDate}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>{{$t('cat')}}</b>: </label>
+          <span>{{rowData.tempCategory}}</span>
+        </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import moment from 'moment';
 import Chart from '../../components/Chart.vue';
 export default {
   components: {
@@ -119,5 +145,10 @@ export default {
       } : {};
     }
   },
+  filters: {
+    formatDate: function (value) {
+      return moment(value).format('DD.MM.YYYY, HH:mm')
+    }
+  }
 }
 </script>
