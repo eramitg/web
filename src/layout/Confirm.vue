@@ -12,7 +12,7 @@
           </header>
           <div class="card-content">
             <div class="content">
-              Are you sure that oyu want to <strong>delete</strong> this item?
+              Are you sure that you want to <strong>delete</strong> this item?
             </div>
           </div>
           <footer class="card-footer">

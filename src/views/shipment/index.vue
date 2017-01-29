@@ -6,7 +6,34 @@
           Shipments
         </h1>
         <hr>
-        <data-table url="/api/v2/parcels/web" :fields="table.columns" :sortOrder="table.sortOrder" row="shipment-detail-row" ref="table" />
+
+        <nav class="level is-marginless">
+          <div class="level-left">
+            <div class="level-item">
+              <filter-bar></filter-bar>
+            </div>
+          </div>
+          <div class="level-right">
+            <vuetable-pagination-info ref="paginationInfo"/>
+          </div>
+        </nav>
+        <vuetable ref="vuetable"
+          api-url="/api/v2/parcels/web"
+          :css="css"
+          :fields="table.columns"
+          :paginationPath="paginationPath"
+          :data-path="dataPath"
+          :sortOrder="table.sortOrder"
+          detail-row-component="shipment-detail-row"
+          @vuetable:cell-clicked="onCellClicked"
+          @vuetable:pagination-data="onPaginationData"
+        >
+          <template slot="actions" scope="props">
+            <button class="button is-primary" @click=""><i class="fa fa-pencil"></button>
+            <button class="button is-danger" @click="deleteUser(props.rowData)"><i class="fa fa-trash"></button>
+          </template>
+        </vuetable>
+        <bulma-pagination ref="pagination" @vuetable-pagination:change-page="onChangePage"/>
       </article>
     </div>
   </div>
@@ -15,16 +42,24 @@
 <script>
 import Vue from 'vue';
 import DetailRow from './DetailRow';
-import DataTable from '../../components/Table';
+
 import Status from './Status';
+import tableMixin from '../../components/Table/mixin';
+import Vuetable from 'vuetable-2/src/components/Vuetable.vue';
+import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo';
+import FilterBar from '../../components/Table/FilterBar.vue';
+import BulmaPagination from '../../components/Table/BulmaPagination.vue';
 
 Vue.component('shipment-detail-row', DetailRow)
 Vue.component('shipment-status', Status)
 
 export default {
+  mixins: [tableMixin],
   components: {
-    DetailRow,
-    DataTable,
+    Vuetable,
+    BulmaPagination,
+    VuetablePaginationInfo,
+    FilterBar
   },
   data() {
     return {
