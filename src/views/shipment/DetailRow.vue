@@ -84,31 +84,44 @@ export default {
         options: {
           responsive: true,
           scales: {
-            yAxes: [{
-              ticks: {
-                max: 40,
-                min: 0,
-                fixedStepSize: 3
-              },
-              scaleLabel: {
-                display: true,
-                labelString: '°C'
+            xAxes: [{
+              type: 'time',
+              time: {
+                tooltipFormat: 'DD.MM.YYYY, HH:mm',
+                displayFormats: {
+                  minute: 'HH:mm:ss',
+                  hour: 'HH:mm:ss',
+                  day: 'DD.MM.YYYY, HH:mm'
+                }
               }
             }],
+            yAxes: [
+              {
+                ticks: {
+                  max: 40,
+                  min: 0,
+                  fixedStepSize: 3
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: '°C'
+                }
+              }
+            ],
           },
           legend: {
-              display: false
+            display: false
           },
           horizontalLine: [
             { y: 25, style: "#FFA100" },
             { y: 15, style: "#25A9E1" }
           ],
           pan: {
-              enabled: true,
+              enabled: false,
               mode: 'xy'
           },
           zoom: {
-              enabled: true,
+              enabled: false,
               mode: 'xy'
           }
         }

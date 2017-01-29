@@ -4,6 +4,7 @@
 
 <script>
 import Chart from 'chart.js' // With moment.js
+import 'Chart.Zoom.js'
 const types = ['line', 'bar', 'radar', 'polarArea', 'pie', 'doughnut']
 
 var horizonalLinePlugin = {
@@ -64,7 +65,10 @@ export default {
       default: () => ({
         legend: {
           display: false
-         }
+        },
+        zoom: {
+          enabled: false
+        }
       })
     },
     horizontalLine: {

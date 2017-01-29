@@ -30,12 +30,12 @@
     <div class="tile is-ancestor" v-if="parcels">
       <div class="tile is-parent is-8">
         <article class="tile is-child box">
-          <chart :type="'bar'" :data="pieData" :options="options"></chart>
+          <chart :type="'bar'" :data="pieData"></chart>
         </article>
       </div>
       <div class="tile is-parent is-4" v-if="parcels">
         <article class="tile is-child box">
-          <chart :type="'doughnut'" :data="pieData" :options="options"></chart>
+          <chart :type="'doughnut'" :data="pieData"></chart>
         </article>
       </div>
     </div>
@@ -66,11 +66,6 @@
         parcels: null,
         labels: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
         data: [20, 40, 5, 35],
-        options: {
-          legend: {
-            display: false
-           }
-        },
         optionsData: {
           skin: 'is-striped',
           headings:{
