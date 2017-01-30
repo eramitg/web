@@ -22,10 +22,10 @@ Vue.use(vuexI18n.plugin, store);
 import translationEn from '../assets/locales/en';
 import translationDe from '../assets/locales/de';
 Vue.i18n.add('en', translationEn);
+Vue.i18n.add('en-US', translationEn);
 Vue.i18n.add('de', translationDe);
 
-Vue.i18n.set(window.navigator.userLanguage || window.navigator.language);
-
+Vue.i18n.set(window.navigator.userLanguage || window.navigator.language ||  'en');
 
 // when the token is changed update HTTP and localStorage
 store.subscribe((mutation, state) => {
