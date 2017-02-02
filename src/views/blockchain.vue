@@ -1,5 +1,48 @@
 <template>
   <div v-if="missing && mined">
+    <div class="tile is-ancestor">
+      <div class="tile is-parent is-12">
+        <article class="tile is-child box">
+          <h1 class="title">Missing Contracts / TX</h1>
+          <hr>
+          <test-table
+            url="/api/v1/contract/missing"
+            :fields="tableMissing.columns"
+            :sortOrder="tableMissing.sortOrder"
+          >
+            <template slot="transaction" scope="props">
+              <a v-if="props.rowData.transaction_hash" :href="`https://etherscan.io/tx/data/${props.rowData.transaction_hash}`">
+                {{`${props.rowData.transaction_hash.substr(0, 20)}...`}}
+              </a>
+              <button v-else class="button">Report Temp.</button>
+            </template>
+
+          </test-table>
+        </article>
+      </div>
+    </div>
+
+    <div class="tile is-ancestor">
+      <div class="tile is-parent is-12">
+        <article class="tile is-child box">
+          <h1 class="title">Mined Contracts / TX</h1>
+          <hr>
+          <test-table
+            url="/api/v1/contract/mined"
+            :fields="tableMined.columns"
+            :sortOrder="tableMined.sortOrder"
+          >
+            <template slot="transaction" scope="props">
+              <a v-if="props.rowData.transaction_hash" :href="`https://etherscan.io/tx/data/${props.rowData.transaction_hash}`">
+                {{`${props.rowData.transaction_hash.substr(0, 20)}...`}}
+              </a>
+              <button v-else class="button">Report Temp.</button>
+            </template>
+          </test-table>
+        </article>
+      </div>
+    </div>
+
     <div class="tile is-ancestor" v-if="missing">
       <div class="tile is-parent is-12">
         <article class="tile is-child box">
@@ -29,12 +72,14 @@
 </template>
 
 <script>
+  import TestTable from '../components/Table';
   import axios from 'axios';
   import DataTable from '../components/DataTable.vue';
 
   export default {
     components: {
-      DataTable
+      DataTable,
+      TestTable
     },
     async beforeRouteEnter(to, from, next){
       let missing = await axios.get('/api/v1/contract/missing');
@@ -48,6 +93,31 @@
       return {
         missing: null,
         mined: null,
+        tableMissing: {
+          columns: [
+            {name: 'tntNumber', title: 'tntNumber', sortField: 'tntNumber'},
+            {name: 'dateSent', title: 'dateSent', sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
+            {name: '__slot:transaction', title: 'transaction_hash', sortField: 'transaction_hash'},
+            {name: 'contract_address', title: 'contract_address', sortField: 'contract_address'},
+            {name: 'cache_result', title: 'cache_result', sortField: 'cache_result'},
+          ],
+          sortOrder: [{
+            field: 'tntNumber',
+            direction: 'asc'
+          }]
+        },
+        tableMined: {
+          columns: [
+            {name: 'tntNumber', title: 'tntNumber', sortField: 'tntNumber'},
+            {name: 'dateSent', title: 'dateSent', sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
+            {name: '__slot:transaction', title: 'transaction_hash', sortField: 'transaction_hash'},
+            {name: 'contract_address', title: 'contract_address', sortField: 'contract_address'},
+          ],
+          sortOrder: [{
+            field: 'tntNumber',
+            direction: 'asc'
+          }]
+        },
         missingTable: {
           columns: ['tntNumber', 'dateSent', 'transaction_hash', 'contract_address', 'cache_result'],
           options: {
@@ -107,6 +177,19 @@
             },
           }
         }
+      }
+    },
+    methods: {
+      formatHash(value){
+        console.log(value);
+        return value
+        /*if(value){
+          let show = `${value.substr(0, 20)}...`;
+          let url = `https://etherscan.io/tx/data/${value}`
+          return '<a href={url} >{show}</a>'
+        } else {
+          return '<button class="button">Report Temp.</button>'
+        }*/
       }
     }
   }

@@ -10,27 +10,12 @@
         </h1>
         <hr>
 
-        <nav class="level is-marginless">
-          <div class="level-left">
-            <div class="level-item">
-              <filter-bar></filter-bar>
-            </div>
-          </div>
-          <div class="level-right">
-            <vuetable-pagination-info ref="paginationInfo"/>
-          </div>
-        </nav>
-        <vuetable ref="vuetable"
-          api-url="/api/preparedshipments"
-          :css="bulmaTableCss"
+        <data-table
+          url="/api/preparedshipments"
           :fields="table.columns"
-          :paginationPath="paginationPath"
-          :data-path="dataPath"
           :sortOrder="table.sortOrder"
-          @vuetable:pagination-data="onPaginationData"
-        >
-        </vuetable>
-        <bulma-pagination ref="pagination" @vuetable-pagination:change-page="onChangePage"/>
+        ></data-table>
+        
       </article>
     </div>
     <modal :active="showModal" title="Create/Edit Shipment" @close="closeModal" form>
@@ -44,23 +29,15 @@
 </template>
 
 <script>
-import dataTableMixin from '../mixins/dataTable';
-import Vuetable from 'vuetable-2/src/components/Vuetable.vue';
-import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo';
-import BulmaPagination from '../components/BulmaPagination.vue';
-import FilterBar from '../components/FilterBar.vue';
+import DataTable from '../components/Table';
 
 import FormInput from '../components/FormInput.vue';
 import FormSelect from '../components/FormSelect.vue';
 import Modal from '../components/Modal.vue';
 
 export default {
-  mixins: [dataTableMixin],
   components: {
-    Vuetable,
-    BulmaPagination,
-    VuetablePaginationInfo,
-    FilterBar,
+    DataTable,
     Modal,
     FormInput,
     FormSelect
