@@ -22,7 +22,7 @@
 <script>
 import Vue from 'vue';
 
-import DataTable from '../../components/Table';
+import DataTable from '../../components/DataTable';
 import DetailRow from './DetailRow';
 import Status from './Status';
 

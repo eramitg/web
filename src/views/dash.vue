@@ -48,14 +48,12 @@
 <script>
   import Card from '../components/Card.vue';
   import Chart from '../components/Chart.vue';
-  import DataTable from '../components/DataTable.vue';
   import axios from 'axios';
 
   export default {
     components: {
       Card,
-      Chart,
-      DataTable
+      Chart
     },
     async beforeRouteEnter(to, from, next) {
       let {data} = await axios.get("/api/statistics");

@@ -15,7 +15,7 @@
           :fields="table.columns"
           :sortOrder="table.sortOrder"
         ></data-table>
-        
+
       </article>
     </div>
     <modal :active="showModal" title="Create/Edit Shipment" @close="closeModal" form>
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import DataTable from '../components/Table';
+import DataTable from '../components/DataTable';
 
 import FormInput from '../components/FormInput.vue';
 import FormSelect from '../components/FormSelect.vue';

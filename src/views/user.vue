@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import DataTable from '../components/Table';
+  import DataTable from '../components/DataTable';
 
   import FormInput from '../components/FormInput.vue';
   import FormSelect from '../components/FormSelect.vue';

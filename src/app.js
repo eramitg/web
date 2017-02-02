@@ -5,7 +5,6 @@ import store from './store';
 import router from './router';
 import axios from 'axios';
 
-import VueTables from 'vue-tables-2';
 import VeeValidate from 'vee-validate';
 import VueProgressBar from 'vue-progressbar'
 import VueResource from 'vue-resource';
@@ -17,7 +16,6 @@ Vue.use(VueProgressBar, {
   height: '2px'
 })
 
-Vue.use(VueTables.client);
 Vue.use(VeeValidate, {fieldsBagName: 'formFields'});
 
 
