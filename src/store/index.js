@@ -25,7 +25,9 @@ Vue.i18n.add('en', translationEn);
 Vue.i18n.add('en-US', translationEn);
 Vue.i18n.add('de', translationDe);
 
-Vue.i18n.set(window.navigator.userLanguage || window.navigator.language ||  'en');
+if (Vue.i18n.exists(window.navigator.userLanguage)) Vue.i18n.set(window.navigator.userLanguage);
+else if (Vue.i18n.exists(window.navigator.language)) Vue.i18n.set(window.navigator.language);
+else Vue.i18n.set('en');
 
 // when the token is changed update HTTP and localStorage
 store.subscribe((mutation, state) => {
