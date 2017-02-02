@@ -16,8 +16,10 @@ const actions = {
   notify({commit}, notification){
     let {text} = notification;
     let type = notification.type || 'info';
-    let timeout = notification.timeout || true;
+    let timeout = false;
     let delay = notification.delay || 3000;
+
+    if (notification.timeout === undefined) timeout = true;
 
     let obj = {text, type};
     commit('addNotification', obj);
