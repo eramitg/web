@@ -15,5 +15,10 @@ export default {
   "temperature_measurements": "Temperature Measurements",
   "status_bad": "Out of Specification",
   "status_ok": "Good",
-  "status_transit": "In Progress"
+  "status_transit": "In Progress",
+  "zero_records": "No records found",
+  "total_shipment": "Total shipments sent",
+  "shipment_ok": "Total shipments ok",
+  "deviations": "Number of deviations",
+  "shipment_transit": "Number of shipments in transit"
 }

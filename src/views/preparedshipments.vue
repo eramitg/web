@@ -56,7 +56,7 @@ export default {
           {name: 'receiverCompany', title: this.$t('rcv_comp'), sortField: 'receiverCompany'},
         ],
         sortOrder: [{
-          field: 'tntNumber',
+          field: 'tnt_number',
           direction: 'asc'
         }]
       },

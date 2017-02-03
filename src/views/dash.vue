@@ -3,25 +3,25 @@
     <div class="tile is-ancestor" v-if="parcels">
       <div class="tile is-parent is-one-quarter">
         <card class="tile is-child has-text-centered">
-          <p class="heading">Total Sendungen verschickt</p>
+          <p class="heading">{{$t('total_shipment')}}</p>
           <p class="title">{{this.totalParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="success" class="tile is-child has-text-centered">
-          <p class="heading">Total Sendungen OK</p>
+          <p class="heading">{{$t('shipment_ok')}}</p>
           <p class="title">{{this.okParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="danger" class="tile is-child has-text-centered">
-          <p class="heading">Anzahl Abweichungen</p>
+          <p class="heading">{{$t('deviations')}}</p>
           <p class="title">{{this.nokParcels}}</p>
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
         <card type="warning" class="tile is-child has-text-centered">
-          <p class="heading"># Sendungen unterwegs</p>
+          <p class="heading">{{$t('shipment_transit')}}</p>
           <p class="title">{{parcels.pendingParcels}}</p>
         </card>
       </div>

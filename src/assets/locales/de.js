@@ -16,5 +16,9 @@ export default {
   "status_bad": "Temperatur Überschreitung",
   "status_ok": "Gut",
   "status_transit": "In Arbeit",
-  "zero_records": "Keine Einträge gefunden"
+  "zero_records": "Keine Einträge gefunden",
+  "total_shipment": "Total Sendungen verschickt",
+  "shipment_ok": "Total Sendungen OK",
+  "deviations": "Anzahl Abweichungen",
+  "shipment_transit": "Anzahl Sendungen unterwegs"
 }
