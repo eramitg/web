@@ -2,9 +2,7 @@
   <div class="tile is-ancestor">
     <div class="tile is-parent is-12">
       <article class="tile is-child box">
-        <h1 class="title">
-          Shipments
-        </h1>
+        <h1 class="title">Shipments</h1>
         <hr>
 
         <data-table
@@ -45,8 +43,8 @@ export default {
           {name: '__component:shipment-status', title: this.$t('status'), dataClass: 'has-text-centered'}
         ],
         sortOrder: [{
-          field: 'tntNumber',
-          direction: 'asc'
+          field: 'dateReceived',
+          direction: 'desc'
         }]
       },
     }

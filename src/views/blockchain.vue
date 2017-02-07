@@ -11,13 +11,13 @@
             :sortOrder="tableMissing.sortOrder"
           >
             <template slot="transaction" scope="props">
-              <a v-if="props.rowData.transaction_hash" :href="`https://etherscan.io/tx/data/${props.rowData.transaction_hash}`">
+              <a v-if="props.rowData.transaction_hash" target="_blank" :href="`https://etherscan.io/tx/data/${props.rowData.transaction_hash}`">
                 {{`${props.rowData.transaction_hash.substr(0, 20)}...`}}
               </a>
               <button v-else class="button" @click="contract(props.rowData.id, props.rowData.gid, 'tx')">Report Temp.</button>
             </template>
             <template slot="contract" scope="props">
-              <a v-if="props.rowData.contract_address" :href="`https://etherscan.io/tx/data/${props.rowData.contract_address}`">
+              <a v-if="props.rowData.contract_address" target="_blank" :href="`https://etherscan.io/tx/data/${props.rowData.contract_address}`">
                 {{`${props.rowData.contract_address.substr(0, 20)}...`}}
               </a>
               <button v-else class="button" @click="contract(props.rowData.id, props.rowData.gid, 'contract')">Create Contract</button>
@@ -41,13 +41,13 @@
             :sortOrder="tableMined.sortOrder"
           >
             <template slot="transaction" scope="props">
-              <a v-if="props.rowData.transaction_hash" :href="`https://etherscan.io/tx/data/${props.rowData.transaction_hash}`">
+              <a v-if="props.rowData.transaction_hash" target="_blank" :href="`https://etherscan.io/tx/data/${props.rowData.transaction_hash}`">
                 {{`${props.rowData.transaction_hash.substr(0, 20)}...`}}
               </a>
               <button v-else class="button" @click="contract(props.rowData.id, props.rowData.gid, 'tx')">Report Temp.</button>
             </template>
             <template slot="contract" scope="props">
-              <a v-if="props.rowData.contract_address" :href="`https://etherscan.io/tx/data/${props.rowData.contract_address}`">
+              <a v-if="props.rowData.contract_address" target="_blank" :href="`https://etherscan.io/tx/data/${props.rowData.contract_address}`">
                 {{`${props.rowData.contract_address.substr(0, 20)}...`}}
               </a>
               <button v-else class="button" @click="contract(props.rowData.id, props.rowData.gid, 'contract')">Create Contract</button>
@@ -72,25 +72,25 @@
           columns: [
             {name: 'tntNumber', title: this.$t('tnt'), sortField: 'tntNumber'},
             {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
-            {name: '__slot:transaction', title: 'transaction_hash', sortField: 'transaction_hash'},
-            {name: '__slot:contract', title: 'contract_address', sortField: 'contract_address'},
-            {name: '__slot:cache', title: 'cache_result', sortField: 'cache_result'},
+            {name: '__slot:transaction', title: 'Transaction Hash', sortField: 'transactionHash'},
+            {name: '__slot:contract', title: 'Contract Address', sortField: 'contractAddress'},
+            {name: '__slot:cache', title: 'Cache Result'},
           ],
           sortOrder: [{
-            field: 'tntNumber',
-            direction: 'asc'
+            field: 'dateSent',
+            direction: 'desc'
           }]
         },
         tableMined: {
           columns: [
             {name: 'tntNumber', title: this.$t('tnt'), sortField: 'tntNumber'},
             {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
-            {name: '__slot:transaction', title: 'transaction_hash', sortField: 'transaction_hash'},
-            {name: '__slot:contract', title: 'contract_address', sortField: 'contract_address'},
+            {name: '__slot:transaction', title: 'Transaction Hash', sortField: 'transactionHash'},
+            {name: '__slot:contract', title: 'Contract Address', sortField: 'contractAddress'},
           ],
           sortOrder: [{
-            field: 'tntNumber',
-            direction: 'asc'
+            field: 'dateSent',
+            direction: 'desc'
           }]
         },
       }

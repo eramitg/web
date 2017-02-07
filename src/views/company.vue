@@ -2,9 +2,7 @@
   <div class="tile is-ancestor">
     <div class="tile is-parent is-12">
       <article class="tile is-child box">
-        <h1 class="title">
-          Company
-        </h1>
+        <h1 class="title">Company</h1>
         <hr>
         <div v-for="item in json">
           <form-select
@@ -24,6 +22,27 @@
         </div>
         <button type="button" class="button is-primary" @click="save">Save</button>
         <textarea v-model="json"></textarea>
+
+        <form-select
+          :value="test.defaultTemperatureCategoryIndex"
+          @input="test.defaultTemperatureCategoryIndex = JSON.parse(arguments[0])"
+          label="Temperature Categories"
+          :options="tempCategories"
+          horizontal
+        />
+        <form-select
+          :value="test.canDoMultiSensorShipments"
+          @input="test.canDoMultiSensorShipments = JSON.parse(arguments[0])"
+          label="Multiple Shipments"
+          :options="[{label: 'Yes',value: true}, {label: 'No', value: false}]"
+          horizontal
+        />
+        <form-input
+          v-model="test.defaultMeasurementInterval"
+          label="Measurement Interval in Minutes"
+          type="number"
+          horizontal
+        />
       </article>
     </div>
   </div>
@@ -45,6 +64,30 @@
     data() {
       return {
         company: null,
+        test: {
+          "recipients": null,
+          "temperatureCategories": [
+            {
+              "label": "Temperature Ambient: 15-20",
+              "value": {
+                "name": "AMBIENT",
+                "tempHigh": 25,
+                "tempLow": 15
+              }
+            },
+            {
+              "label": "Temperature Cool: 2-8",
+              "value": {
+                "name": "Cool",
+                "tempHigh": 8,
+                "tempLow": 2
+              }
+            }
+          ],
+          "defaultTemperatureCategoryIndex": 0,
+          "defaultMeasurementInterval": 10,
+          "canDoMultiSensorShipments": false
+        }
       }
     },
     computed: {
@@ -59,6 +102,18 @@
         set(newValue) {
           this.company.info = window.btoa(newValue);
         }
+      },
+      selectedTempCat() {
+        this.test.defaultTemperatureCategoryIndex
+        return this.test.defaultTemperatureCategoryIndex ?
+          this.test.temperatureCategories[this.test.defaultTemperatureCategoryIndex]
+          : null;
+      },
+      tempCategories() {
+        return this.test.temperatureCategories.map((item, idx) => ({
+          label: item.label,
+          value: idx
+        }))
       }
     },
     methods: {
