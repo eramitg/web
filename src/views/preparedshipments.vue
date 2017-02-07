@@ -73,14 +73,15 @@ export default {
       table: {
         columns: [
           {name: 'tntNumber', title: this.$t('tnt'), sortField: 'tnt_number'},
-          {name: 'receiverCompany.name', title: this.$t('rcv_comp')},
-          {name: 'tempCategoryCategory.name', title: 'Temperatures'},
-          {name: 'CreatedAt', title: 'Created', callback: 'formatDate'},
+          {name: 'senderCompanyName', title: this.$t('send_comp'), sortField: 'senderCompanyName'},
+          {name: 'receiverCompanyName', title: this.$t('rcv_comp'), sortField: 'receiverCompanyName'},
+          {name: 'temperatureCategoryDescription', title: 'Temperatures', sortField: 'temperatureCategoryDescription'},
+          {name: 'createdAt', title: 'Created', callback: 'formatDate', sortField: 'createdAt'},
           {name: '__slot:actions', title: 'Actions'},
         ],
         sortOrder: [{
-          field: 'tnt_number',
-          direction: 'asc'
+          field: 'createdAt',
+          direction: 'desc'
         }]
       },
     }
