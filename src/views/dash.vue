@@ -2,7 +2,7 @@
   <div v-if="parcels">
     <div class="tile is-ancestor" v-if="parcels">
       <div class="tile is-parent is-one-quarter">
-        <card class="tile is-child has-text-centered">
+        <card type="white" class="tile is-child has-text-centered">
           <p class="heading">{{$t('total_shipment')}}</p>
           <p class="title">{{this.totalParcels}}</p>
         </card>

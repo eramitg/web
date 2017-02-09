@@ -11,7 +11,10 @@
       Notification
     },
     props: {
-      type: String
+      type: {
+        type: String,
+        default: 'white'
+      },
     }
   }
 </script>
