@@ -4,23 +4,13 @@
     <div class="hero-head">
       <nav class="nav has-shadow">
         <div class="nav-left">
-          <a class="nav-item hero-brand is-hidden-tablet is-flex" href="/">
-            <div class="box">
-              <img src="../assets/images/logo.svg">
-            </div>
+          <a class="nav-item hero-brand is-flex" href="/">
+            <img src="../assets/images/modumlogo_rand.svg">
           </a>
         </div>
-        <div class="nav-center">
-            <a class="nav-item hero-brand is-hidden-mobile" href="/">
-              <div class="box">
-                <img src="../assets/images/logo.svg">
-              </div>
-            </a>
-        </div>
         <div class="nav-right is-flex">
-          <div class="nav-item">{{user.userName}}</div>
-          <div class="nav-item"><span class="tag is-info">{{user.companyName}}</span></div>
-          <div class="nav-item"><span class="tag is-warning">{{user.role}}</span></div>
+          <div class="nav-item"><i class="fa fa-user margin-right"></i>{{user.userName}}  /  {{user.companyName}}</div>
+          <div class="nav-item" v-if="user.role != 'USER'"><span class="tag is-warning">{{user.role}}</span></div>
           <a class="nav-item" @click="logout"><i class="fa fa-sign-out"></i> Sign out</a>
         </div>
       </nav>
@@ -68,3 +58,9 @@
     }
   }
 </script>
+
+<style lang="scss" scoped>
+  .margin-right {
+    margin-right: 10px;
+  }
+</style>
