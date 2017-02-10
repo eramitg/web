@@ -9,7 +9,6 @@
           </button>
         </h1>
         <hr>
-
         <data-table
           ref="vuetable"
           url="/api/users"
@@ -25,8 +24,8 @@
     </div>
 
     <modal :active="showModal" title="Create/Edit User" @close="closeModal" @submit="createUpdateUser" form>
-      <form-input v-model="form.username" label="Username" placeholder="Name" v-validate data-vv-rules="required" name="username" :err="errors.first('username')" />
-      <form-input v-if="form.id === null" v-model="form.password" label="Password" placeholder="Password" type="password" v-validate data-vv-rules="required" name="password" :err="errors.first('password')"/>
+      <form-input v-model="form.username" label="Username" placeholder="Name" v-validate="'required'" name="username" :err="errors.first('username')" />
+      <form-input v-if="form.id === null" v-model="form.password" label="Password" placeholder="Password" type="password" v-validate="'required'" name="password" :err="errors.first('password')"/>
       <form-select v-model="form.role" label="Role" :options="['USER', 'ADMIN']"/>
       <button slot="footer" type="submit" class="button is-primary" @click.prevent="createUpdateUser">Save changes</button>
       <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
@@ -74,7 +73,8 @@
     methods: {
       closeModal(){
         this.showModal = false;
-        this.resetForm();
+        // reset, when the modal is no longer visible, fix validation flickering
+        setTimeout(() => this.resetForm(), 60);
       },
       resetForm(){
         this.form = {
@@ -83,17 +83,22 @@
           password: '',
           role: 'USER'
         }
+        // validation has to first happen, so that it can be reset
+        setTimeout(() => this.errors.clear(), 10);
       },
-      createUpdateUser () {
-        this.$validator.validateAll();
-
-        if(this.formFields.valid()){
-          if (this.form.id === null) {
-            this.createUser();
-          } else {
-            this.updateUser();
+      async createUpdateUser () {
+        try {
+          let success = await this.$validator.validateAll();
+          if (success){
+            if (this.form.id === null) {
+              this.createUser();
+            } else {
+              this.updateUser();
+            }
+            this.closeModal();
           }
-          this.closeModal();
+        } catch (e) {
+          console.log(e);
         }
       },
       async createUser () {
@@ -101,7 +106,6 @@
           let {data} = await this.$http.post('/api/users', {...this.form});
           this.$refs.vuetable.reload();
           this.$store.dispatch('notify', {type: 'success', text: `Successfully created User ${data.name}`});
-          this.resetForm();
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
         }
@@ -111,7 +115,6 @@
           let {data} = await this.$http.put(`/api/users/${this.form.id}`, {...this.form});
           this.$refs.vuetable.reload();
           this.$store.dispatch('notify', {type: 'success', text: `Successfully updated User ${data.name}`});
-          this.resetForm();
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
         }

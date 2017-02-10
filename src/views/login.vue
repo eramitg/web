@@ -12,21 +12,18 @@
               <form-input
                 label="Username"
                 v-model="username"
-                icon="fa fa-user-circle"
-                v-validate
-                data-vv-rules="required"
                 name="username"
+                icon="fa fa-user-circle"
+                v-validate="'required'"
                 :err="errors.first('username')"
               />
-
               <form-input
                 label="Password"
                 type="password"
                 v-model="password"
-                icon="fa fa-lock"
-                v-validate
-                data-vv-rules="required"
                 name="password"
+                icon="fa fa-lock"
+                v-validate="'required'"
                 :err="errors.first('password')"
               />
               <hr>
