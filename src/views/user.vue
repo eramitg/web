@@ -34,6 +34,7 @@
 </template>
 
 <script>
+  import Vue from 'vue';
   import DataTable from '../components/DataTable';
 
   import FormInput from '../components/FormInput.vue';
@@ -74,7 +75,7 @@
       closeModal(){
         this.showModal = false;
         // reset, when the modal is no longer visible, fix validation flickering
-        setTimeout(() => this.resetForm(), 60);
+        Vue.nextTick(() => this.resetForm())
       },
       resetForm(){
         this.form = {
@@ -84,7 +85,7 @@
           role: 'USER'
         }
         // validation has to first happen, so that it can be reset
-        setTimeout(() => this.errors.clear(), 10);
+        Vue.nextTick(() => this.errors.clear())
       },
       async createUpdateUser () {
         try {

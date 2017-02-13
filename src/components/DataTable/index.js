@@ -1,7 +1,9 @@
+import Vue from 'vue';
 import Vuetable from 'vuetable-2/src/components/Vuetable.vue';
 import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo';
 import FilterBar from './FilterBar.vue';
 import Pagination from './Pagination.vue';
+import FormSelect from '../FormSelect.vue';
 import moment from 'moment';
 
 export default {
@@ -9,7 +11,8 @@ export default {
     Vuetable,
     VuetablePaginationInfo,
     FilterBar,
-    Pagination
+    Pagination,
+    FormSelect
   },
   render(h) {
     return h('div', [
@@ -21,7 +24,26 @@ export default {
         ]),
         h('div', {class: 'level-right'}, [
           h('div', {class: 'level-item'}, [
-            h('vuetable-pagination-info', {ref: 'paginationInfo'})
+            h('vuetable-pagination-info', {ref: 'paginationInfo'}),
+          ]),
+          h('div', {class: 'level-item'}, [
+            h('form-select', {
+              props: {
+                options: [
+                  {label: "10", value: 10},
+                  {label: "25", value: 25},
+                  {label: "50", value: 50},
+                  {label: "100", value: 100}
+                ],
+                value: this.numberOfItems
+              },
+              on: {
+                input: value => {
+                  this.numberOfItems = JSON.parse(value)
+                  Vue.nextTick(() => this.reload())
+                }
+              }
+            })
           ])
         ])
       ]),
@@ -29,6 +51,7 @@ export default {
         props: {
           'api-url': this.url,
           css: this.css,
+          'per-page': this.numberOfItems,
           fields: this.fields,
           sortOrder: this.sortOrder,
           paginationPath: this.paginationPath,
@@ -42,6 +65,11 @@ export default {
       }),
       h('pagination', {ref: 'pagination', on: {'vuetable-pagination:change-page': this.onChangePage}})
     ])
+  },
+  data() {
+    return {
+      numberOfItems: 25
+    }
   },
   props: {
     url: {
