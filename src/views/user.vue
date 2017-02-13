@@ -9,7 +9,6 @@
           </button>
         </h1>
         <hr>
-        {{errors}}
         <data-table
           ref="vuetable"
           url="/api/users"
@@ -28,6 +27,7 @@
       <form-input v-model="form.username" label="Username" placeholder="Name" v-validate="'required'" name="username" :err="errors.first('username')" />
       <form-input v-if="form.id === null" v-model="form.password" label="Password" placeholder="Password" type="password" v-validate="'required'" name="password" :err="errors.first('password')"/>
       <form-select v-model="form.role" label="Role" :options="['USER', 'ADMIN']"/>
+      <form-select v-if="$store.getters.user.role == 'SUPER'" :value="form.companyId" @input="form.companyId = JSON.parse(arguments[0])" label="Company" :options="companyOptions"/>
       <button slot="footer" type="submit" class="button is-primary" @click.prevent="createUpdateUser">Save changes</button>
       <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
     </modal>
@@ -41,6 +41,7 @@
   import FormInput from '../components/FormInput.vue';
   import FormSelect from '../components/FormSelect.vue';
   import Modal from '../components/Modal.vue';
+  import store from '../store';
 
   export default {
     components: {
@@ -49,27 +50,50 @@
       FormInput,
       FormSelect
     },
+    async beforeRouteEnter(to, from, next) {
+      try {
+        if (store.getters.user.role == 'SUPER') {
+          let {data} = await Vue.http.get("/api/v1/company/companies");
+          next(vm => {
+            vm.$data.companies = data;
+          })
+        } else {
+          next()
+        }
+      } catch(e) {
+        next()
+      }
+    },
     data(){
       return {
         showModal: false,
+        companies: null,
         form: {
           id: null,
           username: '',
           password: '',
-          role: 'USER'
+          role: 'USER',
+          companyId: 0
         },
         table: {
           columns: [
             {name: 'userName', title: 'Name', sortField: 'userName'},
             {name: 'userRole', title: 'Role', sortField: 'userRole'},
             {name: 'companyName', title: 'Company', sortField: 'companyName'},
-            {name: '__slot:actions', title: 'Actions'},
+            {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'},
           ],
           sortOrder: [{
             field: 'userName',
             direction: 'asc'
           }]
         }
+      }
+    },
+    computed: {
+      companyOptions() {
+        return this.companies ?
+          this.companies.map(item => ({label: item.name, value: item.ID}))
+          : [];
       }
     },
     methods: {
@@ -83,7 +107,8 @@
           id: null,
           username: '',
           password: '',
-          role: 'USER'
+          role: 'USER',
+          companyId: 0
         }
         // validation has to first happen, so that it can be reset
         Vue.nextTick(() => this.errors.clear())
@@ -112,7 +137,12 @@
       },
       async createUser () {
         try{
-          let {data} = await this.$http.post('/api/users', {...this.form});
+          let {data} = await this.$http.post('api/users', {
+            username: this.form.username,
+            password: this.form.password,
+            role: this.form.role,
+            companyId: this.form.companyId
+          });
           this.$refs.vuetable.reload();
           this.$store.dispatch('notify', {type: 'success', text: `Successfully created User ${data.name}`});
         } catch (e) {
@@ -137,6 +167,7 @@
             this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted User ${data.name}`})
           } catch(e){
             // Notification for exception is created globally
+            this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
           }
         }
       },

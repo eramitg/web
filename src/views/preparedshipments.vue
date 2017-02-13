@@ -77,7 +77,7 @@ export default {
           {name: 'receiverCompanyName', title: this.$t('rcv_comp'), sortField: 'receiverCompanyName'},
           {name: 'temperatureCategoryDescription', title: 'Temperatures', sortField: 'temperatureCategoryDescription'},
           {name: 'createdAt', title: 'Created', callback: 'formatDate', sortField: 'createdAt'},
-          {name: '__slot:actions', title: 'Actions'},
+          {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'},
         ],
         sortOrder: [{
           field: 'createdAt',

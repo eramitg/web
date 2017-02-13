@@ -74,7 +74,7 @@
             {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
             {name: '__slot:transaction', title: 'Transaction Hash', sortField: 'transactionHash'},
             {name: '__slot:contract', title: 'Contract Address', sortField: 'contractAddress'},
-            {name: '__slot:cache', title: 'Cache Result'},
+            {name: '__slot:cache', title: 'Cache Result', dataClass: 'has-text-centered'},
           ],
           sortOrder: [{
             field: 'dateSent',
