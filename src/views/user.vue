@@ -9,6 +9,7 @@
           </button>
         </h1>
         <hr>
+        {{errors}}
         <data-table
           ref="vuetable"
           url="/api/users"
@@ -89,7 +90,14 @@
       },
       async createUpdateUser () {
         try {
-          let success = await this.$validator.validateAll();
+          let success = false;
+          if(this.form.id == null) {
+            success = await this.$validator.validateAll();
+          } else {
+            success = await this.$validator.validateAll({
+              username: this.form.username
+            })
+          }
           if (success){
             if (this.form.id === null) {
               this.createUser();

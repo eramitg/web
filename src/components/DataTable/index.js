@@ -68,7 +68,7 @@ export default {
   },
   data() {
     return {
-      numberOfItems: 25
+      numberOfItems: 10
     }
   },
   props: {
