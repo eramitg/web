@@ -27,7 +27,7 @@
       <form-input v-model="form.username" label="Username" placeholder="Name" v-validate="'required'" name="username" :err="errors.first('username')" />
       <form-input v-if="form.id === null" v-model="form.password" label="Password" placeholder="Password" type="password" v-validate="'required'" name="password" :err="errors.first('password')"/>
       <form-select v-model="form.role" label="Role" :options="['USER', 'ADMIN']"/>
-      <form-select v-if="$store.getters.user.role == 'SUPER'" :value="form.companyId" @input="form.companyId = JSON.parse(arguments[0])" label="Company" :options="companyOptions"/>
+      <form-select v-if="$store.getters.user.role == 'SUPER'" v-model.number="form.companyId" label="Company" :options="companyOptions"/>
       <button slot="footer" type="submit" class="button is-primary" @click.prevent="createUpdateUser">Save changes</button>
       <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
     </modal>
@@ -171,10 +171,11 @@
           }
         }
       },
-      editUser({userID, userName, userRole}) {
+      editUser({userID, userName, userRole, companyID}) {
         this.form.id = userID;
         this.form.username = userName;
         this.form.role = userRole;
+        this.form.companyId = companyID;
         this.showModal = true;
       }
     }

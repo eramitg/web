@@ -4,45 +4,48 @@
       <article class="tile is-child box">
         <h1 class="title">Company</h1>
         <hr>
-        <div v-for="item in json">
-          <form-select
-            v-if="item.type == 'select'"
-            v-model="item.value"
-            :label="item.label"
-            :options="item.options"
-            horizontal
-          />
-          <form-input
-            v-else
-            v-model="item.value"
-            :label="item.label"
-            :type="item.type"
-            horizontal
-          />
-        </div>
-        <button type="button" class="button is-primary" @click="save">Save</button>
-        <textarea v-model="json"></textarea>
+        <data-table
+          v-if="$store.getters.user.role == 'SUPER'"
+          ref="vuetable"
+          url="/api/v1/company/companies"
+          :fields="table.columns"
+          :sortOrder="table.sortOrder"
+        >
+          <template slot="actions" scope="props">
+            <button class="button is-primary" @click="editUser(props.rowData)"><i class="fa fa-pencil"></button>
+            <button class="button is-danger" @click="deleteUser(props.rowData)"><i class="fa fa-trash"></button>
+          </template>
+        </data-table>
 
-        <form-select
-          :value="test.defaultTemperatureCategoryIndex"
-          @input="test.defaultTemperatureCategoryIndex = JSON.parse(arguments[0])"
-          label="Temperature Categories"
-          :options="tempCategories"
-          horizontal
-        />
-        <form-select
-          :value="test.canDoMultiSensorShipments"
-          @input="test.canDoMultiSensorShipments = JSON.parse(arguments[0])"
-          label="Multiple Shipments"
-          :options="[{label: 'Yes',value: true}, {label: 'No', value: false}]"
-          horizontal
-        />
-        <form-input
-          v-model="test.defaultMeasurementInterval"
-          label="Measurement Interval in Minutes"
-          type="number"
-          horizontal
-        />
+        <div v-else>
+          <form-select
+            v-model.number="test.defaultTemperatureCategoryIndex"
+            label="Temperature Categories"
+            :options="tempCategories"
+            horizontal
+          />
+          <div class="control is-horizontal">
+            <div class="control-label">
+              <label class="label">Multiple Shipments</label>
+            </div>
+            <p class="control">
+              <label class="radio">
+                <input v-model="test.canDoMultiSensorShipments" type="radio" :value="true">Yes
+              </label>
+              <label class="radio">
+                <input v-model="test.canDoMultiSensorShipments" type="radio" :value="false">No
+              </label>
+            </p>
+          </div>
+
+          <form-input
+            v-model.number="test.defaultMeasurementInterval"
+            label="Measurement Interval in Minutes"
+            type="number"
+            horizontal
+          />
+          <button type="button" class="button is-primary" @click="save">Save</button>
+        </div>
       </article>
     </div>
   </div>
@@ -50,12 +53,14 @@
 
 <script>
   import axios from 'axios';
+  import DataTable from '../components/DataTable';
   import FormInput from '../components/FormInput.vue';
   import FormSelect from '../components/FormSelect.vue';
   export default {
     components: {
       FormInput,
-      FormSelect
+      FormSelect,
+      DataTable
     },
     async beforeRouteEnter(to, from, next) {
       let {data} = await axios.get("/api/v1/company/admin/company");
@@ -87,6 +92,16 @@
           "defaultTemperatureCategoryIndex": 0,
           "defaultMeasurementInterval": 10,
           "canDoMultiSensorShipments": false
+        },
+        table: {
+          columns: [
+            {name: 'name', title: 'Name', sortField: 'name'},
+            {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'},
+          ],
+          sortOrder: [{
+            field: 'name',
+            direction: 'asc'
+          }]
         }
       }
     },
