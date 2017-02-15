@@ -23,7 +23,7 @@
       options: {
         type: Array,
         default: () => [],
-        required: true,
+        required: true
       },
       label: {
         type: String,
@@ -39,12 +39,12 @@
       }
     },
     computed: {
-      finalOptions() {
-        return this.options.map(item => (typeof item == "string" ? {label: item, value: item} : item))
+      finalOptions () {
+        return this.options.map(item => (typeof item === 'string' ? {label: item, value: item} : item))
       }
     },
-    methods:{
-      updateValue(event){
+    methods: {
+      updateValue (event) {
         this.$emit('input', event.target.value)
       }
     }

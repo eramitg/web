@@ -18,11 +18,11 @@
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue from 'vue'
 
-import DataTable from '../../components/DataTable';
-import DetailRow from './DetailRow';
-import Status from './Status';
+import DataTable from '../../components/DataTable'
+import DetailRow from './DetailRow'
+import Status from './Status'
 
 Vue.component('shipment-detail-row', DetailRow)
 Vue.component('shipment-status', Status)
@@ -31,7 +31,7 @@ export default {
   components: {
     DataTable
   },
-  data() {
+  data () {
     return {
       table: {
         columns: [
@@ -46,7 +46,7 @@ export default {
           field: 'dateReceived',
           direction: 'desc'
         }]
-      },
+      }
     }
   }
 }

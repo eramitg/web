@@ -35,13 +35,13 @@
 </template>
 
 <script>
-  import Vue from 'vue';
-  import DataTable from '../components/DataTable';
+  import Vue from 'vue'
+  import DataTable from '../components/DataTable'
 
-  import FormInput from '../components/FormInput.vue';
-  import FormSelect from '../components/FormSelect.vue';
-  import Modal from '../components/Modal.vue';
-  import store from '../store';
+  import FormInput from '../components/FormInput.vue'
+  import FormSelect from '../components/FormSelect.vue'
+  import Modal from '../components/Modal.vue'
+  import store from '../store'
 
   export default {
     components: {
@@ -50,21 +50,21 @@
       FormInput,
       FormSelect
     },
-    async beforeRouteEnter(to, from, next) {
+    async beforeRouteEnter (to, from, next) {
       try {
-        if (store.getters.user.role == 'SUPER') {
-          let {data} = await Vue.http.get("/api/v1/company/companies");
+        if (store.getters.user.role === 'SUPER') {
+          let {data} = await Vue.http.get('/api/v1/company/companies')
           next(vm => {
-            vm.$data.companies = data;
+            vm.$data.companies = data
           })
         } else {
           next()
         }
-      } catch(e) {
+      } catch (e) {
         next()
       }
     },
-    data(){
+    data () {
       return {
         showModal: false,
         companies: null,
@@ -80,7 +80,7 @@
             {name: 'userName', title: 'Name', sortField: 'userName'},
             {name: 'userRole', title: 'Role', sortField: 'userRole'},
             {name: 'companyName', title: 'Company', sortField: 'companyName'},
-            {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'},
+            {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'}
           ],
           sortOrder: [{
             field: 'userName',
@@ -90,19 +90,19 @@
       }
     },
     computed: {
-      companyOptions() {
-        return this.companies ?
-          this.companies.map(item => ({label: item.name, value: item.ID}))
-          : [];
+      companyOptions () {
+        return this.companies
+        ? this.companies.map(item => ({label: item.name, value: item.ID}))
+        : []
       }
     },
     methods: {
-      closeModal(){
-        this.showModal = false;
+      closeModal () {
+        this.showModal = false
         // reset, when the modal is no longer visible, fix validation flickering
         Vue.nextTick(() => this.resetForm())
       },
-      resetForm(){
+      resetForm () {
         this.form = {
           id: null,
           username: '',
@@ -115,68 +115,68 @@
       },
       async createUpdateUser () {
         try {
-          let success = false;
-          if(this.form.id == null) {
-            success = await this.$validator.validateAll();
+          let success = false
+          if (this.form.id == null) {
+            success = await this.$validator.validateAll()
           } else {
             success = await this.$validator.validateAll({
               username: this.form.username
             })
           }
-          if (success){
+          if (success) {
             if (this.form.id === null) {
-              this.createUser();
+              this.createUser()
             } else {
-              this.updateUser();
+              this.updateUser()
             }
-            this.closeModal();
+            this.closeModal()
           }
         } catch (e) {
-          console.log(e);
+          console.log(e)
         }
       },
       async createUser () {
-        try{
+        try {
           let {data} = await this.$http.post('api/users', {
             username: this.form.username,
             password: this.form.password,
             role: this.form.role,
             companyId: this.form.companyId
-          });
-          this.$refs.vuetable.reload();
-          this.$store.dispatch('notify', {type: 'success', text: `Successfully created User ${data.name}`});
+          })
+          this.$refs.vuetable.reload()
+          this.$store.dispatch('notify', {type: 'success', text: `Successfully created User ${data.name}`})
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
         }
       },
       async updateUser () {
         try {
-          let {data} = await this.$http.put(`/api/users/${this.form.id}`, {...this.form});
-          this.$refs.vuetable.reload();
-          this.$store.dispatch('notify', {type: 'success', text: `Successfully updated User ${data.name}`});
+          let {data} = await this.$http.put(`/api/users/${this.form.id}`, {...this.form})
+          this.$refs.vuetable.reload()
+          this.$store.dispatch('notify', {type: 'success', text: `Successfully updated User ${data.name}`})
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
         }
       },
       async deleteUser ({userID, userName}) {
         if (userID > 0) {
-          try{
-            await this.$store.dispatch('confirm');
+          try {
+            await this.$store.dispatch('confirm')
             let {data} = await this.$http.delete(`/api/users/${userID}`)
-            this.$refs.vuetable.reload();
+            this.$refs.vuetable.reload()
             this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted User ${data.name}`})
-          } catch(e){
+          } catch (e) {
             // Notification for exception is created globally
             this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
           }
         }
       },
-      editUser({userID, userName, userRole, companyID}) {
-        this.form.id = userID;
-        this.form.username = userName;
-        this.form.role = userRole;
-        this.form.companyId = companyID;
-        this.showModal = true;
+      editUser ({userID, userName, userRole, companyID}) {
+        this.form.id = userID
+        this.form.username = userName
+        this.form.role = userRole
+        this.form.companyId = companyID
+        this.showModal = true
       }
     }
   }

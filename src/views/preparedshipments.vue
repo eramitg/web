@@ -32,12 +32,12 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import DataTable from '../components/DataTable';
+import Vue from 'vue'
+import DataTable from '../components/DataTable'
 
-import FormInput from '../components/FormInput.vue';
-import FormSelect from '../components/FormSelect.vue';
-import Modal from '../components/Modal.vue';
+import FormInput from '../components/FormInput.vue'
+import FormSelect from '../components/FormSelect.vue'
+import Modal from '../components/Modal.vue'
 
 export default {
   components: {
@@ -46,19 +46,18 @@ export default {
     FormInput,
     FormSelect
   },
-  async beforeRouteEnter(to, from, next) {
+  async beforeRouteEnter (to, from, next) {
     try {
-      let {data} = await Vue.http.get("/api/v1/company/defaults");
+      let {data} = await Vue.http.get('/api/v1/company/defaults')
       next(vm => {
-        vm.$data.temperatureCategories = data.temperatureCategories;
-        vm.$data.recipients = data.recipients;
-        //vm.resetForm();
+        vm.$data.temperatureCategories = data.temperatureCategories
+        vm.$data.recipients = data.recipients
       })
-    } catch(e) {
+    } catch (e) {
       next()
     }
   },
-  data() {
+  data () {
     return {
       showModal: false,
       temperatureCategories: [],
@@ -77,37 +76,37 @@ export default {
           {name: 'receiverCompanyName', title: this.$t('rcv_comp'), sortField: 'receiverCompanyName'},
           {name: 'temperatureCategoryDescription', title: 'Temperatures', sortField: 'temperatureCategoryDescription'},
           {name: 'createdAt', title: 'Created', callback: 'formatDate', sortField: 'createdAt'},
-          {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'},
+          {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'}
         ],
         sortOrder: [{
           field: 'createdAt',
           direction: 'desc'
         }]
-      },
+      }
     }
   },
   computed: {
-    tempOptions() {
+    tempOptions () {
       return this.temperatureCategories.map((item, idx) => ({
         label: item.label,
         value: idx
-      }));
+      }))
     },
-    selectedTempCatObj() {
-      return this.selectedTempCat < this.temperatureCategories.length ?
-        {
-          name: this.temperatureCategories[this.selectedTempCat].value.name,
-          minTemp: this.temperatureCategories[this.selectedTempCat].value.tempLow,
-          maxTemp: this.temperatureCategories[this.selectedTempCat].value.tempHigh
-        }
-        : null
+    selectedTempCatObj () {
+      return this.selectedTempCat < this.temperatureCategories.length
+      ? {
+        name: this.temperatureCategories[this.selectedTempCat].value.name,
+        minTemp: this.temperatureCategories[this.selectedTempCat].value.tempLow,
+        maxTemp: this.temperatureCategories[this.selectedTempCat].value.tempHigh
+      }
+      : null
     }
   },
   methods: {
-    closeModal(){
-      this.showModal = false;
+    closeModal () {
+      this.showModal = false
     },
-    resetForm(){
+    resetForm () {
       this.form = {
         id: null,
         receiverID: null,
@@ -115,28 +114,28 @@ export default {
         tempCategory: null
       }
     },
-    createUpdateShipment() {
-      this.$validator.validateAll();
+    createUpdateShipment () {
+      this.$validator.validateAll()
 
-      if(this.formFields.valid()){
+      if (this.formFields.valid()) {
         if (this.form.id === null) {
-          this.createShipment();
+          this.createShipment()
         } else {
-          this.updateShipment();
+          this.updateShipment()
         }
-        this.closeModal();
+        this.closeModal()
       }
     },
     async createShipment () {
-      try{
+      try {
         let {data} = await this.$http.post('/api/preparedshipments', {
           ...this.form,
           tempCategory: this.selectedTempCatObj
-        });
-        this.$refs.vuetable.reload();
-        console.log(data);
-        this.$store.dispatch('notify', {type: 'success', text: `Successfully prepared Shipment ${data.tntNumber}`});
-        this.resetForm();
+        })
+        this.$refs.vuetable.reload()
+        console.log(data)
+        this.$store.dispatch('notify', {type: 'success', text: `Successfully prepared Shipment ${data.tntNumber}`})
+        this.resetForm()
       } catch (e) {
         this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
       }
@@ -146,36 +145,36 @@ export default {
         let {data} = await this.$http.put(`/api/preparedshipments/${this.form.id}`, {
           ...this.form,
           tempCategory: this.selectedTempCatObj
-        });
-        this.$refs.vuetable.reload();
-        this.$store.dispatch('notify', {type: 'success', text: `Successfully updated Shipment ${data.tntNumber}`});
-        this.resetForm();
+        })
+        this.$refs.vuetable.reload()
+        this.$store.dispatch('notify', {type: 'success', text: `Successfully updated Shipment ${data.tntNumber}`})
+        this.resetForm()
       } catch (e) {
         this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
       }
     },
     async deleteShipment ({ID}) {
       if (ID > 0) {
-        try{
-          await this.$store.dispatch('confirm');
+        try {
+          await this.$store.dispatch('confirm')
           let {data} = await this.$http.delete(`/api/preparedshipments/${ID}`)
-          this.$refs.vuetable.reload();
+          this.$refs.vuetable.reload()
           this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted Shipment ${data.tntNumber}`})
-        } catch(e){
+        } catch (e) {
           // Notification for exception is created globally
         }
       }
     },
-    editShipment({ID, receiverCompanyID, tntNumber, tempCategory}) {
-      this.form.id = ID;
-      this.form.receiverID = receiverCompanyID;
-      this.form.tntNumber = tntNumber;
+    editShipment ({ID, receiverCompanyID, tntNumber, tempCategory}) {
+      this.form.id = ID
+      this.form.receiverID = receiverCompanyID
+      this.form.tntNumber = tntNumber
       this.form.tempCategory = {
         name: tempCategory.name,
         minTemp: tempCategory.minTemp,
         maxTemp: tempCategory.maxTemp
       }
-      this.showModal = true;
+      this.showModal = true
     }
   }
 }

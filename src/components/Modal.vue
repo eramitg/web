@@ -37,12 +37,12 @@
       }
     },
     methods: {
-      close: function (event){
+      close: function (event) {
         this.$emit('close', false)
       },
-      submit(event){
+      submit (event) {
         this.$emit('submit')
       }
-    },
+    }
   }
 </script>

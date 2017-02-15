@@ -30,19 +30,19 @@
   export default {
     computed: {
       deferred () {
-        return this.$store.state.confirm.deferred;
+        return this.$store.state.confirm.deferred
       }
     },
     methods: {
-      onConfirm(){
-        if(this.deferred){
-          this.deferred.resolve();
+      onConfirm () {
+        if (this.deferred) {
+          this.deferred.resolve()
         }
         this.$store.commit('setDeferred', null)
       },
-      onCancel(){
-        if(this.deferred){
-          this.deferred.reject();
+      onCancel () {
+        if (this.deferred) {
+          this.deferred.reject()
         }
         this.$store.commit('setDeferred', null)
       }

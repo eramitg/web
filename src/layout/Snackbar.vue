@@ -12,20 +12,20 @@
 </template>
 
 <script>
-  import Notification from '../components/Notification.vue';
+  import Notification from '../components/Notification.vue'
 
   export default {
     components: {
       Notification
     },
     computed: {
-      list(){
-        return this.$store.state.snackbar.list;
+      list () {
+        return this.$store.state.snackbar.list
       }
     },
     methods: {
-      remove: function(notification){
-        this.$store.commit('removeNotification', notification);
+      remove (notification) {
+        this.$store.commit('removeNotification', notification)
       }
     }
   }

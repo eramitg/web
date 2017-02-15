@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import Notification from './Notification.vue';
+  import Notification from './Notification.vue'
   export default{
     components: {
       Notification
@@ -14,7 +14,7 @@
       type: {
         type: String,
         default: 'white'
-      },
+      }
     }
   }
 </script>

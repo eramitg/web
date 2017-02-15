@@ -1,10 +1,10 @@
-import Vue from 'vue';
-import Vuetable from 'vuetable-2/src/components/Vuetable.vue';
-import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo';
-import FilterBar from './FilterBar.vue';
-import Pagination from './Pagination.vue';
-import FormSelect from '../FormSelect.vue';
-import moment from 'moment';
+import Vue from 'vue'
+import Vuetable from 'vuetable-2/src/components/Vuetable.vue'
+import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo'
+import FilterBar from './FilterBar.vue'
+import Pagination from './Pagination.vue'
+import FormSelect from '../FormSelect.vue'
+import moment from 'moment'
 
 export default {
   components: {
@@ -14,7 +14,7 @@ export default {
     Pagination,
     FormSelect
   },
-  render(h) {
+  render (h) {
     return h('div', [
       h('nav', {class: 'level is-marginless'}, [
         h('div', {class: 'level-left'}, [
@@ -24,16 +24,16 @@ export default {
         ]),
         h('div', {class: 'level-right'}, [
           h('div', {class: 'level-item'}, [
-            h('vuetable-pagination-info', {ref: 'paginationInfo'}),
+            h('vuetable-pagination-info', {ref: 'paginationInfo'})
           ]),
           h('div', {class: 'level-item'}, [
             h('form-select', {
               props: {
                 options: [
-                  {label: "10", value: 10},
-                  {label: "25", value: 25},
-                  {label: "50", value: 50},
-                  {label: "100", value: 100}
+                  {label: '10', value: 10},
+                  {label: '25', value: 25},
+                  {label: '50', value: 50},
+                  {label: '100', value: 100}
                 ],
                 value: this.numberOfItems
               },
@@ -47,7 +47,8 @@ export default {
           ])
         ])
       ]),
-      h('vuetable', {ref: 'vuetable', scopedSlots: this.$scopedSlots,
+      h('vuetable', {ref: 'vuetable',
+        scopedSlots: this.$scopedSlots,
         props: {
           'api-url': this.url,
           css: this.css,
@@ -66,7 +67,7 @@ export default {
       h('pagination', {ref: 'pagination', on: {'vuetable-pagination:change-page': this.onChangePage}})
     ])
   },
-  data() {
+  data () {
     return {
       numberOfItems: 10
     }
@@ -82,7 +83,7 @@ export default {
       required: true
     },
     sortOrder: {
-      type: Array,
+      type: Array
     },
     css: {
       type: Object,
@@ -132,11 +133,11 @@ export default {
     onChangePage (page) {
       this.$refs.vuetable.changePage(page)
     },
-    reload() {
+    reload () {
       this.$refs.vuetable.reload()
     },
     onCellClicked (data, field, event) {
-      if(this.rowComponent){
+      if (this.rowComponent) {
         this.$refs.vuetable.toggleDetailRow(data.id)
       }
     },
@@ -144,6 +145,6 @@ export default {
       return (value == null)
         ? ''
         : moment(value).format(fmt)
-    },
+    }
   }
 }

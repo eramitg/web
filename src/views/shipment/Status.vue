@@ -16,8 +16,8 @@ export default {
     }
   },
   computed: {
-    statusCode(){
-      return !this.rowData.isFailed && !this.rowData.isSuccess ? -1 : this.rowData.nrFailures;
+    statusCode () {
+      return !this.rowData.isFailed && !this.rowData.isSuccess ? -1 : this.rowData.nrFailures
     }
   }
 }

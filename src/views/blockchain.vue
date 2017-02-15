@@ -60,13 +60,13 @@
 </template>
 
 <script>
-  import DataTable from '../components/DataTable';
+  import DataTable from '../components/DataTable'
 
   export default {
     components: {
       DataTable
     },
-    data(){
+    data () {
       return {
         tableMissing: {
           columns: [
@@ -74,7 +74,7 @@
             {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
             {name: '__slot:transaction', title: 'Transaction Hash', sortField: 'transactionHash'},
             {name: '__slot:contract', title: 'Contract Address', sortField: 'contractAddress'},
-            {name: '__slot:cache', title: 'Cache Result', dataClass: 'has-text-centered'},
+            {name: '__slot:cache', title: 'Cache Result', dataClass: 'has-text-centered'}
           ],
           sortOrder: [{
             field: 'dateSent',
@@ -86,22 +86,22 @@
             {name: 'tntNumber', title: this.$t('tnt'), sortField: 'tntNumber'},
             {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
             {name: '__slot:transaction', title: 'Transaction Hash', sortField: 'transactionHash'},
-            {name: '__slot:contract', title: 'Contract Address', sortField: 'contractAddress'},
+            {name: '__slot:contract', title: 'Contract Address', sortField: 'contractAddress'}
           ],
           sortOrder: [{
             field: 'dateSent',
             direction: 'desc'
           }]
-        },
+        }
       }
     },
     methods: {
-      async contract(pid, gid, type) {
+      async contract (pid, gid, type) {
         try {
-          let {data} = await this.$http.get(`/api/v1/contract/type/${pid}/${gid}/${type}`);
-          this.$store.dispatch('notify', {type: 'success', timeout: false, text: data});
-        } catch(e) {
-          this.$store.dispatch('notify', {type: 'danger', text: e.data.message});
+          let {data} = await this.$http.get(`/api/v1/contract/type/${pid}/${gid}/${type}`)
+          this.$store.dispatch('notify', {type: 'success', timeout: false, text: data})
+        } catch (e) {
+          this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
         }
       }
     }

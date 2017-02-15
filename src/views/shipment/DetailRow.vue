@@ -57,16 +57,16 @@
 </template>
 
 <script>
-import axios from 'axios';
-import moment from 'moment';
-import Chart from '../../components/Chart.vue';
+import axios from 'axios'
+import moment from 'moment'
+import Chart from '../../components/Chart.vue'
 export default {
   components: {
     Chart
   },
-  async mounted() {
-    let {data} = await axios.get(`/api/v2/parcels/details/${this.rowData.id}`);
-    this.chart.data = this.createChartData(data);
+  async mounted () {
+    let {data} = await axios.get(`/api/v2/parcels/details/${this.rowData.id}`)
+    this.chart.data = this.createChartData(data)
   },
   props: {
     rowData: {
@@ -77,7 +77,7 @@ export default {
       type: Number
     }
   },
-  data() {
+  data () {
     return {
       chart: {
         data: null,
@@ -107,22 +107,22 @@ export default {
                   labelString: '°C'
                 }
               }
-            ],
+            ]
           },
           legend: {
             display: false
           },
           horizontalLine: [
-            { y: 25, style: "#FFA100" },
-            { y: 15, style: "#25A9E1" }
+            { y: 25, style: '#FFA100' },
+            { y: 15, style: '#25A9E1' }
           ],
           pan: {
-              enabled: false,
-              mode: 'xy'
+            enabled: false,
+            mode: 'xy'
           },
           zoom: {
-              enabled: false,
-              mode: 'xy'
+            enabled: false,
+            mode: 'xy'
           }
         }
       }
@@ -132,34 +132,36 @@ export default {
     onClick (event) {
       console.log('my-detail-row: on-click', event.target)
     },
-    createChartData(data) {
-      return data ? {
+    createChartData (data) {
+      return data
+      ? {
         labels: data.map(item => item.timestamp),
         datasets: [{
           data: data.map(item => item.temperature),
           label: 'Temperature',
           fill: false,
-          backgroundColor: "rgba(75,192,192,0.4)",
-          borderColor: "rgba(75,192,192,1)",
+          backgroundColor: 'rgba(75,192,192,0.4)',
+          borderColor: 'rgba(75,192,192,1)',
           borderCapStyle: 'butt',
           borderDash: [],
           borderDashOffset: 0.0,
           borderJoinStyle: 'miter',
-          pointBorderColor: "rgba(75,192,192,1)",
-          pointBackgroundColor: "#fff",
+          pointBorderColor: 'rgba(75,192,192,1)',
+          pointBackgroundColor: '#fff',
           pointBorderWidth: 1,
           pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgba(75,192,192,1)",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
+          pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+          pointHoverBorderColor: 'rgba(220,220,220,1)',
           pointHoverBorderWidth: 2,
           pointRadius: 2,
-          pointHitRadius: 2,
+          pointHitRadius: 2
         }]
-      } : {};
+      }
+      : {}
     }
   },
   filters: {
-    formatDate: function (value) {
+    formatDate (value) {
       return moment(value).format('DD.MM.YYYY, HH:mm')
     }
   }

@@ -52,51 +52,53 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import DataTable from '../components/DataTable';
-  import FormInput from '../components/FormInput.vue';
-  import FormSelect from '../components/FormSelect.vue';
+  import axios from 'axios'
+  import DataTable from '../components/DataTable'
+  import FormInput from '../components/FormInput.vue'
+  import FormSelect from '../components/FormSelect.vue'
   export default {
     components: {
       FormInput,
       FormSelect,
       DataTable
     },
-    async beforeRouteEnter(to, from, next) {
-      let {data} = await axios.get("/api/v1/company/admin/company");
-      next(vm => vm.$data.company = data);
+    async beforeRouteEnter (to, from, next) {
+      let {data} = await axios.get('/api/v1/company/admin/company')
+      next(vm => {
+        vm.$data.company = data
+      })
     },
-    data() {
+    data () {
       return {
         company: null,
         test: {
-          "recipients": null,
-          "temperatureCategories": [
+          recipients: null,
+          temperatureCategories: [
             {
-              "label": "Temperature Ambient: 15-20",
-              "value": {
-                "name": "AMBIENT",
-                "tempHigh": 25,
-                "tempLow": 15
+              label: 'Temperature Ambient: 15-20',
+              value: {
+                name: 'AMBIENT',
+                tempHigh: 25,
+                tempLow: 15
               }
             },
             {
-              "label": "Temperature Cool: 2-8",
-              "value": {
-                "name": "Cool",
-                "tempHigh": 8,
-                "tempLow": 2
+              label: 'Temperature Cool: 2-8',
+              value: {
+                name: 'Cool',
+                tempHigh: 8,
+                tempLow: 2
               }
             }
           ],
-          "defaultTemperatureCategoryIndex": 0,
-          "defaultMeasurementInterval": 10,
-          "canDoMultiSensorShipments": false
+          defaultTemperatureCategoryIndex: 0,
+          defaultMeasurementInterval: 10,
+          canDoMultiSensorShipments: false
         },
         table: {
           columns: [
             {name: 'name', title: 'Name', sortField: 'name'},
-            {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'},
+            {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'}
           ],
           sortOrder: [{
             field: 'name',
@@ -107,24 +109,24 @@
     },
     computed: {
       json: {
-        get() {
+        get () {
           try {
-            return this.company ? JSON.parse(window.atob(this.company.info)) : [];
-          } catch(e){
-            return [];
+            return this.company ? JSON.parse(window.atob(this.company.info)) : []
+          } catch (e) {
+            return []
           }
         },
-        set(newValue) {
-          this.company.info = window.btoa(newValue);
+        set (newValue) {
+          this.company.info = window.btoa(newValue)
         }
       },
-      selectedTempCat() {
+      selectedTempCat () {
         this.test.defaultTemperatureCategoryIndex
-        return this.test.defaultTemperatureCategoryIndex ?
-          this.test.temperatureCategories[this.test.defaultTemperatureCategoryIndex]
-          : null;
+        return this.test.defaultTemperatureCategoryIndex
+        ? this.test.temperatureCategories[this.test.defaultTemperatureCategoryIndex]
+        : null
       },
-      tempCategories() {
+      tempCategories () {
         return this.test.temperatureCategories.map((item, idx) => ({
           label: item.label,
           value: idx
@@ -132,13 +134,13 @@
       }
     },
     methods: {
-      async save() {
-        try{
-          let {data} = await axios.put('/api/v1/company/admin/update', {...this.company});
+      async save () {
+        try {
+          await axios.put('/api/v1/company/admin/update', {...this.company})
           this.$store.dispatch('notify', {type: 'success', text: 'Successfully updated Settings'})
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
-          console.log(e);
+          console.log(e)
         }
       }
     }

@@ -18,13 +18,13 @@
       }
     },
     computed: {
-      classObject(){
-        return this.type ? `is-${this.type}` : '';
+      classObject () {
+        return this.type ? `is-${this.type}` : ''
       }
     },
     methods: {
-      close(){
-        this.$emit('close');
+      close () {
+        this.$emit('close')
       }
     }
   }

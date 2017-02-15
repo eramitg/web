@@ -35,23 +35,23 @@
   import { mapGetters } from 'vuex'
   export default {
     methods: {
-      logout(){
-        this.$router.push('/login');
-        this.$store.commit('logout');
+      logout () {
+        this.$router.push('/login')
+        this.$store.commit('logout')
       },
-      isSuperOrAdmin(role){
-        let userRole = this.user.role;
-        if(userRole == 'SUPER') return true;
-        if(userRole == 'ADMIN' && (role == 'ADMIN' || role == null)) return true;
-        if(userRole == 'USER'){
-          if(role == 'ADMIN' || role == 'SUPER') return false;
-          if(role == null) return true;
+      isSuperOrAdmin (role) {
+        let userRole = this.user.role
+        if (userRole === 'SUPER') return true
+        if (userRole === 'ADMIN' && (role === 'ADMIN' || role == null)) return true
+        if (userRole === 'USER') {
+          if (role === 'ADMIN' || role === 'SUPER') return false
+          if (role === null) return true
         }
       }
     },
     computed: {
-      routes(){
-        let route = this.$router.options.routes.find(route => route.path == '/')
+      routes () {
+        let route = this.$router.options.routes.find(route => route.path === '/')
         return route ? route.children : []
       },
       ...mapGetters(['user'])

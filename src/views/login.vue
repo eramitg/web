@@ -39,12 +39,12 @@
 </template>
 
 <script>
-  import FormInput from '../components/FormInput.vue';
+  import FormInput from '../components/FormInput.vue'
   export default {
     components: {
       FormInput
     },
-    data() {
+    data () {
       return {
         username: '',
         password: '',
@@ -52,27 +52,27 @@
       }
     },
     methods: {
-      async onSubmit(){
-        this.$validator.validateAll();
+      async onSubmit () {
+        this.$validator.validateAll()
 
-        if(this.formFields.valid()){
-          this.loading = true;
+        if (this.formFields.valid()) {
+          this.loading = true
           try {
             await this.$store.dispatch('login', {
               username: this.username,
               password: this.password
             })
             const {redirect} = this.$route.query
-            this.$router.push(redirect || '/');
-          } catch({response}){
+            this.$router.push(redirect || '/')
+          } catch ({response}) {
             // missing
           }
-          this.loading = false;
+          this.loading = false
         }
       },
-      reset(){
-        this.username = '';
-        this.password = '';
+      reset () {
+        this.username = ''
+        this.password = ''
       }
     }
   }

@@ -1,71 +1,70 @@
-import axios from 'axios';
-import Vue from 'vue';
+import axios from 'axios'
+// import Vue from 'vue'
 
 const initializeState = () => {
-  let token = localStorage.getItem('token');
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  //Vue.http.headers.common['Authorization'] = `Bearer ${token}`;
+  let token = localStorage.getItem('token')
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  // Vue.http.headers.common['Authorization'] = `Bearer ${token}`
 
   return {
     token: token,
     roles: ['USER', 'ADMIN', 'SUPER']
   }
-};
+}
 
-const state = initializeState();
+const state = initializeState()
 
 const getters = {
-  isAuthenticated(state){
-    return state.token != null;
+  isAuthenticated (state) {
+    return state.token != null
   },
-  user(state){
-    if(state.token == null){
+  user (state) {
+    if (state.token == null) {
       return {}
     }
-    let data = state.token.split(".")[1];
-    let json = JSON.parse(atob(data));
+    let data = state.token.split('.')[1]
+    let json = JSON.parse(atob(data))
 
-    return json;
+    return json
   }
 }
 
 const mutations = {
-  setToken(state, token){
+  setToken (state, token) {
     state.token = token
   },
-  logout(state){
+  logout (state) {
     state.token = null
   }
 }
 
 const actions = {
-  async login({commit, state}, payload){
-    try{
-      let {data} = await axios.post('/api/login', payload);
-      if (data.token){
-        commit('setToken', data.token);
+  async login ({commit, state}, payload) {
+    try {
+      let {data} = await axios.post('/api/login', payload)
+      if (data.token) {
+        commit('setToken', data.token)
       }
-      return data;
-    } catch (e){
-      return Promise.reject(e);
+      return data
+    } catch (e) {
+      return Promise.reject(e)
     }
   },
-  checkAccess({getters}, role){
-    if(!role){
-      return true;
+  checkAccess ({getters}, role) {
+    if (!role) {
+      return true
     }
-    if(getters.user){
-      let userRole = getters.user.role;
-      if(userRole == 'SUPER') return true;
-      if(userRole == 'ADMIN' && role == 'ADMIN') return true;
-      if(userRole == 'USER'){
-        if(role == 'ADMIN' || role == 'SUPER') return false;
+    if (getters.user) {
+      let userRole = getters.user.role
+      if (userRole === 'SUPER') return true
+      if (userRole === 'ADMIN' && role === 'ADMIN') return true
+      if (userRole === 'USER') {
+        if (role === 'ADMIN' || role === 'SUPER') return false
       }
     }
-    return false;
+    return false
   }
-};
-
+}
 
 export default {
   state,

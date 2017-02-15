@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app">
     <router-view></router-view>
     <snackbar></snackbar>
     <confirm></confirm>
@@ -8,32 +8,33 @@
 </template>
 
 <script>
-  import Snackbar from './layout/Snackbar.vue';
-  import Confirm from './layout/Confirm.vue';
-  export default {
-    components: {
-      Confirm,
-      Snackbar
-    },
-    mounted () {
-      this.$Progress.finish()
-    },
-    created () {
-      const token = localStorage.getItem('token');
-      if(token){
-        this.$store.commit('setToken', token);
-      }
-
-      this.$Progress.start()
-      this.$router.beforeEach((to, from, next) => {
-        this.$Progress.start()
-        next()
-      })
-      this.$router.afterEach((to, from) => {
-        this.$Progress.finish()
-      })
+import Snackbar from './layout/Snackbar.vue'
+import Confirm from './layout/Confirm.vue'
+export default {
+  name: 'app',
+  components: {
+    Confirm,
+    Snackbar
+  },
+  mounted () {
+    this.$Progress.finish()
+  },
+  created () {
+    const token = localStorage.getItem('token')
+    if (token) {
+      this.$store.commit('setToken', token)
     }
+
+    this.$Progress.start()
+    this.$router.beforeEach((to, from, next) => {
+      this.$Progress.start()
+      next()
+    })
+    this.$router.afterEach((to, from) => {
+      this.$Progress.finish()
+    })
   }
+}
 </script>
 
 <style lang="scss">

@@ -16,14 +16,14 @@
 
 <script>
   export default{
-    name: "FormInput",
+    name: 'FormInput',
     props: {
       value: {
         required: true
       },
       type: {
         type: String,
-        default: 'text',
+        default: 'text'
       },
       label: {
         type: String,
@@ -38,7 +38,7 @@
       },
       icon: {
         type: String,
-        default: '',
+        default: ''
       },
       horizontal: {
         type: Boolean,
@@ -49,8 +49,8 @@
         default: ''
       }
     },
-    methods:{
-      updateValue(event){
+    methods: {
+      updateValue (event) {
         this.$emit('input', event.target.value)
       }
     }

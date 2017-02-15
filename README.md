@@ -1,15 +1,30 @@
-# web
+# modum-web
 
-Installation: 
+> Temperature Logging Web App for modum.io"
 
-Install npm
-install webpack / webpack-dev-server
+## Build Setup
 
-sudo npm install webpack -g
-sudo npm install webpack-dev-server -g
+``` bash
+# install dependencies
+npm install
 
-Install dependencies: npm install
+# serve with hot reload at localhost:8080
+npm run dev
 
-Run webpack-dev-server
+# build for production with minification
+npm run build
 
-In the browser: http://localhost:8080/webpack-dev-server/index.html
+# build for production and view the bundle analyzer report
+npm run build --report
+
+# run unit tests
+npm run unit
+
+# run e2e tests
+npm run e2e
+
+# run all tests
+npm test
+```
+
+For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

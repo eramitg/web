@@ -46,27 +46,29 @@
 </template>
 
 <script>
-  import Card from '../components/Card.vue';
-  import Chart from '../components/Chart.vue';
-  import axios from 'axios';
+  import Card from '../components/Card.vue'
+  import Chart from '../components/Chart.vue'
+  import axios from 'axios'
 
   export default {
     components: {
       Card,
       Chart
     },
-    async beforeRouteEnter(to, from, next) {
-      let {data} = await axios.get("/api/statistics");
-      next(vm => vm.$data.parcels = data);
+    async beforeRouteEnter (to, from, next) {
+      let {data} = await axios.get('/api/statistics')
+      next(vm => {
+        vm.$data.parcels = data
+      })
     },
-    data(){
+    data () {
       return {
         parcels: null,
         labels: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
         data: [20, 40, 5, 35],
         optionsData: {
           skin: 'is-striped',
-          headings:{
+          headings: {
             tnt: 'Just Something'
           }
         },
@@ -74,21 +76,21 @@
           '#26BA9A',
           '#D8544F',
           '#EFAC4D'
-        ],
-       }
+        ]
+      }
     },
     computed: {
-      totalParcels(){
-        return this.parcels ? this.parcels.totalParcels : 0;
+      totalParcels () {
+        return this.parcels ? this.parcels.totalParcels : 0
       },
-      okParcels(){
-        return this.parcels ? this.parcels.okParcels : 0;
+      okParcels () {
+        return this.parcels ? this.parcels.okParcels : 0
       },
-      nokParcels(){
-        return this.parcels ? this.parcels.nokParcels : 0;
+      nokParcels () {
+        return this.parcels ? this.parcels.nokParcels : 0
       },
-      pendingParcels(){
-        return this.parcels ? this.parcels.pendingParcels : 0;
+      pendingParcels () {
+        return this.parcels ? this.parcels.pendingParcels : 0
       },
       pieData () {
         return {
@@ -98,7 +100,7 @@
             backgroundColor: this.backgroundColor
           }]
         }
-      },
+      }
     }
   }
 </script>

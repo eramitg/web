@@ -1,15 +1,15 @@
 const state = {
-  deferred: null,
+  deferred: null
 }
 
 const mutations = {
-  setDeferred(state, deferred){
-    state.deferred = deferred;
+  setDeferred (state, deferred) {
+    state.deferred = deferred
   }
 }
 
 const actions = {
-  confirm({commit}){
+  confirm ({commit}) {
     return new Promise((resolve, reject) => commit('setDeferred', {resolve, reject}))
   }
 }
