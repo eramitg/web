@@ -19,7 +19,7 @@
     <div class="hero-foot">
       <nav class="tabs is-centered is-fullwidth is-boxed">
         <ul>
-          <router-link v-for="route in routes" tag="li" :to="route.path" exact v-if="!route.meta || isSuperOrAdmin(route.meta.role)">
+          <router-link v-for="route in routes" tag="li" :to="route.path" exact v-if="!route.meta || isAllowedToAccessPath(route.meta.role)">
             <a>
               <span class="icon is-small" v-if="route.meta && route.meta.icon"><i :class="['fa', route.meta.icon]"></i></span>
               <span>{{route.meta.label || route.name}}</span>
@@ -42,10 +42,25 @@
       isSuperOrAdmin (role) {
         let userRole = this.user.role
         if (userRole === 'SUPER') return true
-        if (userRole === 'ADMIN' && (role === 'ADMIN' || role == null)) return true
+        if (userRole === 'ADMIN' && (role === 'ADMIN' || role === undefined)) return true
         if (userRole === 'USER') {
           if (role === 'ADMIN' || role === 'SUPER') return false
           if (role === null) return true
+        }
+      },
+      isAllowedToAccessPath (role) {
+        switch (this.user.role) {
+          case 'SUPER':
+            return true
+          case 'ADMIN':
+            if (role === 'ADMIN' || role === undefined) return true
+            else return false
+          case 'USER':
+            if (role === 'ADMIN' || role === 'SUPER') return false
+            if (role === undefined) return true
+            break
+          default:
+            return false
         }
       }
     },
