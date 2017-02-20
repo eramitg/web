@@ -1,5 +1,5 @@
 <template>
-  <div class="columns" @click="onClick">
+  <div v-if="chart.data" class="columns" @click="onClick">
     <div class="column is-three-quarters">
       <div class="box">
         <h1 class="title is-5">{{$t('temperature_measurements')}}</h1>
@@ -54,6 +54,10 @@
     </div>
     </div>
   </div>
+  <div v-else class="has-text-centered">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+    <span class="sr-only">Loading...</span>
+  </div>
 </template>
 
 <script>
@@ -64,7 +68,7 @@ export default {
   components: {
     Chart
   },
-  async mounted () {
+  async created () {
     let {data} = await axios.get(`/api/v2/parcels/details/${this.rowData.id}`)
     this.chart.data = this.createChartData(data)
   },
