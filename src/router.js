@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-const Layout = () => System.import('./layout/Layout.vue')
+const Layout = () => System.import('./layout/Layout')
 
 function lazyLoad (component) {
-  return () => System.import(`./views/${component}.vue`)
+  return () => System.import(`./views/${component}`)
 }
 
 Vue.use(Router)

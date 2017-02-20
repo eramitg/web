@@ -153,11 +153,11 @@ export default {
         this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
       }
     },
-    async deleteShipment ({ID}) {
-      if (ID > 0) {
+    async deleteShipment ({Id}) {
+      if (Id > 0) {
         try {
           await this.$store.dispatch('confirm')
-          let {data} = await this.$http.delete(`/api/preparedshipments/${ID}`)
+          let {data} = await this.$http.delete(`/api/preparedshipments/${Id}`)
           this.$refs.vuetable.reload()
           this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted Shipment ${data.tntNumber}`})
         } catch (e) {
@@ -165,14 +165,14 @@ export default {
         }
       }
     },
-    editShipment ({ID, receiverCompanyID, tntNumber, tempCategory}) {
-      this.form.id = ID
+    editShipment ({Id, receiverCompanyID, tntNumber, temperatureCategory}) {
+      this.form.id = Id
       this.form.receiverID = receiverCompanyID
       this.form.tntNumber = tntNumber
       this.form.tempCategory = {
-        name: tempCategory.name,
-        minTemp: tempCategory.minTemp,
-        maxTemp: tempCategory.maxTemp
+        name: temperatureCategory.name,
+        minTemp: temperatureCategory.minTemp,
+        maxTemp: temperatureCategory.maxTemp
       }
       this.showModal = true
     }
