@@ -30,7 +30,7 @@
     <div class="tile is-ancestor" v-if="parcels">
       <div class="tile is-parent is-8">
         <article class="tile is-child box">
-          <chart :type="'bar'" :data="pieData"></chart>
+          <chart :type="'bar'" :data="pieData" :options="barOptions"></chart>
         </article>
       </div>
       <div class="tile is-parent is-4" v-if="parcels">
@@ -65,18 +65,20 @@
       return {
         parcels: null,
         labels: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
-        data: [20, 40, 5, 35],
-        optionsData: {
-          skin: 'is-striped',
-          headings: {
-            tnt: 'Just Something'
-          }
-        },
         backgroundColor: [
           '#26BA9A',
           '#D8544F',
           '#EFAC4D'
-        ]
+        ],
+        barOptions: {
+          legend: {display: false},
+          zoom: {enabled: false},
+          scales: {
+            yAxes: [
+              {display: true, ticks: {beginAtZero: true}}
+            ]
+          }
+        }
       }
     },
     computed: {
