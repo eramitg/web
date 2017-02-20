@@ -16,7 +16,6 @@
           :sortOrder="table.sortOrder"
         >
           <template slot="actions" scope="props">
-            <button class="button is-primary" @click="editShipment(props.rowData)"><i class="fa fa-pencil"></button>
             <button class="button is-danger" @click="deleteShipment(props.rowData)"><i class="fa fa-trash"></button>
           </template>
         </data-table>
