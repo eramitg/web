@@ -102,8 +102,8 @@ export default {
             yAxes: [
               {
                 ticks: {
-                  max: 40,
-                  min: 0,
+                  suggestedMax: 40,
+                  suggestedMin: -15,
                   fixedStepSize: 3
                 },
                 scaleLabel: {
