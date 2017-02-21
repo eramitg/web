@@ -9,7 +9,7 @@
       <span v-if="icon" class="icon">
         <i :class="icon"></i>
       </span>
-      <span v-if="err" class="help is-danger">{{ err }}</span>
+      <span v-if="err" class="help is-danger">{{err}}</span>
     </div>
   </div>
 </template>

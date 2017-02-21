@@ -10,6 +10,7 @@
           <option v-for="option in finalOptions" :value="option.value">{{option.label}}</option>
         </select>
       </div>
+      <span v-if="err" class="help is-danger">{{err}}</span>
     </div>
   </div>
 </template>
@@ -36,6 +37,10 @@
       horizontal: {
         type: Boolean,
         default: false
+      },
+      err: {
+        type: String,
+        default: ''
       }
     },
     computed: {
