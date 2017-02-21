@@ -24,20 +24,6 @@
             :options="tempCategories"
             horizontal
           />
-          <div class="control is-horizontal">
-            <div class="control-label">
-              <label class="label">Multiple Shipments</label>
-            </div>
-            <p class="control">
-              <label class="radio">
-                <input v-model="test.canDoMultiSensorShipments" type="radio" :value="true">Yes
-              </label>
-              <label class="radio">
-                <input v-model="test.canDoMultiSensorShipments" type="radio" :value="false">No
-              </label>
-            </p>
-          </div>
-
           <form-input
             v-model.number="test.defaultMeasurementInterval"
             label="Measurement Interval in Minutes"
