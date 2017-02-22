@@ -142,9 +142,10 @@ export default {
       }
     },
     formatDate (value, fmt = 'DD.MM.YYYY, HH:mm') {
-      return (value == null)
-        ? ''
-        : moment(value).format(fmt)
+      let parsed = moment(value).format(fmt)
+      return (value === null || parsed === '01.01.0001, 01:00')
+        ? 'n/a'
+        : parsed
     }
   }
 }
