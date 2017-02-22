@@ -8,7 +8,7 @@
           v-if="chart.data"
           :type="'line'"
           :data="chart.data"
-          :options="chart.options"
+          :options="options"
         />
       </div>
     </div>
@@ -84,50 +84,55 @@ export default {
   data () {
     return {
       chart: {
-        data: null,
-        options: {
-          responsive: true,
-          scales: {
-            xAxes: [{
-              type: 'time',
-              time: {
-                tooltipFormat: 'DD.MM.YYYY, HH:mm',
-                displayFormats: {
-                  minute: 'HH:mm:ss',
-                  hour: 'HH:mm:ss',
-                  day: 'DD.MM.YYYY, HH:mm'
-                }
+        data: null
+      }
+    }
+  },
+  computed: {
+    options () {
+      let {minTemp, maxTemp} = this.rowData
+      return {
+        responsive: true,
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              tooltipFormat: 'DD.MM.YYYY, HH:mm',
+              displayFormats: {
+                minute: 'HH:mm:ss',
+                hour: 'HH:mm:ss',
+                day: 'DD.MM.YYYY, HH:mm'
               }
-            }],
-            yAxes: [
-              {
-                ticks: {
-                  suggestedMax: 40,
-                  suggestedMin: -15,
-                  fixedStepSize: 3
-                },
-                scaleLabel: {
-                  display: true,
-                  labelString: '°C'
-                }
+            }
+          }],
+          yAxes: [
+            {
+              ticks: {
+                suggestedMax: 40,
+                suggestedMin: -15,
+                fixedStepSize: 3
+              },
+              scaleLabel: {
+                display: true,
+                labelString: '°C'
               }
-            ]
-          },
-          legend: {
-            display: false
-          },
-          horizontalLine: [
-            { y: 25, style: '#FFA100' },
-            { y: 15, style: '#25A9E1' }
-          ],
-          pan: {
-            enabled: false,
-            mode: 'xy'
-          },
-          zoom: {
-            enabled: false,
-            mode: 'xy'
-          }
+            }
+          ]
+        },
+        legend: {
+          display: false
+        },
+        horizontalLine: [
+          { y: maxTemp, style: '#FFA100' },
+          { y: minTemp, style: '#25A9E1' }
+        ],
+        pan: {
+          enabled: false,
+          mode: 'xy'
+        },
+        zoom: {
+          enabled: false,
+          mode: 'xy'
         }
       }
     }
