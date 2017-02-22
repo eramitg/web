@@ -182,7 +182,7 @@
           let {data} = await this.$http.put(`/api/v1/company/admin/updateuser/${this.form.id}`, {
             userName: this.form.username,
             userRole: this.form.role,
-            companyId: this.form.companyId
+            companyID: this.form.companyId
           })
           this.$refs.vuetable.reload()
           this.$store.dispatch('notify', {type: 'success', text: `Successfully updated User ${data.name}`})

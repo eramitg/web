@@ -2,7 +2,12 @@
   <div class="tile is-ancestor">
     <div class="tile is-parent is-12">
       <article class="tile is-child box">
-        <h1 class="title">Company</h1>
+        <h1 class="title">
+          Company
+          <button v-if="$store.getters.user.role == 'SUPER'" class="button" @click="showModal = true">
+            <span class="fa fa-plus"></span>
+          </button>
+        </h1>
         <hr>
         <data-table
           v-if="$store.getters.user.role == 'SUPER'"
@@ -34,19 +39,28 @@
         </div>
       </article>
     </div>
+
+    <modal :active="showModal" title="Create/Edit Company" @close="closeModal" @submit="submitForm" form>
+      <form-input v-model="form.name" label="Company name" placeholder="Name" v-validate="'required'" name="company name" :err="errors.first('company name')" />
+      <button slot="footer" type="submit" class="button is-primary" @click.prevent="submitForm">Save changes</button>
+      <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
+    </modal>
   </div>
 </template>
 
 <script>
+  import Vue from 'vue'
   import axios from 'axios'
   import DataTable from '../components/DataTable'
   import FormInput from '../components/FormInput.vue'
   import FormSelect from '../components/FormSelect.vue'
+  import Modal from '../components/Modal.vue'
   export default {
     components: {
       FormInput,
       FormSelect,
-      DataTable
+      DataTable,
+      Modal
     },
     async beforeRouteEnter (to, from, next) {
       let {data} = await axios.get('/api/v1/company/admin/company')
@@ -57,6 +71,11 @@
     data () {
       return {
         company: null,
+        showModal: false,
+        form: {
+          id: null,
+          name: ''
+        },
         test: {
           recipients: null,
           temperatureCategories: [
@@ -120,12 +139,54 @@
       }
     },
     methods: {
+      closeModal () {
+        this.showModal = false
+        // reset, when the modal is no longer visible, fix validation flickering
+        Vue.nextTick(() => {
+          this.resetForm()
+        })
+      },
+      resetForm () {
+        this.form = {
+          id: null,
+          name: ''
+        }
+        // validation has to first happen, so that it can be reset
+        Vue.nextTick(() => this.errors.clear())
+      },
       async save () {
         try {
           await axios.put('/api/v1/company/admin/update', {...this.company})
           this.$store.dispatch('notify', {type: 'success', text: 'Successfully updated Settings'})
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+          console.log(e)
+        }
+      },
+      async createCompany () {
+        try {
+          let {data} = await this.$http.post('api/v1/company', {
+            name: this.form.name,
+            info: 'W3sibGFiZWwiOiJUZW1wZXJhdHVyZSBDYXRlZ29yaWVzIiwibmFtZSI6InRlbXBlcmF0dXJlQ2F0ZWdvcmllcyIsInZhbHVlIjp7Im5hbWUiOiJBTUJJRU5UIiwidGVtcExvdyI6MTUsInRlbXBIaWdoIjoyNX0sInR5cGUiOiJzZWxlY3QiLCJvcHRpb25zIjpbeyJsYWJlbCI6IlRlbXBlcmF0dXJlIEFtYmllbnQ6IDE1LTIwIiwidmFsdWUiOnsibmFtZSI6IkFNQklFTlQiLCJ0ZW1wTG93IjoxNSwidGVtcEhpZ2giOjI1fX0seyJsYWJlbCI6IlRlbXBlcmF0dXJlIENvb2w6IDItOCIsInZhbHVlIjp7Im5hbWUiOiJDb29sIiwidGVtcExvdyI6MiwidGVtcEhpZ2giOjh9fV19LHsibGFiZWwiOiJNdWx0aXBsZSBTaGlwbWVudHMiLCJuYW1lIjoiY2FuRG9NdWx0aVNlbnNvclNoaXBtZW50cyIsInZhbHVlIjpmYWxzZSwidHlwZSI6InNlbGVjdCIsIm9wdGlvbnMiOlt7ImxhYmVsIjoiWWVzIiwidmFsdWUiOnRydWV9LHsibGFiZWwiOiJObyIsInZhbHVlIjpmYWxzZX1dfSx7ImxhYmVsIjoiTWVhc3VyZW1lbnQgSW50ZXJ2YWwgaW4gTWludXRlcyIsIm5hbWUiOiJkZWZhdWx0TWVhc3VyZW1lbnRJbnRlcnZhbCIsInZhbHVlIjoxMCwidHlwZSI6InRleHQifV0='
+          })
+          this.$refs.vuetable.reload()
+          this.$store.dispatch('notify', {type: 'success', text: `Successfully created Company ${data.name}`})
+        } catch (e) {
+          this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+        }
+      },
+      async submitForm () {
+        try {
+          let success = await this.$validator.validateAll()
+          if (success) {
+            if (this.form.id === null) {
+              this.createCompany()
+            } else {
+              // TODO: Update
+            }
+            this.closeModal()
+          }
+        } catch (e) {
           console.log(e)
         }
       }
