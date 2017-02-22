@@ -17,8 +17,7 @@
           :sortOrder="table.sortOrder"
         >
           <template slot="actions" scope="props">
-            <button class="button is-primary" @click="editUser(props.rowData)"><i class="fa fa-pencil"></button>
-            <button class="button is-danger" @click="deleteUser(props.rowData)"><i class="fa fa-trash"></button>
+            <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"></button>
           </template>
         </data-table>
 
@@ -175,6 +174,30 @@
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
         }
       },
+      async deleteCompany ({ID}) {
+        if (ID > 0) {
+          try {
+            await this.$store.dispatch('confirm')
+            let {data} = await this.$http.delete(`/api/v1/company/delete/${ID}`)
+            this.$refs.vuetable.reload()
+            this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted Company ${data.name}`})
+          } catch (e) {
+            // Notification for exception is created globally
+            this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+          }
+        }
+      },
+      async updateCompany () {
+        try {
+          let {data} = await this.$http.put(`/api/v1/company/update/${this.form.id}`, {
+            name: this.form.name
+          })
+          this.$refs.vuetable.reload()
+          this.$store.dispatch('notify', {type: 'success', text: `Successfully updated Company ${data.name}`})
+        } catch (e) {
+          this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+        }
+      },
       async submitForm () {
         try {
           let success = await this.$validator.validateAll()
@@ -182,13 +205,18 @@
             if (this.form.id === null) {
               this.createCompany()
             } else {
-              // TODO: Update
+              this.updateCompany()
             }
             this.closeModal()
           }
         } catch (e) {
           console.log(e)
         }
+      },
+      clickUpdate ({ID, name}) {
+        this.form.id = ID
+        this.form.name = name
+        this.showModal = true
       }
     }
   }
