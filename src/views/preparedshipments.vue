@@ -4,7 +4,7 @@
       <article class="tile is-child box">
         <h1 class="title">
           Prepared Shipments
-          <button class="button" @click="showModal = true">
+          <button v-if="$store.getters.user.role !== 'SUPER'" class="button" @click="showModal = true">
             <span class="fa fa-plus"></span>
           </button>
         </h1>
@@ -33,6 +33,7 @@
 <script>
 import Vue from 'vue'
 import DataTable from '../components/DataTable'
+import store from '../store'
 
 import FormInput from '../components/FormInput.vue'
 import FormSelect from '../components/FormSelect.vue'
@@ -47,11 +48,14 @@ export default {
   },
   async beforeRouteEnter (to, from, next) {
     try {
-      let {data} = await Vue.http.get('/api/v1/company/defaults')
-      next(vm => {
-        vm.$data.temperatureCategories = data.temperatureCategories
-        vm.$data.recipients = data.recipients
-      })
+      if (store.getters.user.role !== 'SUPER') {
+        let {data} = await Vue.http.get('/api/v1/company/defaults')
+        next(vm => {
+          vm.$data.temperatureCategories = data.temperatureCategories
+          vm.$data.recipients = data.recipients
+        })
+      }
+      next()
     } catch (e) {
       next()
     }
