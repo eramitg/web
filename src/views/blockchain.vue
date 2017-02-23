@@ -11,13 +11,13 @@
             :sortOrder="tableMissing.sortOrder"
           >
             <template slot="transaction" scope="props">
-              <a v-if="props.rowData.transaction_hash" target="_blank" :href="`https://etherscan.io/tx/data/${props.rowData.transaction_hash}`">
+              <a v-if="props.rowData.transaction_hash" target="_blank" :href="`https://etherscan.io/tx/${props.rowData.transaction_hash}`">
                 {{`${props.rowData.transaction_hash.substr(0, 20)}...`}}
               </a>
               <button v-else class="button" @click="contract(props.rowData.id, props.rowData.gid, 'tx')">Report Temp.</button>
             </template>
             <template slot="contract" scope="props">
-              <a v-if="props.rowData.contract_address" target="_blank" :href="`https://etherscan.io/tx/data/${props.rowData.contract_address}`">
+              <a v-if="props.rowData.contract_address" target="_blank" :href="`https://etherscan.io/address/${props.rowData.contract_address}`">
                 {{`${props.rowData.contract_address.substr(0, 20)}...`}}
               </a>
               <button v-else class="button" @click="contract(props.rowData.id, props.rowData.gid, 'contract')">Create Contract</button>
