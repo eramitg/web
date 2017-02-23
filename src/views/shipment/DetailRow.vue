@@ -1,15 +1,15 @@
 <template>
-  <div v-if="chart.data" class="columns" @click="onClick">
+  <div v-if="chart.data" class="columns">
     <div class="column is-three-quarters">
       <div class="box">
         <h1 class="title is-5">{{$t('temperature_measurements')}}</h1>
         <hr>
-        <chart
+        <plotly
           v-if="chart.data"
-          :type="'line'"
           :data="chart.data"
-          :options="options"
-        />
+          :min="rowData.minTemp"
+          :max="rowData.maxTemp"
+        ></plotly>
       </div>
     </div>
 
@@ -61,15 +61,16 @@
 </template>
 
 <script>
-import axios from 'axios'
 import moment from 'moment'
 import Chart from '../../components/Chart.vue'
+import Plotly from '../../components/Plotly.vue'
 export default {
   components: {
-    Chart
+    Chart,
+    Plotly
   },
   async created () {
-    let {data} = await axios.get(`/api/v2/parcels/details/${this.rowData.id}`)
+    let {data} = await this.$http.get(`/api/v2/parcels/details/${this.rowData.id}`)
     this.chart.data = this.createChartData(data)
   },
   props: {
@@ -88,85 +89,14 @@ export default {
       }
     }
   },
-  computed: {
-    options () {
-      let {minTemp, maxTemp} = this.rowData
-      return {
-        responsive: true,
-        scales: {
-          xAxes: [{
-            type: 'time',
-            time: {
-              tooltipFormat: 'DD.MM.YYYY, HH:mm',
-              displayFormats: {
-                minute: 'HH:mm:ss',
-                hour: 'HH:mm:ss',
-                day: 'DD.MM.YYYY, HH:mm'
-              }
-            }
-          }],
-          yAxes: [
-            {
-              ticks: {
-                suggestedMax: 40,
-                suggestedMin: -15,
-                fixedStepSize: 3
-              },
-              scaleLabel: {
-                display: true,
-                labelString: '°C'
-              }
-            }
-          ]
-        },
-        legend: {
-          display: false
-        },
-        horizontalLine: [
-          { y: maxTemp, style: '#FFA100' },
-          { y: minTemp, style: '#25A9E1' }
-        ],
-        pan: {
-          enabled: false,
-          mode: 'xy'
-        },
-        zoom: {
-          enabled: false,
-          mode: 'xy'
-        }
-      }
-    }
-  },
   methods: {
-    onClick (event) {
-      console.log('my-detail-row: on-click', event.target)
-    },
     createChartData (data) {
       return data
-      ? {
-        labels: data.map(item => item.timestamp),
-        datasets: [{
-          data: data.map(item => item.temperature),
-          label: 'Temperature',
-          fill: false,
-          backgroundColor: 'rgba(75,192,192,0.4)',
-          borderColor: 'rgba(75,192,192,1)',
-          borderCapStyle: 'butt',
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: 'miter',
-          pointBorderColor: 'rgba(75,192,192,1)',
-          pointBackgroundColor: '#fff',
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-          pointHoverBorderColor: 'rgba(220,220,220,1)',
-          pointHoverBorderWidth: 2,
-          pointRadius: 2,
-          pointHitRadius: 2
-        }]
-      }
-      : {}
+      ? [{
+        x: data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
+        y: data.map(item => item.temperature)
+      }]
+      : []
     }
   },
   filters: {
