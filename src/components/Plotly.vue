@@ -52,28 +52,24 @@ export default {
   },
   computed: {
     finalLayout () {
-      let {x} = this.data[0]
-      let layout = {...this.layout}
-      layout.shapes = []
-
-      // console.log(this.data)
-      if (x && x.length > 0) {
-        let start = x[0]
-        let end = x[x.length - 1]
-        if (this.min !== null) layout.shapes.push(this.horizontalLine(start, end, this.min, '#25A9E1'))
-        if (this.max !== null) layout.shapes.push(this.horizontalLine(start, end, this.max, '#FFA100'))
+      let layout = {
+        ...this.layout,
+        shapes: []
       }
+      if (this.min !== null) layout.shapes.push(this.horizontalLine(this.min, '#25A9E1'))
+      if (this.max !== null) layout.shapes.push(this.horizontalLine(this.max, '#FFA100'))
       return layout
     }
   },
   methods: {
-    horizontalLine (x0, x1, y, color = 'rgb(0, 0, 0)') {
+    horizontalLine (y, color = 'rgb(0, 0, 0)') {
       this
       return {
         type: 'line',
-        x0: x0,
+        xref: 'paper',
+        x0: 0,
         y0: y,
-        x1: x1,
+        x1: 1,
         y1: y,
         line: {color, width: 4, dash: 'dot'}
       }
