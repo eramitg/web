@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-bar control is-grouped">
+  <div v-if="false" class="filter-bar control is-grouped">
     <p class="control is-expanded has-addons">
       <input id="search" type="text" v-model="filterText" class="input" @keyup.enter="doFilter" placeholder="Search name, nickname, or email">
       <a @click="doFilter" class="button is-primary">Go</a>
