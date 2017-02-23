@@ -32,12 +32,18 @@ export default {
     }
   },
   mounted () {
-    this.chart = Plotly.plot(
+    Plotly.plot(
       this.$el,
       this.data,
       this.layout,
       this.config
-    )
+    ).then(res => {
+      this.chart = res
+    })
+    window.addEventListener('resize', this.handleResize)
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.handleResize)
   },
   data () {
     return {
@@ -71,6 +77,9 @@ export default {
         y1: y,
         line: {color, width: 4, dash: 'dot'}
       }
+    },
+    handleResize (event) {
+      Plotly.Plots.resize(this.chart)
     }
   },
   watch: {
