@@ -35,7 +35,7 @@
           <span>{{rowData.receiverCompany}}</span>
         </div>
         <div class="inline field">
-          <label><b>{{$t('send_user')}}</b>: </label>
+          <label><b>{{$t('rcv_user')}}</b>: </label>
           <span>{{rowData.receiver}}</span>
         </div>
         <div class="inline field">
