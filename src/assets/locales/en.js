@@ -6,6 +6,7 @@ export default {
   date_sent: 'Date Sent',
   date_received: 'Date Received',
   tnt: 'Track and Trace',
+  sensor: 'Sensor Id',
   transit: 'In Transit',
   cat: 'Temperature Category',
   status: 'Status',

@@ -23,6 +23,10 @@
           <span>{{rowData.tntNumber}}</span>
         </div>
         <div class="inline field">
+          <label><b>{{$t('sensor')}}</b>: </label>
+          <span>{{rowData.sensorID}}</span>
+        </div>
+        <div class="inline field">
           <label><b>{{$t('send_comp')}}</b>: </label>
           <span>{{rowData.senderCompany}}</span>
         </div>

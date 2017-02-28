@@ -6,6 +6,7 @@ export default {
   date_sent: 'Gesendet am',
   date_received: 'Empfangen am',
   tnt: 'Liefernummer',
+  sensor: 'Sensor-Nummer',
   transit: 'Lieferzeit',
   cat: 'Temperatur Kategorie',
   status: 'Status',
