@@ -12,7 +12,7 @@
         <data-table
           v-if="$store.getters.user.role == 'SUPER'"
           ref="vuetable"
-          url="/api/v1/company/companies"
+          url="v1/company/companies"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
         >
@@ -49,7 +49,6 @@
 
 <script>
   import Vue from 'vue'
-  import axios from 'axios'
   import DataTable from '../components/DataTable'
   import FormInput from '../components/FormInput.vue'
   import FormSelect from '../components/FormSelect.vue'
@@ -62,7 +61,7 @@
       Modal
     },
     async beforeRouteEnter (to, from, next) {
-      let {data} = await axios.get('/api/v1/company/admin/company')
+      let {data} = await this.$http.get('v1/company/admin/company')
       next(vm => {
         vm.$data.company = data
       })
@@ -155,7 +154,7 @@
       },
       async save () {
         try {
-          await axios.put('/api/v1/company/admin/update', {...this.company})
+          await this.$http.put('v1/company/admin/update', {...this.company})
           this.$store.dispatch('notify', {type: 'success', text: 'Successfully updated Settings'})
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
@@ -164,7 +163,7 @@
       },
       async createCompany () {
         try {
-          let {data} = await this.$http.post('api/v1/company', {
+          let {data} = await this.$http.post('v1/company', {
             name: this.form.name,
             info: 'W3sibGFiZWwiOiJUZW1wZXJhdHVyZSBDYXRlZ29yaWVzIiwibmFtZSI6InRlbXBlcmF0dXJlQ2F0ZWdvcmllcyIsInZhbHVlIjp7Im5hbWUiOiJBTUJJRU5UIiwidGVtcExvdyI6MTUsInRlbXBIaWdoIjoyNX0sInR5cGUiOiJzZWxlY3QiLCJvcHRpb25zIjpbeyJsYWJlbCI6IlRlbXBlcmF0dXJlIEFtYmllbnQ6IDE1LTIwIiwidmFsdWUiOnsibmFtZSI6IkFNQklFTlQiLCJ0ZW1wTG93IjoxNSwidGVtcEhpZ2giOjI1fX0seyJsYWJlbCI6IlRlbXBlcmF0dXJlIENvb2w6IDItOCIsInZhbHVlIjp7Im5hbWUiOiJDb29sIiwidGVtcExvdyI6MiwidGVtcEhpZ2giOjh9fV19LHsibGFiZWwiOiJNdWx0aXBsZSBTaGlwbWVudHMiLCJuYW1lIjoiY2FuRG9NdWx0aVNlbnNvclNoaXBtZW50cyIsInZhbHVlIjpmYWxzZSwidHlwZSI6InNlbGVjdCIsIm9wdGlvbnMiOlt7ImxhYmVsIjoiWWVzIiwidmFsdWUiOnRydWV9LHsibGFiZWwiOiJObyIsInZhbHVlIjpmYWxzZX1dfSx7ImxhYmVsIjoiTWVhc3VyZW1lbnQgSW50ZXJ2YWwgaW4gTWludXRlcyIsIm5hbWUiOiJkZWZhdWx0TWVhc3VyZW1lbnRJbnRlcnZhbCIsInZhbHVlIjoxMCwidHlwZSI6InRleHQifV0='
           })
@@ -178,7 +177,7 @@
         if (ID > 0) {
           try {
             await this.$store.dispatch('confirm')
-            let {data} = await this.$http.delete(`/api/v1/company/delete/${ID}`)
+            let {data} = await this.$http.delete(`v1/company/delete/${ID}`)
             this.$refs.vuetable.reload()
             this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted Company ${data.name}`})
           } catch (e) {
@@ -189,7 +188,7 @@
       },
       async updateCompany () {
         try {
-          let {data} = await this.$http.put(`/api/v1/company/update/${this.form.id}`, {
+          let {data} = await this.$http.put(`v1/company/update/${this.form.id}`, {
             name: this.form.name
           })
           this.$refs.vuetable.reload()

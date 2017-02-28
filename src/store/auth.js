@@ -1,18 +1,9 @@
-import axios from 'axios'
-// import Vue from 'vue'
+import Vue from 'vue'
 
-const initializeState = () => {
-  let token = localStorage.getItem('token')
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-  // Vue.http.headers.common['Authorization'] = `Bearer ${token}`
-
-  return {
-    token: token,
-    roles: ['USER', 'ADMIN', 'SUPER']
-  }
+const state = {
+  token: null,
+  roles: ['USER', 'ADMIN', 'SUPER']
 }
-
-const state = initializeState()
 
 const getters = {
   isAuthenticated (state) {
@@ -41,7 +32,7 @@ const mutations = {
 const actions = {
   async login ({commit, state}, payload) {
     try {
-      let {data} = await axios.post('/api/login', payload)
+      let {data} = await Vue.http.post('login', payload)
       if (data.token) {
         commit('setToken', data.token)
       }

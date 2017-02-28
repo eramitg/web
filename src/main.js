@@ -4,7 +4,6 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-import axios from 'axios'
 
 import VeeValidate from 'vee-validate'
 import VueProgressBar from 'vue-progressbar'
@@ -17,6 +16,8 @@ Vue.use(VueProgressBar, {
   failedColor: 'red',
   height: '2px'
 })
+
+Vue.http.options.root = process.env.API_ROOT
 
 // check authentication
 router.beforeEach((to, from, next) => {
@@ -43,17 +44,6 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next({path: '/403'})
   }
-})
-
-// handle connection errors
-axios.interceptors.response.use(res => (res), (error) => {
-  let {response} = error
-  if (response.data && response.data.message) {
-    store.dispatch('notify', {text: response.data.message, type: 'danger'})
-  } else if (response.data) {
-    store.dispatch('notify', {text: response.data, type: 'danger'})
-  }
-  return error
 })
 
 /* eslint-disable no-new */

@@ -64,8 +64,8 @@
             })
             const {redirect} = this.$route.query
             this.$router.push(redirect || '/')
-          } catch ({response}) {
-            // missing
+          } catch ({data}) {
+            this.$store.dispatch('notify', {text: data.message, type: 'danger'})
           }
           this.loading = false
         }

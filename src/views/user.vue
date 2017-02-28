@@ -11,7 +11,7 @@
         <hr>
         <data-table
           ref="vuetable"
-          url="/api/users"
+          url="users"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
         >
@@ -55,7 +55,7 @@
     async beforeRouteEnter (to, from, next) {
       try {
         if (store.getters.user.role === 'SUPER') {
-          let {data} = await Vue.http.get('/api/v1/company/companies')
+          let {data} = await Vue.http.get('v1/company/companies')
           next(vm => {
             vm.$data.companies = data
           })
@@ -165,7 +165,7 @@
       },
       async createUser () {
         try {
-          let {data} = await this.$http.post('api/users', {
+          let {data} = await this.$http.post('users', {
             username: this.form.username,
             password: this.form.password,
             role: this.form.role,
@@ -179,7 +179,7 @@
       },
       async updateUser () {
         try {
-          let {data} = await this.$http.put(`/api/v1/company/admin/updateuser/${this.form.id}`, {
+          let {data} = await this.$http.put(`v1/company/admin/updateuser/${this.form.id}`, {
             userName: this.form.username,
             userRole: this.form.role,
             companyID: this.form.companyId
@@ -192,7 +192,7 @@
       },
       async changePw () {
         try {
-          let {data} = await this.$http.put(`/api/v1/company/admin/changepw/${this.form.id}`, {
+          let {data} = await this.$http.put(`v1/company/admin/changepw/${this.form.id}`, {
             username: this.form.username,
             password: this.form.password
           })
@@ -206,7 +206,7 @@
         if (userID > 0) {
           try {
             await this.$store.dispatch('confirm')
-            let {data} = await this.$http.delete(`/api/users/${userID}`)
+            let {data} = await this.$http.delete(`users/${userID}`)
             this.$refs.vuetable.reload()
             this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted User ${data.name}`})
           } catch (e) {

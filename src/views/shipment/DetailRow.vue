@@ -70,7 +70,7 @@ export default {
     Plotly
   },
   async created () {
-    let {data} = await this.$http.get(`/api/v2/parcels/details/${this.rowData.id}`)
+    let {data} = await this.$http.get(`v2/parcels/details/${this.rowData.id}`)
     this.chart.data = this.createChartData(data)
   },
   props: {

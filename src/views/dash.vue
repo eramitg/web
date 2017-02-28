@@ -46,9 +46,9 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import Card from '../components/Card.vue'
   import Chart from '../components/Chart.vue'
-  import axios from 'axios'
 
   export default {
     components: {
@@ -56,7 +56,7 @@
       Chart
     },
     async beforeRouteEnter (to, from, next) {
-      let {data} = await axios.get('/api/statistics')
+      let {data} = await Vue.http.get('statistics')
       next(vm => {
         vm.$data.parcels = data
       })

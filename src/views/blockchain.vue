@@ -6,7 +6,7 @@
           <h1 class="title">Missing Contracts / TX</h1>
           <hr>
           <data-table
-            url="/api/v1/contract/missing"
+            url="v1/contract/missing"
             :fields="tableMissing.columns"
             :sortOrder="tableMissing.sortOrder"
           >
@@ -36,7 +36,7 @@
           <h1 class="title">Mined Contracts / TX</h1>
           <hr>
           <data-table
-            url="/api/v1/contract/mined"
+            url="v1/contract/mined"
             :fields="tableMined.columns"
             :sortOrder="tableMined.sortOrder"
           >
@@ -98,7 +98,7 @@
     methods: {
       async contract (pid, gid, type) {
         try {
-          let {data} = await this.$http.get(`/api/v1/contract/type/${pid}/${gid}/${type}`)
+          let {data} = await this.$http.get(`v1/contract/type/${pid}/${gid}/${type}`)
           this.$store.dispatch('notify', {type: 'success', timeout: false, text: data})
         } catch (e) {
           this.$store.dispatch('notify', {type: 'danger', text: e.data.message})

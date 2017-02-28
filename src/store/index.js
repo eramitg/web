@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
 
 Vue.use(Vuex)
 
@@ -33,12 +32,10 @@ else Vue.i18n.set('en')
 store.subscribe((mutation, state) => {
   switch (mutation.type) {
     case 'setToken':
-      axios.defaults.headers.common['Authorization'] = `Bearer ${mutation.payload}`
       Vue.http.headers.common['Authorization'] = `Bearer ${mutation.payload}`
       localStorage.setItem('token', mutation.payload)
       break
     case 'logout':
-      delete axios.defaults.headers.common['Authorization']
       delete Vue.http.headers.common['Authorization']
       localStorage.removeItem('token')
       break

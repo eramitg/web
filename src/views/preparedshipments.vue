@@ -11,7 +11,7 @@
         <hr>
         <data-table
           ref="vuetable"
-          url="/api/preparedshipments"
+          url="preparedshipments"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
         >
@@ -49,7 +49,7 @@ export default {
   async beforeRouteEnter (to, from, next) {
     try {
       if (store.getters.user.role !== 'SUPER') {
-        let {data} = await Vue.http.get('/api/v1/company/defaults')
+        let {data} = await Vue.http.get('v1/company/defaults')
         next(vm => {
           vm.$data.temperatureCategories = data.temperatureCategories
           vm.$data.recipients = data.recipients
@@ -131,7 +131,7 @@ export default {
     },
     async createShipment () {
       try {
-        let {data} = await this.$http.post('/api/preparedshipments', {
+        let {data} = await this.$http.post('preparedshipments', {
           ...this.form,
           tempCategory: this.selectedTempCatObj
         })
@@ -145,7 +145,7 @@ export default {
     },
     async updateShipment () {
       try {
-        let {data} = await this.$http.put(`/api/preparedshipments/${this.form.id}`, {
+        let {data} = await this.$http.put(`preparedshipments/${this.form.id}`, {
           ...this.form,
           tempCategory: this.selectedTempCatObj
         })
@@ -160,11 +160,11 @@ export default {
       if (Id > 0) {
         try {
           await this.$store.dispatch('confirm')
-          let {data} = await this.$http.delete(`/api/preparedshipments/${Id}`)
+          let {data} = await this.$http.delete(`preparedshipments/${Id}`)
           this.$refs.vuetable.reload()
           this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted Shipment ${data.tntNumber}`})
         } catch (e) {
-          // Notification for exception is created globally
+          this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
         }
       }
     },
