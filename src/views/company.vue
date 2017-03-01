@@ -61,7 +61,7 @@
       Modal
     },
     async beforeRouteEnter (to, from, next) {
-      let {data} = await this.$http.get('v1/company/admin/company')
+      let {data} = await Vue.http.get('v1/company/admin/company')
       next(vm => {
         vm.$data.company = data
       })
