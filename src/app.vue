@@ -20,11 +20,6 @@ export default {
     this.$Progress.finish()
   },
   created () {
-    const token = localStorage.getItem('token')
-    if (token) {
-      this.$store.commit('setToken', token)
-    }
-
     this.$Progress.start()
     this.$router.beforeEach((to, from, next) => {
       this.$Progress.start()
