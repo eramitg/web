@@ -25,9 +25,9 @@
     </div>
 
     <modal :active="showModal" title="Create/Edit User" @close="closeModal" @submit="submitForm" form>
-      <form-input v-if="mode != 'PASSWORD'" v-model="form.username" label="Username" placeholder="Name" v-validate="'required'" name="username" :err="errors.first('username')" />
-      <form-input v-if="mode != 'UPDATE'" v-model="form.password" label="Password" placeholder="Password" type="password" v-validate="'required'" name="password" :err="errors.first('password')"/>
-      <form-input v-if="mode != 'UPDATE'" v-model="form.password2" label="Repeat Password" placeholder="Password" type="password" v-validate="'required|confirmed:password'" name="password2" :err="errors.first('password2')"/>
+      <form-input v-if="mode != 'PASSWORD'" v-model="form.username" label="Username" placeholder="Name" v-validate="{ rules: {required: true}, arg: 'form.username' }" name="username" :err="errors.first('username')" />
+      <form-input v-if="mode != 'UPDATE'" v-model="form.password" label="Password" placeholder="Password" type="password" v-validate="{ rules: {required: true}, arg: 'form.password' }" name="password" :err="errors.first('password')"/>
+      <form-input v-if="mode != 'UPDATE'" v-model="form.password2" label="Repeat Password" placeholder="Password" type="password" v-validate="{ rules: {confirmed: 'password'}, arg: 'form.password2' }" name="password2" :err="errors.first('password2')"/>
       <form-select v-if="mode != 'PASSWORD'" v-model="form.role" label="Role" :options="['USER', 'ADMIN']"/>
       <form-select v-if="$store.getters.user.role == 'SUPER' && mode != 'PASSWORD'" v-model.number="form.companyId" label="Company" :options="companyOptions" v-validate="'required'" name="company" :err="errors.first('company')"/>
       <button slot="footer" type="submit" class="button is-primary" @click.prevent="submitForm">Save changes</button>
