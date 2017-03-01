@@ -46,7 +46,7 @@ export default {
           {name: '__component:shipment-status', title: this.$t('status'), dataClass: 'has-text-centered'}
         ],
         sortOrder: [{
-          field: 'dateReceived',
+          field: 'updatedAt',
           direction: 'desc'
         }]
       }
