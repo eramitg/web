@@ -18,7 +18,7 @@ export default {
     config: {
       type: Object,
       default: () => ({
-        modeBarButtonsToRemove: ['sendDataToCloud', 'hoverCompareCartesian'],
+        modeBarButtonsToRemove: ['sendDataToCloud', 'hoverCompareCartesian', 'hoverClosest3d', 'hoverClosestCartesian', 'lasso2d', 'hoverClosestPie'],
         displaylogo: false
       })
     },
@@ -86,6 +86,19 @@ export default {
         })
       },
       immediate: true
+    },
+    data (val) {
+      this.$nextTick(() => {
+        Plotly.animate(this.$el, {
+          data: val
+        }, {
+          transition: {
+            duration: 500,
+            easing: 'cubic-in-out'
+          }
+        })
+        // Plotly.newPlot(this.$refs.chart, this.data, this.layouts)
+      })
     }
   }
 }

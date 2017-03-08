@@ -4,10 +4,10 @@
 
 <script>
 import Chart from 'chart.js' // With moment.js
-import 'Chart.Zoom.js'
+// import 'Chart.Zoom.js'
 const types = ['line', 'bar', 'radar', 'polarArea', 'pie', 'doughnut']
 
-var horizonalLinePlugin = {
+/* var horizonalLinePlugin = {
   beforeDraw: function (chartInstance) {
     var yScale = chartInstance.scales['y-axis-0']
     var canvas = chartInstance.chart
@@ -41,8 +41,8 @@ var horizonalLinePlugin = {
       return
     }
   }
-}
-Chart.pluginService.register(horizonalLinePlugin)
+} */
+// Chart.pluginService.register(horizonalLinePlugin)
 
 export default {
   props: {
@@ -51,9 +51,7 @@ export default {
     type: {
       type: String,
       required: true,
-      validator (value) {
-        return types.indexOf(value) > -1
-      }
+      validator: val => types.includes(val)
     },
     data: {
       type: Object,
@@ -88,13 +86,29 @@ export default {
       chart: null
     }
   },
-  watch: {
-    data (val) {
+  methods: {
+    resetChart () {
       this.$nextTick(() => {
-        // this.chart.data.datasets = val.datasets
-        // this.chart.data.labels = val.labels
+        this.chart.destroy()
+        this.chart = new Chart(this.$el, {
+          type: this.type,
+          data: this.data,
+          options: this.options
+        })
+      })
+    }
+  },
+  watch: {
+    type () {
+      this.resetChart()
+    },
+    data () {
+      this.$nextTick(() => {
         this.chart.update()
       })
+    },
+    options () {
+      this.resetChart()
     }
   }
 }
