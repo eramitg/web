@@ -49,12 +49,12 @@
       <div class="tile is-ancestor" v-if="parcels">
         <div class="tile is-parent is-8">
           <article class="tile is-child box">
-            <plotly :data="barChart"/>
+            <bar-chart :chartData="pieData"/>
           </article>
         </div>
         <div class="tile is-parent is-4" v-if="parcels">
           <article class="tile is-child box">
-            <plotly :data="pieChart"/>
+            <doughnut-chart :chartData="pieData"/>
           </article>
         </div>
       </div>
@@ -66,29 +66,38 @@
 </template>
 
 <script>
+  import moment from 'moment'
   import Vue from 'vue'
   import Card from '../components/Card.vue'
   import Chart from '../components/Chart.vue'
   import DatePicker from '../components/DatePicker.vue'
   import Plotly from '../components/Plotly.vue'
+  import BarChart from '../components/BarChart'
+  import DoughnutChart from '../components/DoughnutChart'
 
   export default {
     components: {
       Card,
       Chart,
       DatePicker,
-      Plotly
+      Plotly,
+      BarChart,
+      DoughnutChart
     },
     async beforeRouteEnter (to, from, next) {
-      let {data} = await Vue.http.get('statistics')
+      let start = '01/01/2016'
+      let end = moment().format('DD/MM/YYYY')
+      let {data} = await Vue.http.get('statistics', {
+        params: {start, end}
+      })
       next(vm => {
         vm.$data.parcels = data
       })
     },
     data () {
       return {
-        start: null,
-        end: null,
+        start: '01/01/2016',
+        end: moment().format('DD/MM/YYYY'),
         parcels: null,
         labels: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
         backgroundColor: [
@@ -122,34 +131,12 @@
       },
       pieData () {
         return {
-          labels: this.labels,
+          labels: [this.$t('shipment_ok'), this.$t('deviations'), this.$t('shipment_transit')],
           datasets: [{
             data: [this.okParcels, this.nokParcels, this.pendingParcels],
             backgroundColor: this.backgroundColor
           }]
         }
-      },
-      pieChart () {
-        return [{
-          labels: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
-          values: [this.okParcels, this.nokParcels, this.pendingParcels],
-          type: 'pie',
-          showlegend: false,
-          hole: 0.4,
-          marker: {
-            colors: this.backgroundColor
-          }
-        }]
-      },
-      barChart () {
-        return [{
-          x: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
-          y: [this.okParcels, this.nokParcels, this.pendingParcels],
-          type: 'bar',
-          marker: {
-            color: this.backgroundColor
-          }
-        }]
       }
     },
     methods: {
