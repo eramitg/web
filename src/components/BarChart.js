@@ -17,7 +17,7 @@ export default Bar.extend({
         },
         scales: {
           xAxes: [
-            {barThickness: 150}
+            {barThickness: 100}
           ]
         }
       })

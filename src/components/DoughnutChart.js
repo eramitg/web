@@ -11,7 +11,7 @@ export default Doughnut.extend({
       type: Object,
       default: () => ({
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
         legend: {
           display: false
         }

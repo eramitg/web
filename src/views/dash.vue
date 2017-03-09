@@ -18,7 +18,7 @@
         </article>
       </div>
     </div>
-    <div v-if="parcels">
+    <template v-if="parcels">
       <div class="tile is-ancestor" v-if="parcels">
         <div class="tile is-parent is-one-quarter">
           <card type="white" class="tile is-child has-text-centered">
@@ -49,16 +49,16 @@
       <div class="tile is-ancestor" v-if="parcels">
         <div class="tile is-parent is-8">
           <article class="tile is-child box">
-            <bar-chart :chartData="pieData"/>
+            <bar-chart :chartData="pieData" style="{'max-width': '100%'}"/>
           </article>
         </div>
         <div class="tile is-parent is-4" v-if="parcels">
           <article class="tile is-child box">
-            <doughnut-chart :chartData="pieData"/>
+            <doughnut-chart :chartData="pieData" style="{'max-width': '100%'}"/>
           </article>
         </div>
       </div>
-    </div>
+    </template>
     <div v-else>
       <span>Nothing Found</span>
     </div>
@@ -154,3 +154,13 @@
     }
   }
 </script>
+
+<style lang="scss">
+  #bar-chart {
+    max-width: 100%
+  }
+
+  #doughnut-chart {
+    max-width: 100%
+  }
+</style>
