@@ -54,12 +54,15 @@ export default {
   },
   methods: {
     computeTransitTime ({dateSent, dateReceived}) {
-      let diff = moment(dateReceived).diff(moment(dateSent), 'hour', true).toFixed(1)
-      if (diff > 0) {
-        return `${diff}h`
-      } else {
+      if (dateReceived === '0001-01-01T00:34:08+00:34') {
         return 'n/a'
       }
+
+      let received = moment(dateReceived)
+      let sent = moment(dateSent)
+      let diff = moment.duration(received.diff(sent))
+
+      return diff.humanize()
     }
   }
 }
