@@ -1,7 +1,7 @@
 <template>
-  <span v-if="statusCode < 0">{{this.$t('status_transit')}}</span>
-  <i v-else-if="statusCode === 0" class="fa fa-check ok"></i>
-  <i v-else class="fa fa-times bad"></i>
+  <img class="small" v-if="statusCode < 0" src="../../assets/icons/shipment_underway.svg" :alt="$t('status_transit')">
+  <img class="small" v-else-if="statusCode === 0" src="../../assets/icons/inside_specifications.svg" :alt="$t('status_ok')">
+  <img class="small" v-else src="../../assets/icons/outside_specifications.svg" :alt="$t('status_bad')">
 </template>
 
 <script>
@@ -24,13 +24,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "../../variables";
-
-  .ok {
-    color: $success
-  }
-
-  .bad {
-    color: $danger
+  .small {
+    width: 35%;
+    vertical-align: middle;
   }
 </style>
