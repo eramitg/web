@@ -25,7 +25,7 @@ export default {
 
 <style lang="scss" scoped>
   .small {
-    width: 35%;
+    height: 50%;
     vertical-align: middle;
   }
 </style>
