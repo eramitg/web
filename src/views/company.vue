@@ -1,0 +1,222 @@
+<template>
+  <div class="tile is-ancestor">
+    <div class="tile is-parent is-12">
+      <article class="tile is-child box">
+        <h1 class="title">
+          Company
+          <button v-if="$store.getters.user.role == 'SUPER'" class="button" @click="showModal = true">
+            <span class="fa fa-plus"></span>
+          </button>
+        </h1>
+        <hr>
+        <data-table
+          v-if="$store.getters.user.role == 'SUPER'"
+          ref="vuetable"
+          url="v1/company/companies"
+          :fields="table.columns"
+          :sortOrder="table.sortOrder"
+        >
+          <template slot="actions" scope="props">
+            <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"></button>
+          </template>
+        </data-table>
+
+        <div v-else>
+          <form-select
+            v-model.number="test.defaultTemperatureCategoryIndex"
+            label="Temperature Categories"
+            :options="tempCategories"
+            horizontal
+          />
+          <form-input
+            v-model.number="test.defaultMeasurementInterval"
+            label="Measurement Interval in Minutes"
+            type="number"
+            horizontal
+          />
+          <button type="button" class="button is-primary" @click="save">Save</button>
+        </div>
+      </article>
+    </div>
+
+    <modal :active="showModal" title="Create/Edit Company" @close="closeModal" @submit="submitForm" form>
+      <form-input v-model="form.name" label="Company name" placeholder="Name" v-validate="'required'" name="company name" :err="errors.first('company name')" />
+      <button slot="footer" type="submit" class="button is-primary" @click.prevent="submitForm">Save changes</button>
+      <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
+    </modal>
+  </div>
+</template>
+
+<script>
+  import Vue from 'vue'
+  import DataTable from '../components/DataTable'
+  import FormInput from '../components/FormInput.vue'
+  import FormSelect from '../components/FormSelect.vue'
+  import Modal from '../components/Modal.vue'
+  export default {
+    components: {
+      FormInput,
+      FormSelect,
+      DataTable,
+      Modal
+    },
+    async beforeRouteEnter (to, from, next) {
+      let {data} = await Vue.http.get('v1/company/admin/company')
+      next(vm => {
+        vm.$data.company = data
+      })
+    },
+    data () {
+      return {
+        company: null,
+        showModal: false,
+        form: {
+          id: null,
+          name: ''
+        },
+        test: {
+          recipients: null,
+          temperatureCategories: [
+            {
+              label: 'Temperature Ambient: 15-20',
+              value: {
+                name: 'AMBIENT',
+                tempHigh: 25,
+                tempLow: 15
+              }
+            },
+            {
+              label: 'Temperature Cool: 2-8',
+              value: {
+                name: 'Cool',
+                tempHigh: 8,
+                tempLow: 2
+              }
+            }
+          ],
+          defaultTemperatureCategoryIndex: 0,
+          defaultMeasurementInterval: 10,
+          canDoMultiSensorShipments: false
+        },
+        table: {
+          columns: [
+            {name: 'name', title: 'Name', sortField: 'name'},
+            {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'}
+          ],
+          sortOrder: [{
+            field: 'name',
+            direction: 'asc'
+          }]
+        }
+      }
+    },
+    computed: {
+      json: {
+        get () {
+          try {
+            return this.company ? JSON.parse(window.atob(this.company.info)) : []
+          } catch (e) {
+            return []
+          }
+        },
+        set (newValue) {
+          this.company.info = window.btoa(newValue)
+        }
+      },
+      selectedTempCat () {
+        this.test.defaultTemperatureCategoryIndex
+        return this.test.defaultTemperatureCategoryIndex
+        ? this.test.temperatureCategories[this.test.defaultTemperatureCategoryIndex]
+        : null
+      },
+      tempCategories () {
+        return this.test.temperatureCategories.map((item, idx) => ({
+          label: item.label,
+          value: idx
+        }))
+      }
+    },
+    methods: {
+      closeModal () {
+        this.showModal = false
+        // reset, when the modal is no longer visible, fix validation flickering
+        Vue.nextTick(() => {
+          this.resetForm()
+        })
+      },
+      resetForm () {
+        this.form = {
+          id: null,
+          name: ''
+        }
+        // validation has to first happen, so that it can be reset
+        Vue.nextTick(() => this.errors.clear())
+      },
+      async save () {
+        try {
+          await this.$http.put('v1/company/admin/update', {...this.company})
+          this.$store.dispatch('notify', {type: 'success', text: 'Successfully updated Settings'})
+        } catch (e) {
+          this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+          console.log(e)
+        }
+      },
+      async createCompany () {
+        try {
+          let {data} = await this.$http.post('v1/company', {
+            name: this.form.name,
+            info: 'W3sibGFiZWwiOiJUZW1wZXJhdHVyZSBDYXRlZ29yaWVzIiwibmFtZSI6InRlbXBlcmF0dXJlQ2F0ZWdvcmllcyIsInZhbHVlIjp7Im5hbWUiOiJBTUJJRU5UIiwidGVtcExvdyI6MTUsInRlbXBIaWdoIjoyNX0sInR5cGUiOiJzZWxlY3QiLCJvcHRpb25zIjpbeyJsYWJlbCI6IlRlbXBlcmF0dXJlIEFtYmllbnQ6IDE1LTIwIiwidmFsdWUiOnsibmFtZSI6IkFNQklFTlQiLCJ0ZW1wTG93IjoxNSwidGVtcEhpZ2giOjI1fX0seyJsYWJlbCI6IlRlbXBlcmF0dXJlIENvb2w6IDItOCIsInZhbHVlIjp7Im5hbWUiOiJDb29sIiwidGVtcExvdyI6MiwidGVtcEhpZ2giOjh9fV19LHsibGFiZWwiOiJNdWx0aXBsZSBTaGlwbWVudHMiLCJuYW1lIjoiY2FuRG9NdWx0aVNlbnNvclNoaXBtZW50cyIsInZhbHVlIjpmYWxzZSwidHlwZSI6InNlbGVjdCIsIm9wdGlvbnMiOlt7ImxhYmVsIjoiWWVzIiwidmFsdWUiOnRydWV9LHsibGFiZWwiOiJObyIsInZhbHVlIjpmYWxzZX1dfSx7ImxhYmVsIjoiTWVhc3VyZW1lbnQgSW50ZXJ2YWwgaW4gTWludXRlcyIsIm5hbWUiOiJkZWZhdWx0TWVhc3VyZW1lbnRJbnRlcnZhbCIsInZhbHVlIjoxMCwidHlwZSI6InRleHQifV0='
+          })
+          this.$refs.vuetable.reload()
+          this.$store.dispatch('notify', {type: 'success', text: `Successfully created Company ${data.name}`})
+        } catch (e) {
+          this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+        }
+      },
+      async deleteCompany ({ID}) {
+        if (ID > 0) {
+          try {
+            await this.$store.dispatch('confirm')
+            let {data} = await this.$http.delete(`v1/company/delete/${ID}`)
+            this.$refs.vuetable.reload()
+            this.$store.dispatch('notify', {type: 'success', text: `Successfully deleted Company ${data.name}`})
+          } catch (e) {
+            // Notification for exception is created globally
+            this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+          }
+        }
+      },
+      async updateCompany () {
+        try {
+          let {data} = await this.$http.put(`v1/company/update/${this.form.id}`, {
+            name: this.form.name
+          })
+          this.$refs.vuetable.reload()
+          this.$store.dispatch('notify', {type: 'success', text: `Successfully updated Company ${data.name}`})
+        } catch (e) {
+          this.$store.dispatch('notify', {type: 'danger', text: e.data.message})
+        }
+      },
+      async submitForm () {
+        try {
+          let success = await this.$validator.validateAll()
+          if (success) {
+            if (this.form.id === null) {
+              this.createCompany()
+            } else {
+              this.updateCompany()
+            }
+            this.closeModal()
+          }
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      clickUpdate ({ID, name}) {
+        this.form.id = ID
+        this.form.name = name
+        this.showModal = true
+      }
+    }
+  }
+</script>
