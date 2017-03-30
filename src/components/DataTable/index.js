@@ -19,7 +19,8 @@ export default {
       h('nav', {class: 'level is-marginless'}, [
         h('div', {class: 'level-left'}, [
           h('div', {class: 'level-item'}, [
-            h('filter-bar')
+            h('filter-bar'),
+            h('div', this.$slots.default)
           ])
         ]),
         h('div', {class: 'level-right'}, [
@@ -57,7 +58,8 @@ export default {
           sortOrder: this.sortOrder,
           paginationPath: this.paginationPath,
           'data-path': this.dataPath,
-          'detail-row-component': this.rowComponent
+          'detail-row-component': this.rowComponent,
+          'append-params': this.additionalParams
         },
         on: {
           'vuetable:cell-clicked': this.onCellClicked,
@@ -123,6 +125,10 @@ export default {
     },
     'row-component': {
       type: String
+    },
+    additionalParams: {
+      type: Object,
+      default: () => ({})
     }
   },
   methods: {

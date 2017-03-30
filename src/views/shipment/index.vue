@@ -5,11 +5,16 @@
         <h1 class="title">Shipments</h1>
         <hr>
         <data-table
+          ref="vuetable"
           url="v2/parcels/web"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
+          :additionalParams="moreParams"
           row-component="shipment-detail-row"
         >
+        <slot>
+          <form-select :options="possibleStatus" :value="status" @input="updateStatus"></form-select>
+        </slot>
         <template slot="transit" scope="props">
           {{computeTransitTime(props.rowData)}}
         </template>
@@ -22,6 +27,7 @@
 <script>
 import Vue from 'vue'
 import moment from 'moment'
+import FormSelect from '../../components/FormSelect'
 import DataTable from '../../components/DataTable'
 import DetailRow from './DetailRow'
 import Status from './Status'
@@ -31,10 +37,21 @@ Vue.component('shipment-status', Status)
 
 export default {
   components: {
-    DataTable
+    DataTable,
+    FormSelect
   },
   data () {
     return {
+      status: '-1',
+      possibleStatus: [
+        {label: 'All Status', value: '-1'},
+        {label: 'In Transit', value: '0'},
+        {label: 'ReceivedSuccess', value: '1'},
+        {label: 'ReceivedFailure', value: '2'},
+        {label: 'MinedSuccess', value: '3'},
+        {label: 'MinedFailure', value: '4'},
+        {label: 'Conflict', value: '5'}
+      ],
       table: {
         columns: [
           {name: '__component:shipment-status', title: this.$t('status'), titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered'},
@@ -59,6 +76,19 @@ export default {
         return `${diff}h`
       } else {
         return 'n/a'
+      }
+    },
+    updateStatus (value) {
+      this.status = value
+      Vue.nextTick(() => {
+        this.$refs.vuetable.reload()
+      })
+    }
+  },
+  computed: {
+    moreParams () {
+      return {
+        status: this.status
       }
     }
   }
