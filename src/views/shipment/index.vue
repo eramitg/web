@@ -37,13 +37,13 @@ export default {
     return {
       table: {
         columns: [
+          {name: '__component:shipment-status', title: this.$t('status'), titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered'},
           {name: 'tntNumber', title: this.$t('tnt'), sortField: 'tntNumber'},
           {name: 'senderCompany', title: this.$t('send_comp'), sortField: 'senderCompany'},
           {name: 'receiverCompany', title: this.$t('rcv_comp'), sortField: 'receiverCompany'},
           {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
           {name: 'dateReceived', title: this.$t('date_received'), sortField: 'dateReceived', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
-          {name: '__slot:transit', title: this.$t('transit')},
-          {name: '__component:shipment-status', title: this.$t('status'), dataClass: 'has-text-centered'}
+          {name: '__slot:transit', title: this.$t('transit')}
         ],
         sortOrder: [{
           field: 'updatedAt',
@@ -64,3 +64,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  .fix-width{
+    width: 70px;
+    text-align: center !important;
+  }
+
+  .vertical-centered{
+    vertical-align: middle;
+  }
+</style>

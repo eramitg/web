@@ -29,10 +29,10 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api/**': {
-        target: 'http://127.0.0.1:8080',
-        secure: false,
-        changeOrigin: true,
-        pathRewrite: {'^/api': ''}
+        target: 'http://dev.modum.io', //'http://127.0.0.1:8080',
+        // secure: false,
+        // changeOrigin: true,
+        // pathRewrite: {'^/api': ''}
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
