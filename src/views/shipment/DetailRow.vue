@@ -97,7 +97,7 @@ export default {
     createChartData (data) {
       return data
       ? [{
-        x: data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
+        x: data.map(item => new Date(item.timestamp)), // data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
         y: data.map(item => item.temperature)
       }]
       : []
