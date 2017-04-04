@@ -10,6 +10,7 @@
           :min="rowData.minTemp"
           :max="rowData.maxTemp"
           :filename="rowData.tntNumber"
+          :layout="layout"
         ></plotly>
       </div>
     </div>
@@ -107,6 +108,29 @@ export default {
   filters: {
     formatDate (value) {
       return moment(value).format('DD.MM.YYYY, HH:mm')
+    }
+  },
+  computed: {
+    min () {
+      return Math.min(...this.chart.data[0].y)
+    },
+    max () {
+      return Math.max(...this.chart.data[0].y)
+    },
+    range () {
+      let offset = 3
+      return [
+        this.min - offset < this.rowData.minTemp ? this.min - offset : this.rowData.minTemp - offset,
+        this.max + offset > this.rowData.maxTemp ? this.max + offset : this.rowData.maxTemp + offset
+      ]
+    },
+    layout () {
+      return {
+        yaxis: {
+          title: '°C',
+          range: this.range
+        }
+      }
     }
   }
 }
