@@ -9,6 +9,7 @@
           :data="chart.data"
           :min="rowData.minTemp"
           :max="rowData.maxTemp"
+          :filename="rowData.tntNumber"
         ></plotly>
       </div>
     </div>
