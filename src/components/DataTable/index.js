@@ -24,7 +24,10 @@ export default {
         ]),
         h('div', {class: 'level-right'}, [
           h('div', {class: 'level-item'}, [
-            h('vuetable-pagination-info', {ref: 'paginationInfo'})
+            h('vuetable-pagination-info', {ref: 'paginationInfo',
+              props: {
+                infoClass: ''
+              }})
           ]),
           h('div', {class: 'level-item'}, [
             h('form-select', {

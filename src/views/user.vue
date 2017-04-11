@@ -16,9 +16,9 @@
           :sortOrder="table.sortOrder"
         >
           <template slot="actions" scope="props">
-            <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"></button>
-            <button class="button is-info" @click="clickChangePw(props.rowData)"><i class="fa fa-lock"></button>
-            <button class="button is-danger" @click="deleteUser(props.rowData)"><i class="fa fa-trash"></button>
+            <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"/></button>
+            <button class="button is-info" @click="clickChangePw(props.rowData)"><i class="fa fa-lock"/></button>
+            <button class="button is-danger" @click="deleteUser(props.rowData)"><i class="fa fa-trash"/></button>
           </template>
         </data-table>
       </article>

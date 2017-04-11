@@ -17,7 +17,7 @@
           :sortOrder="table.sortOrder"
         >
           <template slot="actions" scope="props">
-            <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"></button>
+            <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"/></button>
           </template>
         </data-table>
 
