@@ -21,5 +21,6 @@ export default {
   total_shipment: 'Total shipments sent',
   shipment_ok: 'Total shipments ok',
   deviations: 'Number of deviations',
-  shipment_transit: 'Number of shipments in transit'
+  shipment_transit: 'Number of shipments in transit',
+  shipment_not_received: 'The shipment has not been received yet'
 }
