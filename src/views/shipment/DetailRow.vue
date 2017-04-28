@@ -1,15 +1,20 @@
 <template>
   <div v-if="chart.data" class="columns">
     <div class="column is-three-quarters">
-      <div class="box">
+      <div class="box" v-if="chart.data.length">
         <h1 class="title is-5">{{$t('temperature_measurements')}}</h1>
         <hr>
         <plotly
-          v-if="chart.data"
+          v-if="chart.data.length"
           :data="chart.data"
           :min="rowData.minTemp"
           :max="rowData.maxTemp"
+          :filename="rowData.tntNumber"
+          :layout="layout"
         ></plotly>
+      </div>
+      <div class="box" v-else>
+        <h1 class="title is-5">{{$t('shipment_not_received')}}</h1>
       </div>
     </div>
 
@@ -95,9 +100,10 @@ export default {
   },
   methods: {
     createChartData (data) {
+      console.log(data)
       return data
       ? [{
-        x: data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
+        x: data.map(item => new Date(item.timestamp)), // data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
         y: data.map(item => item.temperature)
       }]
       : []
@@ -106,6 +112,36 @@ export default {
   filters: {
     formatDate (value) {
       return moment(value).format('DD.MM.YYYY, HH:mm')
+    }
+  },
+  computed: {
+    min () {
+      return this.chart.data.length ? Math.min(...this.chart.data[0].y) : 0
+    },
+    max () {
+      return this.chart.data.length ? Math.max(...this.chart.data[0].y) : 0
+    },
+    range () {
+      let offset = 3
+      return [
+        this.min - offset < this.rowData.minTemp ? this.min - offset : this.rowData.minTemp - offset,
+        this.max + offset > this.rowData.maxTemp ? this.max + offset : this.rowData.maxTemp + offset
+      ]
+    },
+    layout () {
+      return {
+        margin: {
+          l: 50,
+          r: 50,
+          b: 50,
+          t: 50,
+          pad: 4
+        },
+        yaxis: {
+          title: '°C',
+          range: this.range
+        }
+      }
     }
   }
 }

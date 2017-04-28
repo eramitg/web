@@ -29,6 +29,10 @@ export default {
     max: {
       type: Number,
       default: null
+    },
+    filename: {
+      type: String,
+      default: 'newplot'
     }
   },
   mounted () {
@@ -38,6 +42,8 @@ export default {
       this.layout,
       this.config
     ).then(res => {
+      // set filename for image download
+      res.fn = this.filename
       this.chart = res
     })
     window.addEventListener('resize', this.handleResize)

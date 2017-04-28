@@ -41,7 +41,7 @@
     </div>
   </div>
   <div v-else>
-    Make sure you have an internet connection
+    No statistics to show yet
   </div>
 </template>
 
@@ -56,10 +56,14 @@
       Chart
     },
     async beforeRouteEnter (to, from, next) {
-      let {data} = await Vue.http.get('statistics')
-      next(vm => {
-        vm.$data.parcels = data
-      })
+      try {
+        let {data} = await Vue.http.get('statistics')
+        next(vm => {
+          vm.$data.parcels = data
+        })
+      } catch (e) {
+        next()
+      }
     },
     data () {
       return {
