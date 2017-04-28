@@ -8,13 +8,31 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import Snackbar from './layout/Snackbar.vue'
 import Confirm from './layout/Confirm.vue'
+import store from './store'
+import router from './router'
 export default {
   name: 'app',
   components: {
     Confirm,
     Snackbar
+  },
+  beforeCreate () {
+    const token = localStorage.getItem('token')
+    if (token) {
+      store.commit('setToken', token)
+      Vue.nextTick(async () => {
+        // check if token is still valid
+        try {
+          await Vue.http.get('statistics')
+        } catch (e) {
+          store.commit('logout')
+          router.push('/login')
+        }
+      })
+    }
   },
   mounted () {
     this.$Progress.finish()
