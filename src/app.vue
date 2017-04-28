@@ -20,19 +20,11 @@ export default {
     Snackbar
   },
   beforeCreate () {
-    const token = localStorage.getItem('token')
-    if (token) {
-      store.commit('setToken', token)
-      Vue.nextTick(async () => {
-        // check if token is still valid
-        try {
-          await Vue.http.get('statistics')
-        } catch (e) {
-          store.commit('logout')
-          router.push('/login')
-        }
-      })
-    }
+    Vue.http.get('statistics')
+    .catch(() => {
+      store.commit('logout')
+      router.push('/login')
+    })
   },
   mounted () {
     this.$Progress.finish()

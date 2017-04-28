@@ -19,6 +19,11 @@ Vue.use(VueProgressBar, {
 
 Vue.http.options.root = process.env.API_ROOT
 
+const token = localStorage.getItem('token')
+if (token) {
+  store.commit('setToken', token)
+}
+
 // check authentication
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
