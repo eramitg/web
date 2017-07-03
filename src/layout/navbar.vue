@@ -9,8 +9,9 @@
           </a>
         </div>
         <div class="nav-right is-flex">
-          <div class="nav-item"><i class="fa fa-user margin-right"></i>{{user.userName}}  /  {{user.companyName}}</div>
-          <div class="nav-item" v-if="user.role != 'USER'"><span class="tag is-warning">{{user.role}}</span></div>
+          <div class="nav-item"><i class="fa fa-user margin-right"></i>{{user.firstname}} {{user.lastname}}</div>
+          <div class="nav-item"><i class="fa fa-industry margin-right"></i>{{company.name}}</div>
+          <div class="nav-item" v-if="user.role != 'USER'"><span class="tag is-warning">{{hasRole}}</span></div>
           <a class="nav-item" @click="logout"><i class="fa fa-sign-out"></i> Sign out</a>
         </div>
       </nav>
@@ -48,19 +49,11 @@
           if (role === null) return true
         }
       },
-      isAllowedToAccessPath (role) {
-        switch (this.user.role) {
-          case 'SUPER':
-            return true
-          case 'ADMIN':
-            if (role === 'ADMIN' || role === undefined) return true
-            else return false
-          case 'USER':
-            if (role === 'ADMIN' || role === 'SUPER') return false
-            if (role === undefined) return true
-            break
-          default:
-            return false
+      async isAllowedToAccessPath (role) {
+        try {
+          return await this.store.dispatch('checkAccess', role)
+        } catch (e) {
+          return false
         }
       }
     },
@@ -69,7 +62,7 @@
         let route = this.$router.options.routes.find(route => route.path === '/')
         return route ? route.children : []
       },
-      ...mapGetters(['user'])
+      ...mapGetters(['user', 'company', 'hasRole'])
     }
   }
 </script>

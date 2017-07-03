@@ -24,6 +24,11 @@ if (token) {
   store.commit('setToken', token)
 }
 
+const user = localStorage.getItem('user')
+if (user) {
+  store.commit('setUser', JSON.parse(user))
+}
+
 // check authentication
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {

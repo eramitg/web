@@ -10,12 +10,12 @@
               </figure>
               <hr>
               <form-input
-                label="Username"
-                v-model="username"
-                name="username"
+                label="Email"
+                v-model="mail"
+                name="email"
                 icon="fa fa-user-circle"
-                v-validate="'required'"
-                :err="errors.first('username')"
+                v-validate="'required|email'"
+                :err="errors.first('email')"
               />
               <form-input
                 label="Password"
@@ -46,7 +46,7 @@
     },
     data () {
       return {
-        username: '',
+        mail: '',
         password: '',
         loading: false
       }
@@ -58,7 +58,7 @@
           this.loading = true
           try {
             await this.$store.dispatch('login', {
-              username: this.username,
+              mail: this.mail,
               password: this.password
             })
             const {redirect} = this.$route.query
@@ -72,7 +72,7 @@
         }
       },
       reset () {
-        this.username = ''
+        this.mail = ''
         this.password = ''
       }
     }
