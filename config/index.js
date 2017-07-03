@@ -13,7 +13,7 @@ module.exports = {
     // Surge or Netlify already gzip all static assets for you.
     // Before setting to `true`, make sure to:
     // npm install --save-dev compression-webpack-plugin
-    productionGzip: false,
+    productionGzip: true,
     productionGzipExtensions: ['js', 'css'],
     // Run the build command with an extra argument to
     // View the bundle analyzer report after build finishes:
@@ -29,10 +29,10 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api/**': {
-        target: 'http://dev.modum.io', //'http://127.0.0.1:8080',
-        // secure: false,
-        // changeOrigin: true,
-        // pathRewrite: {'^/api': ''}
+        target: 'http://127.0.0.1:8080', // 'http://dev.modum.io'
+        secure: false,
+        changeOrigin: true,
+        pathRewrite: {'^/api': ''}
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"

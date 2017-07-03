@@ -53,9 +53,8 @@
     },
     methods: {
       async onSubmit () {
-        this.$validator.validateAll()
-
-        if (this.formFields.valid()) {
+        try {
+          await this.$validator.validateAll()
           this.loading = true
           try {
             await this.$store.dispatch('login', {
@@ -65,9 +64,11 @@
             const {redirect} = this.$route.query
             this.$router.push(redirect || '/')
           } catch ({data}) {
-            this.$store.dispatch('notify', {text: data.message, type: 'danger'})
+            this.$store.dispatch('notify', {text: data, type: 'danger'})
           }
           this.loading = false
+        } catch (e) {
+
         }
       },
       reset () {
