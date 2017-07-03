@@ -7,9 +7,9 @@ import store from './store'
 
 import VeeValidate from 'vee-validate'
 import VueProgressBar from 'vue-progressbar'
-import VueResource from 'vue-resource'
+import axiosPlugin from './axiosPlugin'
 
-Vue.use(VueResource)
+Vue.use(axiosPlugin)
 Vue.use(VeeValidate, {fieldsBagName: 'formFields'})
 Vue.use(VueProgressBar, {
   color: 'rgb(143, 255, 199)',
@@ -17,7 +17,8 @@ Vue.use(VueProgressBar, {
   height: '2px'
 })
 
-Vue.http.options.root = process.env.API_ROOT
+// Set the base endpoint of axios
+Vue.http.defaults.baseURL = process.env.API_ROOT
 
 const token = localStorage.getItem('token')
 if (token) {

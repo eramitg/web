@@ -29,7 +29,7 @@
       <form-input v-if="mode != 'UPDATE'" v-model="form.password" label="Password" placeholder="Password" type="password" v-validate="{ rules: {required: true}, arg: 'form.password' }" name="password" :err="errors.first('password')"/>
       <form-input v-if="mode != 'UPDATE'" v-model="form.password2" label="Repeat Password" placeholder="Password" type="password" v-validate="{ rules: {confirmed: 'password'}, arg: 'form.password2' }" name="password2" :err="errors.first('password2')"/>
       <form-select v-if="mode != 'PASSWORD'" v-model="form.role" label="Role" :options="['USER', 'ADMIN']"/>
-      <form-select v-if="$store.getters.user.role == 'SUPER' && mode != 'PASSWORD'" v-model.number="form.companyId" label="Company" :options="companyOptions" v-validate="'required'" name="company" :err="errors.first('company')"/>
+      <form-select v-if="$store.getters.hasRole == 'SUPER' && mode != 'PASSWORD'" v-model.number="form.companyId" label="Company" :options="companyOptions" v-validate="'required'" name="company" :err="errors.first('company')"/>
       <button slot="footer" type="submit" class="button is-primary" @click.prevent="submitForm">Save changes</button>
       <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
     </modal>
@@ -54,8 +54,8 @@
     },
     async beforeRouteEnter (to, from, next) {
       try {
-        if (store.getters.user.role === 'SUPER') {
-          let {data} = await Vue.http.get('v1/company/companies')
+        if (store.getters.hasRole === 'SUPER') {
+          let {data} = await Vue.http.get('companies')
           next(vm => {
             vm.$data.companies = data
           })
@@ -81,8 +81,10 @@
         },
         table: {
           columns: [
-            {name: 'userName', title: 'Name', sortField: 'userName'},
-            {name: 'userRole', title: 'Role', sortField: 'userRole'},
+            {name: 'mail', title: 'Email', sortField: 'email'},
+            {name: 'firstname', title: 'Firstname', sortField: 'firstname'},
+            {name: 'lastname', title: 'Lastname', sortField: 'lastname'},
+            {name: 'role', title: 'Role', sortField: 'role'},
             {name: 'companyName', title: 'Company', sortField: 'companyName'},
             {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'}
           ],

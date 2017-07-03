@@ -5,7 +5,7 @@
         <h1 class="title">Shipments</h1>
         <hr>
         <data-table
-          url="v2/parcels/web"
+          url="shipments"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
           row-component="shipment-detail-row"

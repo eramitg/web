@@ -4,15 +4,15 @@
       <article class="tile is-child box">
         <h1 class="title">
           Company
-          <button v-if="$store.getters.user.role == 'SUPER'" class="button" @click="showModal = true">
+          <button v-if="$store.getters.hasRole == 'SUPER'" class="button" @click="showModal = true">
             <span class="fa fa-plus"></span>
           </button>
         </h1>
         <hr>
         <data-table
-          v-if="$store.getters.user.role == 'SUPER'"
+          v-if="$store.getters.hasRole == 'SUPER'"
           ref="vuetable"
-          url="v1/company/companies"
+          url="companies"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
         >
@@ -61,7 +61,7 @@
       Modal
     },
     async beforeRouteEnter (to, from, next) {
-      let {data} = await Vue.http.get('v1/company/admin/company')
+      let {data} = await Vue.http.get('companies')
       next(vm => {
         vm.$data.company = data
       })
@@ -101,6 +101,7 @@
         table: {
           columns: [
             {name: 'name', title: 'Name', sortField: 'name'},
+            {name: 'interval', title: 'Default Measurement Interval', sortField: 'interval'},
             {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'}
           ],
           sortOrder: [{

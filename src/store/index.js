@@ -32,14 +32,15 @@ else Vue.i18n.set('en')
 store.subscribe((mutation, state) => {
   switch (mutation.type) {
     case 'setToken':
-      Vue.http.headers.common['Authorization'] = `Bearer ${mutation.payload}`
+      // Vue.http.headers.default.common['Authorization'] = `Bearer ${mutation.payload}`
+      Vue.http.defaults.headers.common['Authorization'] = `Bearer ${mutation.payload}`
       localStorage.setItem('token', mutation.payload)
       break
     case 'setUser':
       localStorage.setItem('user', JSON.stringify(mutation.payload))
       break
     case 'logout':
-      delete Vue.http.headers.common['Authorization']
+      delete Vue.http.defaults.headers.common['Authorization']
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       break
