@@ -54,6 +54,7 @@ export default {
         scopedSlots: this.$scopedSlots,
         props: {
           'api-url': this.url,
+          'http-options': this.query,
           css: this.css,
           'per-page': this.numberOfItems,
           fields: this.fields,
@@ -84,6 +85,10 @@ export default {
     fields: {
       type: Array,
       required: true
+    },
+    query: {
+      type: Object,
+      default: () => ({})
     },
     sortOrder: {
       type: Array
@@ -149,6 +154,18 @@ export default {
       return (value === null || parsed === '01.01.0001, 01:00')
         ? 'n/a'
         : parsed
+    },
+    roleAsString (role) {
+      switch (role) {
+        case 0:
+          return 'USER'
+        case 1:
+          return 'ADMIN'
+        case 2:
+          return 'SUPER'
+        default:
+          return 'UNKNOWN'
+      }
     }
   }
 }
