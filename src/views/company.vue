@@ -15,6 +15,7 @@
           url="companies"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
+          :query="table.query"
         >
           <template slot="actions" scope="props">
             <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"/></button>
@@ -109,7 +110,11 @@
           sortOrder: [{
             field: 'name',
             direction: 'asc'
-          }]
+          }],
+          query: [
+            {name: 'Name', field: 'name'},
+            {name: 'Interval', field: 'interval'}
+          ]
         }
       }
     },
