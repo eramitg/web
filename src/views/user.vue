@@ -14,6 +14,7 @@
           url="users"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
+          :query="table.query"
         >
           <template slot="actions" scope="props">
             <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"/></button>
@@ -95,7 +96,13 @@
           sortOrder: [{
             field: 'mail',
             direction: 'asc'
-          }]
+          }],
+          query: [
+            {name: 'Email', field: 'mail'},
+            {name: 'Firstname', field: 'firstname'},
+            {name: 'Lastname', field: 'lastname'},
+            {name: 'Role', field: 'role', options: [{label: 'USER', value: 0}, {label: 'ADMIN', value: 1}, {label: 'SUPER', value: 2}]}
+          ]
         }
       }
     },

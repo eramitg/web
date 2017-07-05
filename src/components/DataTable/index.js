@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuetable from 'vuetable-2/src/components/Vuetable.vue'
 import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo'
 import FilterBar from './FilterBar.vue'
+import FilterTags from './FilterTags.vue'
 import Pagination from './Pagination.vue'
 import FormSelect from '../FormSelect.vue'
 import moment from 'moment'
@@ -11,15 +12,31 @@ export default {
     Vuetable,
     VuetablePaginationInfo,
     FilterBar,
+    FilterTags,
     Pagination,
     FormSelect
   },
   render (h) {
+    window.filters = this.filters
     return h('div', [
       h('nav', {class: 'level is-marginless'}, [
         h('div', {class: 'level-left'}, [
           h('div', {class: 'level-item'}, [
-            h('filter-bar')
+            h('filter-bar', {
+              props: {query: this.query},
+              on: {
+                filter: this.addFilter,
+                'filter-reset': this.resetFilter
+              }
+            })
+          ])
+        ]),
+        h('div', {class: 'level-left'}, [
+          h('div', {class: 'level-item'}, [
+            h('filter-tags', {
+              props: {tags: this.filters},
+              on: {'remove-tag': this.removeFilter}
+            })
           ])
         ]),
         h('div', {class: 'level-right'}, [
@@ -54,7 +71,7 @@ export default {
         scopedSlots: this.$scopedSlots,
         props: {
           'api-url': this.url,
-          'http-options': this.query,
+          'append-params': this.queryParams,
           css: this.css,
           'per-page': this.numberOfItems,
           fields: this.fields,
@@ -73,7 +90,28 @@ export default {
   },
   data () {
     return {
-      numberOfItems: 10
+      numberOfItems: 10,
+      filters: []
+    }
+  },
+  computed: {
+    queryParams () {
+      let param = {}
+      this.filters.forEach(item => {
+        if (param.hasOwnProperty(item.field) && param[item.field]) {
+          if (Object.prototype.toString.call(param[item.field]) === '[object Array]') {
+            param[item.field].push(item.value)
+          } else {
+            let currentVal = param[item.field]
+            param[item.field] = []
+            param[item.field].push(currentVal)
+            param[item.field].push(item.value)
+          }
+        } else {
+          param[item.field] = item.value
+        }
+      })
+      return param
     }
   },
   props: {
@@ -87,8 +125,8 @@ export default {
       required: true
     },
     query: {
-      type: Object,
-      default: () => ({})
+      type: Array,
+      default: () => ([])
     },
     sortOrder: {
       type: Array
@@ -148,6 +186,24 @@ export default {
       if (this.rowComponent) {
         this.$refs.vuetable.toggleDetailRow(data.id)
       }
+    },
+    addFilter (filter) {
+      this.filters.push(filter)
+      Vue.nextTick(() => {
+        this.reload()
+      })
+    },
+    removeFilter (filter) {
+      this.filters.splice(this.filters.indexOf(filter), 1)
+      this.$nextTick(() => {
+        this.reload()
+      })
+    },
+    resetFilter () {
+      this.filters = []
+      Vue.nextTick(() => {
+        this.reload()
+      })
     },
     formatDate (value, fmt = 'DD.MM.YYYY, HH:mm') {
       let parsed = moment(value).format(fmt)
