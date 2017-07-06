@@ -38,11 +38,11 @@ export default {
       table: {
         columns: [
           {name: '__component:shipment-status', title: this.$t('status'), titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered'},
-          {name: 'tntNumber', title: this.$t('tnt'), sortField: 'tntNumber'},
+          {name: 'tnt', title: this.$t('tnt'), sortField: 'tnt'},
           {name: 'senderCompany', title: this.$t('send_comp'), sortField: 'senderCompany'},
           {name: 'receiverCompany', title: this.$t('rcv_comp'), sortField: 'receiverCompany'},
-          {name: 'dateSent', title: this.$t('date_sent'), sortField: 'dateSent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
-          {name: 'dateReceived', title: this.$t('date_received'), sortField: 'dateReceived', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
+          {name: 'sent', title: this.$t('date_sent'), sortField: 'sent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
+          {name: 'received', title: this.$t('date_received'), sortField: 'received', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
           {name: '__slot:transit', title: this.$t('transit')}
         ],
         sortOrder: [{

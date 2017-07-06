@@ -1,12 +1,12 @@
 <template>
-  <div v-if="chart.data" class="columns">
+  <div v-if="chartData" class="columns">
     <div class="column is-three-quarters">
-      <div class="box" v-if="chart.data.length">
+      <div class="box" v-if="chartData.length">
         <h1 class="title is-5">{{$t('temperature_measurements')}}</h1>
         <hr>
         <plotly
-          v-if="chart.data.length"
-          :data="chart.data"
+          v-if="chartData.length"
+          :data="chartData"
           :min="rowData.minTemp"
           :max="rowData.maxTemp"
           :filename="rowData.tntNumber"
@@ -25,7 +25,7 @@
 
         <div class="inline field">
           <label><b>{{$t('tnt')}}</b>: </label>
-          <span>{{rowData.tntNumber}}</span>
+          <span>{{rowData.tnt}}</span>
         </div>
         <div class="inline field">
           <label><b>{{$t('sensor')}}</b>: </label>
@@ -79,8 +79,12 @@ export default {
     Plotly
   },
   async created () {
-    let {data} = await this.$http.get(`v2/parcels/details/${this.rowData.id}`)
-    this.chart.data = this.createChartData(data)
+    let {data} = await this.$http.get(`shipments/${this.rowData.id}`)
+    this.measurementInterval = data.measurementInterval
+    this.measurementStart = data.measurementStart
+    this.chartData = this.createChartData(data.measurements)
+    // let {data} = await this.$http.get(`shipments/${this.rowData.id}`)
+    // this.chart.data = this.createChartData(data)
   },
   props: {
     rowData: {
@@ -93,18 +97,33 @@ export default {
   },
   data () {
     return {
-      chart: {
-        data: null
-      }
+      chartData: null,
+      measurementStart: null,
+      measurementInterval: null
     }
   },
   methods: {
+    decodeMeasurements (data) {
+      let binary = window.atob(data)
+      let len = binary.length
+      let bytes = new Uint8Array(len)
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binary.charCodeAt(i)
+      }
+      return Array.from(bytes.map(val => {
+        let newVal = val < 0 ? val += 0x100 : val
+        return newVal * (60.0 / 0xff) - 10
+      }))
+    },
     createChartData (data) {
-      console.log(data)
-      return data
+      let decode = this.decodeMeasurements(data)
+      console.log(decode)
+      let start = new Date(this.measurementStart)
+
+      return decode
       ? [{
-        x: data.map(item => new Date(item.timestamp)), // data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
-        y: data.map(item => item.temperature)
+        x: decode.map((item, idx) => new Date(start.getTime() + idx * (this.measurementInterval * 60 * 1000))), // data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
+        y: decode
       }]
       : []
     }
@@ -116,10 +135,10 @@ export default {
   },
   computed: {
     min () {
-      return this.chart.data.length ? Math.min(...this.chart.data[0].y) : 0
+      return this.chartData.length ? Math.min(...this.chartData[0].y) : 0
     },
     max () {
-      return this.chart.data.length ? Math.max(...this.chart.data[0].y) : 0
+      return this.chartData.length ? Math.max(...this.chartData[0].y) : 0
     },
     range () {
       let offset = 3
