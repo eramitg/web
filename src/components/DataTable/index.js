@@ -17,7 +17,6 @@ export default {
     FormSelect
   },
   render (h) {
-    window.filters = this.filters
     return h('div', [
       h('nav', {class: 'level is-marginless'}, [
         h('div', {class: 'level-left'}, [
@@ -34,7 +33,7 @@ export default {
         h('div', {class: 'level-left'}, [
           h('div', {class: 'level-item'}, [
             h('filter-tags', {
-              props: {tags: this.filters},
+              props: {tags: this.$route.query, query: this.query},
               on: {'remove-tag': this.removeFilter}
             })
           ])
@@ -71,7 +70,7 @@ export default {
         scopedSlots: this.$scopedSlots,
         props: {
           'api-url': this.url,
-          'append-params': this.queryParams,
+          'append-params': this.$route.query,
           css: this.css,
           'per-page': this.numberOfItems,
           fields: this.fields,
@@ -90,8 +89,7 @@ export default {
   },
   data () {
     return {
-      numberOfItems: 10,
-      filters: []
+      numberOfItems: 10
     }
   },
   computed: {
@@ -123,6 +121,10 @@ export default {
     fields: {
       type: Array,
       required: true
+    },
+    filters: {
+      type: Object,
+      default: () => ({})
     },
     query: {
       type: Array,
@@ -187,22 +189,40 @@ export default {
         this.$refs.vuetable.toggleDetailRow(data.id)
       }
     },
-    addFilter (filter) {
-      this.filters.push(filter)
-      Vue.nextTick(() => {
-        this.reload()
+    addFilter (key, value) {
+      let query = {...this.$route.query}
+      if (query.hasOwnProperty(key) && query[key]) {
+        if (Object.prototype.toString.call(query[key]) === '[object Array]') {
+          query[key].push(value)
+        } else {
+          let currentVal = query[key]
+          query[key] = []
+          query[key].push(currentVal)
+          query[key].push(value)
+        }
+      } else {
+        query[key] = value
+      }
+      this.$router.replace({...this.$route, query}, () => {
+        this.$nextTick(() => {
+          this.reload()
+        })
       })
     },
-    removeFilter (filter) {
-      this.filters.splice(this.filters.indexOf(filter), 1)
-      this.$nextTick(() => {
-        this.reload()
+    removeFilter (key) {
+      let query = {...this.$route.query}
+      delete query[key]
+      this.$router.replace({...this.$route, query}, () => {
+        this.$nextTick(() => {
+          this.reload()
+        })
       })
     },
     resetFilter () {
-      this.filters = []
-      Vue.nextTick(() => {
-        this.reload()
+      this.$router.replace({...this.$route, query: {}}, () => {
+        this.$nextTick(() => {
+          this.reload()
+        })
       })
     },
     formatDate (value, fmt = 'DD.MM.YYYY, HH:mm') {

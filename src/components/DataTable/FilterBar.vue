@@ -50,13 +50,14 @@ export default {
       value: null
     }
   },
+  watch: {
+    filter (val) {
+      this.value = null
+    }
+  },
   methods: {
     doFilter () {
-      this.$emit('filter', {
-        name: this.filter.name,
-        field: this.filter.field,
-        value: this.value
-      })
+      this.$emit('filter', this.filter.field, this.value)
     },
     resetFilter () {
       this.filter = null
