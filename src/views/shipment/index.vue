@@ -5,7 +5,7 @@
         <h1 class="title">Shipments</h1>
         <hr>
         <data-table
-          url="shipments?nested=1"
+          url="shipments?nested=2"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
           :query="table.query"
@@ -40,8 +40,8 @@ export default {
         columns: [
           {name: '__component:shipment-status', title: this.$t('status'), titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered', sortField: 'status'},
           {name: 'tnt', title: this.$t('tnt'), sortField: 'tnt'},
-          {name: 'senderCompany', title: this.$t('send_comp'), sortField: 'senderCompany'},
-          {name: 'receiverCompany', title: this.$t('rcv_comp'), sortField: 'receiverCompany'},
+          {name: 'sender.company.name', title: this.$t('send_comp')},
+          {name: 'receiver.company.name', title: this.$t('rcv_comp')},
           {name: 'sent', title: this.$t('date_sent'), sortField: 'sent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
           {name: 'received', title: this.$t('date_received'), sortField: 'received', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
           {name: '__slot:transit', title: this.$t('transit')}
@@ -51,14 +51,26 @@ export default {
           direction: 'desc'
         }],
         query: [
-          {name: 'TNT', field: 'tnt'}
+          {
+            name: this.$t('status'),
+            field: 'status',
+            options: [
+              {label: 'In Transit', value: 0},
+              {label: 'Received Success', value: 1},
+              {label: 'Received Failure', value: 2},
+              {label: 'Mined Success', value: 3},
+              {label: 'Mined Failure', value: 4},
+              {label: 'Conflict', value: 5}
+            ]
+          },
+          {name: this.$t('tnt'), field: 'tnt'}
         ]
       }
     }
   },
   methods: {
-    computeTransitTime ({dateSent, dateReceived}) {
-      let diff = moment(dateReceived).diff(moment(dateSent), 'hour', true).toFixed(1)
+    computeTransitTime ({sent, received}) {
+      let diff = moment(received).diff(moment(sent), 'hour', true).toFixed(1)
       if (diff > 0) {
         return `${diff}h`
       } else {

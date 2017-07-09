@@ -11,6 +11,9 @@ import axiosPlugin from './axiosPlugin'
 import axios from 'axios'
 import qs from 'qs'
 
+import Card from './components/Card.vue'
+Vue.component('card', Card)
+
 Vue.use(axiosPlugin)
 Vue.use(VeeValidate, {fieldsBagName: 'formFields'})
 Vue.use(VueProgressBar, {

@@ -24,7 +24,7 @@ export default {
       let obj = this.query.find(item => {
         return item.field === key
       })
-      if (obj.options) {
+      if (obj && obj.options) {
         if (Object.prototype.toString.call(value) === '[object Array]') {
           let names = value.map(val => {
             let option = obj.options.find(item => {

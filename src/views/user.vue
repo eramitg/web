@@ -13,7 +13,6 @@
           ref="vuetable"
           url="users?nested=1"
           :fields="table.columns"
-          :filters="$route.query"
           :sortOrder="table.sortOrder"
           :query="table.query"
         >
