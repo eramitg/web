@@ -11,7 +11,7 @@
         <hr>
         <data-table
           ref="vuetable"
-          url="users"
+          url="users?nested=1"
           :fields="table.columns"
           :filters="$route.query"
           :sortOrder="table.sortOrder"
@@ -91,7 +91,7 @@
             {name: 'firstname', title: 'Firstname', sortField: 'firstname'},
             {name: 'lastname', title: 'Lastname', sortField: 'lastname'},
             {name: 'role', title: 'Role', sortField: 'role', callback: 'roleAsString'},
-            {name: 'companyName', title: 'Company', sortField: 'companyName'},
+            {name: 'company.name', title: 'Company', sortField: 'company_id'},
             {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'}
           ],
           sortOrder: [{

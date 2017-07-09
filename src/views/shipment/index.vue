@@ -5,9 +5,10 @@
         <h1 class="title">Shipments</h1>
         <hr>
         <data-table
-          url="shipments"
+          url="shipments?nested=1"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
+          :query="table.query"
           row-component="shipment-detail-row"
         >
         <template slot="transit" scope="props">
@@ -37,7 +38,7 @@ export default {
     return {
       table: {
         columns: [
-          {name: '__component:shipment-status', title: this.$t('status'), titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered'},
+          {name: '__component:shipment-status', title: this.$t('status'), titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered', sortField: 'status'},
           {name: 'tnt', title: this.$t('tnt'), sortField: 'tnt'},
           {name: 'senderCompany', title: this.$t('send_comp'), sortField: 'senderCompany'},
           {name: 'receiverCompany', title: this.$t('rcv_comp'), sortField: 'receiverCompany'},
@@ -48,7 +49,10 @@ export default {
         sortOrder: [{
           field: 'updatedAt',
           direction: 'desc'
-        }]
+        }],
+        query: [
+          {name: 'TNT', field: 'tnt'}
+        ]
       }
     }
   },

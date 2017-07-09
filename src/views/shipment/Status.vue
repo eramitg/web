@@ -1,6 +1,6 @@
 <template>
-  <img class="small" v-if="statusCode < 0" src="../../assets/icons/shipment_underway.svg" :alt="$t('status_transit')">
-  <img class="small" v-else-if="statusCode === 0" src="../../assets/icons/inside_specifications.svg" :alt="$t('status_ok')">
+  <img class="small" v-if="rowData.status === 0" src="../../assets/icons/shipment_underway.svg" :alt="$t('status_transit')">
+  <img class="small" v-else-if="rowData.status === 1" src="../../assets/icons/inside_specifications.svg" :alt="$t('status_ok')">
   <img class="small" v-else src="../../assets/icons/outside_specifications.svg" :alt="$t('status_bad')">
 </template>
 
@@ -13,11 +13,6 @@ export default {
     },
     rowIndex: {
       type: Number
-    }
-  },
-  computed: {
-    statusCode () {
-      return !this.rowData.isFailed && !this.rowData.isSuccess ? -1 : this.rowData.nrFailures
     }
   }
 }
