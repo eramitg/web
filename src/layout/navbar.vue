@@ -20,7 +20,7 @@
     <div class="hero-foot">
       <nav class="tabs is-centered is-fullwidth is-boxed">
         <ul>
-          <router-link v-for="route in routes" tag="li" :to="route.path" exact v-if="!route.meta || isAllowedToAccessPath(route.meta.role)">
+          <router-link v-for="route in routes" tag="li" :to="route.path" exact v-if="route.meta && isAllowedToAccessPath(route.meta.role)">
             <a>
               <span class="icon is-small" v-if="route.meta && route.meta.icon"><i :class="['fa', route.meta.icon]"></i></span>
               <span>{{route.meta.label || route.name}}</span>

@@ -59,8 +59,10 @@
           <label><b>{{$t('cat')}}</b>: </label>
           <span>{{rowData.tempCategory}}</span>
         </div>
+        <div v-if="link" class="inline field" :style="{marginTop: '20px'}">
+          <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
+        </div>
       </div>
-    </div>
     </div>
   </div>
   <div v-else class="has-text-centered">
@@ -79,12 +81,7 @@ export default {
     Plotly
   },
   async created () {
-    let {data} = await this.$http.get(`shipments/${this.rowData.id}`)
-    this.measurementInterval = data.measurementInterval
-    this.measurementStart = data.measurementStart
-    this.chartData = this.createChartData(data.measurements)
-    // let {data} = await this.$http.get(`shipments/${this.rowData.id}`)
-    // this.chart.data = this.createChartData(data)
+    this.chartData = this.createChartData(this.rowData.measurements)
   },
   props: {
     rowData: {
@@ -93,13 +90,15 @@ export default {
     },
     rowIndex: {
       type: Number
+    },
+    link: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
     return {
-      chartData: null,
-      measurementStart: null,
-      measurementInterval: null
+      chartData: null
     }
   },
   methods: {
@@ -118,11 +117,11 @@ export default {
     createChartData (data) {
       let decode = this.decodeMeasurements(data)
       console.log(decode)
-      let start = new Date(this.measurementStart)
+      let start = new Date(this.rowData.measurementStart)
 
       return decode
       ? [{
-        x: decode.map((item, idx) => new Date(start.getTime() + idx * (this.measurementInterval * 60 * 1000))), // data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
+        x: decode.map((item, idx) => new Date(start.getTime() + idx * (this.rowData.measurementInterval * 60 * 1000))), // data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
         y: decode
       }]
       : []
