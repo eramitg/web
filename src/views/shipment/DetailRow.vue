@@ -1,17 +1,52 @@
 <template>
-  <div v-if="chartData" class="columns">
+  <div class="columns">
     <div class="column is-three-quarters">
-      <div class="box" v-if="chartData.length">
-        <h1 class="title is-5">{{$t('temperature_measurements')}}</h1>
-        <hr>
+      <div v-if="decodedMeasurements.length" class="box">
+        <div class="tabs is-boxed is-medium">
+          <ul>
+            <li :class="{'is-active': page === 0}">
+              <a @click="page = 0"><span class="icon"><i class="fa fa-line-chart"></i></span><span>{{$t('temperature_measurements')}}</span></a>
+            </li>
+            <li :class="{'is-active': page === 1}">
+              <a @click="page = 1"><span class="icon"><i class="fa fa-bar-chart"></i></span><span>Histogram</span></a>
+            </li>
+            <li :class="{'is-active': page === 2}">
+              <a @click="page = 2"><span class="icon"><i class="fa fa-table"></i></span><span>Data Table</span></a>
+            </li>
+          </ul>
+        </div>
         <plotly
-          v-if="chartData.length"
-          :data="chartData"
+          v-if="page === 0 && timeseriesChart.length"
+          key="timeseries"
+          :data="timeseriesChart"
           :min="rowData.tempCat.minTemp"
           :max="rowData.tempCat.maxTemp"
           :filename="rowData.tnt"
-          :layout="layout"
+          :layout="timeLayout"
         ></plotly>
+        <plotly
+          v-if="page === 1 && histogramChart.length"
+          key="histogram"
+          :data="histogramChart"
+          :filename="rowData.tnt"
+          :layout="histogramLayout"
+        ></plotly>
+        <div v-if="page === 2" class="data-table">
+          <table v-if="timeseriesChart.length" key="datatable" class="table is-fullwidth data-table">
+            <thead>
+              <th><abbr title="Number">Nr</abbr></th>
+              <th>Time</th>
+              <th>Temperature</th>
+            </thead>
+            <tbody>
+              <tr v-for="temp, idx in dataTable">
+                <td>{{idx + 1}}</td>
+                <td>{{temp.time | formatDate}}</td>
+                <td>{{temp.temperature}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <div class="box" v-else>
         <h1 class="title is-5">{{$t('shipment_not_received')}}</h1>
@@ -65,27 +100,23 @@
       </div>
     </div>
   </div>
-  <div v-else class="has-text-centered">
-    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
-    <span class="sr-only">Loading...</span>
-  </div>
 </template>
 
 <script>
 import moment from 'moment'
 import Chart from '../../components/Chart.vue'
 import Plotly from '../../components/Plotly.vue'
+import Switches from 'vue-switches'
 export default {
   components: {
     Chart,
-    Plotly
-  },
-  async created () {
-    this.chartData = this.createChartData(this.rowData.measurements)
+    Plotly,
+    Switches
   },
   props: {
     rowData: {
       type: Object,
+      default: () => ({}),
       required: true
     },
     rowIndex: {
@@ -96,42 +127,72 @@ export default {
       default: true
     }
   },
-  data () {
-    return {
-      chartData: null
-    }
-  },
-  methods: {
-    decodeMeasurements (data) {
-      let binary = window.atob(data)
-      let len = binary.length
-      let bytes = new Uint8Array(len)
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binary.charCodeAt(i)
-      }
-      return Array.from(bytes.map(val => {
-        let newVal = val < 0 ? val += 0x100 : val
-        return newVal * (60.0 / 0xff) - 10
-      }))
-    },
-    createChartData (data) {
-      let decode = this.decodeMeasurements(data)
-      let start = new Date(this.rowData.measurementStart)
-
-      return decode
-      ? [{
-        x: decode.map((item, idx) => new Date(start.getTime() + idx * (this.rowData.measurementInterval * 60 * 1000))), // data.map(item => moment(item.timestamp).format('DD.MM.YYYY, HH:mm')),
-        y: decode
-      }]
-      : []
-    }
-  },
   filters: {
     formatDate (value) {
       return moment(value).format('DD.MM.YYYY, HH:mm')
     }
   },
+  data () {
+    return {
+      page: 0
+    }
+  },
   computed: {
+    decodedMeasurements () {
+      try {
+        let {measurements} = this.rowData
+        let binary = window.atob(measurements)
+        let len = binary.length
+        let bytes = new Uint8Array(len)
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binary.charCodeAt(i)
+        }
+        return Array.from(bytes.map(val => {
+          let newVal = val < 0 ? val += 0x100 : val
+          return newVal * (60.0 / 0xff) - 10
+        }))
+      } catch (e) {
+        return []
+      }
+    },
+    timeseriesChart () {
+      try {
+        let {measurementStart, measurementInterval} = this.rowData
+        let start = new Date(measurementStart)
+
+        return [{
+          x: this.decodedMeasurements.map((item, idx) => new Date(start.getTime() + idx * (measurementInterval * 60 * 1000))),
+          y: this.decodedMeasurements
+        }]
+      } catch (e) {
+        return []
+      }
+    },
+    histogramChart () {
+      try {
+        return [{
+          x: this.decodedMeasurements,
+          type: 'histogram'
+        }]
+      } catch (e) {
+        return []
+      }
+    },
+    dataTable () {
+      try {
+        let {measurementStart, measurementInterval} = this.rowData
+        let start = new Date(measurementStart)
+
+        return this.decodedMeasurements.map((item, idx) => {
+          return {
+            time: new Date(start.getTime() + idx * (measurementInterval * 60 * 1000)),
+            temperature: item
+          }
+        })
+      } catch (e) {
+        return []
+      }
+    },
     senderUser () {
       try {
         return `${this.rowData.sender.firstname} ${this.rowData.sender.lastname}`
@@ -168,10 +229,10 @@ export default {
       }
     },
     min () {
-      return this.chartData.length ? Math.min(...this.chartData[0].y) : 0
+      return this.decodedMeasurements.length ? Math.min(...this.decodedMeasurements) : 0
     },
     max () {
-      return this.chartData.length ? Math.max(...this.chartData[0].y) : 0
+      return this.decodedMeasurements.length ? Math.max(...this.decodedMeasurements) : 0
     },
     range () {
       let offset = 3
@@ -180,7 +241,7 @@ export default {
         this.max + offset > this.rowData.maxTemp ? this.max + offset : this.rowData.maxTemp + offset
       ]
     },
-    layout () {
+    timeLayout () {
       return {
         margin: {
           l: 50,
@@ -194,7 +255,26 @@ export default {
           range: this.range
         }
       }
+    },
+    histogramLayout () {
+      return {
+        margin: {
+          l: 50,
+          r: 50,
+          b: 50,
+          t: 50,
+          pad: 4
+        },
+        bargap: 0.15
+      }
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .data-table {
+    max-height: 400px;
+    overflow: scroll;
+  }
+</style>
