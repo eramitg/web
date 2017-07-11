@@ -74,12 +74,13 @@ export default {
   },
   methods: {
     computeTransitTime ({sent, received}) {
-      let diff = moment(received).diff(moment(sent), 'hour', true).toFixed(1)
-      if (diff > 0) {
-        return `${diff}h`
-      } else {
+      if (received === '0001-01-01T00:34:08+00:34') {
         return 'n/a'
       }
+
+      let diff = moment.duration(moment(received).diff(moment(sent)))
+
+      return diff.humanize()
     },
     visualizeTemperature ({calculation, tempCat}) {
       try {
