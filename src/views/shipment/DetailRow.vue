@@ -7,9 +7,9 @@
         <plotly
           v-if="chartData.length"
           :data="chartData"
-          :min="rowData.minTemp"
-          :max="rowData.maxTemp"
-          :filename="rowData.tntNumber"
+          :min="rowData.tempCat.minTemp"
+          :max="rowData.tempCat.maxTemp"
+          :filename="rowData.tnt"
           :layout="layout"
         ></plotly>
       </div>
@@ -33,19 +33,19 @@
         </div>
         <div class="inline field">
           <label><b>{{$t('send_comp')}}</b>: </label>
-          <span>{{rowData.senderCompany}}</span>
+          <span>{{senderCompany}}</span>
         </div>
         <div class="inline field">
           <label><b>{{$t('send_user')}}</b>: </label>
-          <span>{{rowData.sender}}</span>
+          <span>{{senderUser}}</span>
         </div>
         <div class="inline field">
           <label><b>{{$t('rcv_comp')}}</b>: </label>
-          <span>{{rowData.receiverCompany}}</span>
+          <span>{{receiverCompany}}</span>
         </div>
         <div class="inline field">
           <label><b>{{$t('rcv_user')}}</b>: </label>
-          <span>{{rowData.receiver}}</span>
+          <span>{{receiverUser}}</span>
         </div>
         <div class="inline field">
           <label><b>{{$t('date_sent')}}</b>: </label>
@@ -57,7 +57,7 @@
         </div>
         <div class="inline field">
           <label><b>{{$t('cat')}}</b>: </label>
-          <span>{{rowData.tempCategory}}</span>
+          <span>{{rowData.tempCat.name}}</span>
         </div>
         <div v-if="link" class="inline field" :style="{marginTop: '20px'}">
           <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
@@ -116,7 +116,6 @@ export default {
     },
     createChartData (data) {
       let decode = this.decodeMeasurements(data)
-      console.log(decode)
       let start = new Date(this.rowData.measurementStart)
 
       return decode
@@ -133,6 +132,41 @@ export default {
     }
   },
   computed: {
+    senderUser () {
+      try {
+        return `${this.rowData.sender.firstname} ${this.rowData.sender.lastname}`
+      } catch (e) {
+        return ''
+      }
+    },
+    senderCompany () {
+      try {
+        return this.rowData.sender.company.name
+      } catch (e) {
+        return ''
+      }
+    },
+    receiverUser () {
+      try {
+        return `${this.rowData.receiver.firstname} ${this.rowData.receiver.lastname}`
+      } catch (e) {
+        return ''
+      }
+    },
+    receiverCompany () {
+      try {
+        return this.rowData.receiver.company.name
+      } catch (e) {
+        return ''
+      }
+    },
+    tempCat () {
+      try {
+        return this.rowData.tempCat.name
+      } catch (e) {
+        return ''
+      }
+    },
     min () {
       return this.chartData.length ? Math.min(...this.chartData[0].y) : 0
     },
