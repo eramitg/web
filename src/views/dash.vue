@@ -8,22 +8,28 @@
         </card>
       </div>
       <div class="tile is-parent is-one-quarter">
-        <card type="success" class="tile is-child has-text-centered">
-          <p class="heading">{{$t('shipment_ok')}}</p>
-          <p class="title">{{this.okParcels}}</p>
-        </card>
+        <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: [1, 3]}}">
+          <card type="success">
+            <p class="heading">{{$t('shipment_ok')}}</p>
+            <p class="title">{{this.okParcels}}</p>
+          </card>
+        </router-link>
       </div>
       <div class="tile is-parent is-one-quarter">
-        <card type="danger" class="tile is-child has-text-centered">
-          <p class="heading">{{$t('deviations')}}</p>
-          <p class="title">{{this.nokParcels}}</p>
-        </card>
+        <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: [2, 4]}}">
+          <card type="danger">
+            <p class="heading">{{$t('deviations')}}</p>
+            <p class="title">{{this.nokParcels}}</p>
+          </card>
+        </router-link>
       </div>
       <div class="tile is-parent is-one-quarter">
-        <card type="warning" class="tile is-child has-text-centered">
-          <p class="heading">{{$t('shipment_transit')}}</p>
-          <p class="title">{{parcels.pendingParcels}}</p>
-        </card>
+        <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: 0}}">
+          <card type="warning">
+            <p class="heading">{{$t('shipment_transit')}}</p>
+            <p class="title">{{this.pendingParcels}}</p>
+          </card>
+        </router-link>
       </div>
     </div>
 

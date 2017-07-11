@@ -7,9 +7,14 @@ import store from './store'
 
 import VeeValidate from 'vee-validate'
 import VueProgressBar from 'vue-progressbar'
-import VueResource from 'vue-resource'
+import axiosPlugin from './axiosPlugin'
+import axios from 'axios'
+import qs from 'qs'
 
-Vue.use(VueResource)
+import Card from './components/Card.vue'
+Vue.component('card', Card)
+
+Vue.use(axiosPlugin)
 Vue.use(VeeValidate, {fieldsBagName: 'formFields'})
 Vue.use(VueProgressBar, {
   color: 'rgb(143, 255, 199)',
@@ -17,11 +22,20 @@ Vue.use(VueProgressBar, {
   height: '2px'
 })
 
-Vue.http.options.root = process.env.API_ROOT
+// Set the base endpoint of axios
+Vue.http.defaults.baseURL = process.env.API_ROOT
+axios.defaults.paramsSerializer = function (params) {
+  return qs.stringify(params, {arrayFormat: 'repeat'})
+}
 
 const token = localStorage.getItem('token')
 if (token) {
   store.commit('setToken', token)
+}
+
+const user = localStorage.getItem('user')
+if (user) {
+  store.commit('setUser', JSON.parse(user))
 }
 
 // check authentication

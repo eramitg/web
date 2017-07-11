@@ -10,12 +10,12 @@
               </figure>
               <hr>
               <form-input
-                label="Username"
-                v-model="username"
-                name="username"
+                label="Email"
+                v-model="mail"
+                name="email"
                 icon="fa fa-user-circle"
-                v-validate="'required'"
-                :err="errors.first('username')"
+                v-validate="'required|email'"
+                :err="errors.first('email')"
               />
               <form-input
                 label="Password"
@@ -46,32 +46,33 @@
     },
     data () {
       return {
-        username: '',
+        mail: '',
         password: '',
         loading: false
       }
     },
     methods: {
       async onSubmit () {
-        this.$validator.validateAll()
-
-        if (this.formFields.valid()) {
+        try {
+          await this.$validator.validateAll()
           this.loading = true
           try {
             await this.$store.dispatch('login', {
-              username: this.username,
+              mail: this.mail,
               password: this.password
             })
             const {redirect} = this.$route.query
             this.$router.push(redirect || '/')
           } catch ({data}) {
-            this.$store.dispatch('notify', {text: data.message, type: 'danger'})
+            this.$store.dispatch('notify', {text: data, type: 'danger'})
           }
           this.loading = false
+        } catch (e) {
+
         }
       },
       reset () {
-        this.username = ''
+        this.mail = ''
         this.password = ''
       }
     }

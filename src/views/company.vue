@@ -4,17 +4,18 @@
       <article class="tile is-child box">
         <h1 class="title">
           Company
-          <button v-if="$store.getters.user.role == 'SUPER'" class="button" @click="showModal = true">
+          <button v-if="$store.getters.hasRole == 'SUPER'" class="button" @click="showModal = true">
             <span class="fa fa-plus"></span>
           </button>
         </h1>
         <hr>
         <data-table
-          v-if="$store.getters.user.role == 'SUPER'"
+          v-if="$store.getters.hasRole == 'SUPER'"
           ref="vuetable"
-          url="v1/company/companies"
+          url="companies"
           :fields="table.columns"
           :sortOrder="table.sortOrder"
+          :query="table.query"
         >
           <template slot="actions" scope="props">
             <button class="button is-primary" @click="clickUpdate(props.rowData)"><i class="fa fa-pencil"/></button>
@@ -41,6 +42,7 @@
 
     <modal :active="showModal" title="Create/Edit Company" @close="closeModal" @submit="submitForm" form>
       <form-input v-model="form.name" label="Company name" placeholder="Name" v-validate="'required'" name="company name" :err="errors.first('company name')" />
+      <form-input v-model.number="form.interval" type="number" label="Measurement Interval" placeholder="interval" v-validate="'required'" name="interval" :err="errors.first('interval')" />
       <button slot="footer" type="submit" class="button is-primary" @click.prevent="submitForm">Save changes</button>
       <button slot="footer" type="button" class="button" @click.prevent="closeModal">Cancel</button>
     </modal>
@@ -61,7 +63,7 @@
       Modal
     },
     async beforeRouteEnter (to, from, next) {
-      let {data} = await Vue.http.get('v1/company/admin/company')
+      let {data} = await Vue.http.get('companies')
       next(vm => {
         vm.$data.company = data
       })
@@ -72,7 +74,8 @@
         showModal: false,
         form: {
           id: null,
-          name: ''
+          name: '',
+          interval: 10
         },
         test: {
           recipients: null,
@@ -101,12 +104,17 @@
         table: {
           columns: [
             {name: 'name', title: 'Name', sortField: 'name'},
+            {name: 'interval', title: 'Default Measurement Interval', sortField: 'interval'},
             {name: '__slot:actions', title: 'Actions', dataClass: 'has-text-centered'}
           ],
           sortOrder: [{
             field: 'name',
             direction: 'asc'
-          }]
+          }],
+          query: [
+            {name: 'Name', field: 'name'},
+            {name: 'Interval', field: 'interval'}
+          ]
         }
       }
     },
@@ -147,7 +155,8 @@
       resetForm () {
         this.form = {
           id: null,
-          name: ''
+          name: '',
+          interval: 10
         }
         // validation has to first happen, so that it can be reset
         Vue.nextTick(() => this.errors.clear())
@@ -163,9 +172,9 @@
       },
       async createCompany () {
         try {
-          let {data} = await this.$http.post('v1/company', {
+          let {data} = await this.$http.post('companies', {
             name: this.form.name,
-            info: 'W3sibGFiZWwiOiJUZW1wZXJhdHVyZSBDYXRlZ29yaWVzIiwibmFtZSI6InRlbXBlcmF0dXJlQ2F0ZWdvcmllcyIsInZhbHVlIjp7Im5hbWUiOiJBTUJJRU5UIiwidGVtcExvdyI6MTUsInRlbXBIaWdoIjoyNX0sInR5cGUiOiJzZWxlY3QiLCJvcHRpb25zIjpbeyJsYWJlbCI6IlRlbXBlcmF0dXJlIEFtYmllbnQ6IDE1LTIwIiwidmFsdWUiOnsibmFtZSI6IkFNQklFTlQiLCJ0ZW1wTG93IjoxNSwidGVtcEhpZ2giOjI1fX0seyJsYWJlbCI6IlRlbXBlcmF0dXJlIENvb2w6IDItOCIsInZhbHVlIjp7Im5hbWUiOiJDb29sIiwidGVtcExvdyI6MiwidGVtcEhpZ2giOjh9fV19LHsibGFiZWwiOiJNdWx0aXBsZSBTaGlwbWVudHMiLCJuYW1lIjoiY2FuRG9NdWx0aVNlbnNvclNoaXBtZW50cyIsInZhbHVlIjpmYWxzZSwidHlwZSI6InNlbGVjdCIsIm9wdGlvbnMiOlt7ImxhYmVsIjoiWWVzIiwidmFsdWUiOnRydWV9LHsibGFiZWwiOiJObyIsInZhbHVlIjpmYWxzZX1dfSx7ImxhYmVsIjoiTWVhc3VyZW1lbnQgSW50ZXJ2YWwgaW4gTWludXRlcyIsIm5hbWUiOiJkZWZhdWx0TWVhc3VyZW1lbnRJbnRlcnZhbCIsInZhbHVlIjoxMCwidHlwZSI6InRleHQifV0='
+            interval: this.form.interval
           })
           this.$refs.vuetable.reload()
           this.$store.dispatch('notify', {type: 'success', text: `Successfully created Company ${data.name}`})
@@ -188,8 +197,9 @@
       },
       async updateCompany () {
         try {
-          let {data} = await this.$http.put(`v1/company/update/${this.form.id}`, {
-            name: this.form.name
+          let {data} = await this.$http.put(`companies/${this.form.id}`, {
+            name: this.form.name,
+            interval: this.form.interval
           })
           this.$refs.vuetable.reload()
           this.$store.dispatch('notify', {type: 'success', text: `Successfully updated Company ${data.name}`})
@@ -212,9 +222,10 @@
           console.log(e)
         }
       },
-      clickUpdate ({ID, name}) {
-        this.form.id = ID
+      clickUpdate ({id, name, interval}) {
+        this.form.id = id
         this.form.name = name
+        this.form.interval = interval
         this.showModal = true
       }
     }

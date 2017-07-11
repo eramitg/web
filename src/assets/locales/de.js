@@ -22,5 +22,7 @@ export default {
   shipment_ok: 'Total Sendungen OK',
   deviations: 'Anzahl Abweichungen',
   shipment_transit: 'Anzahl Sendungen unterwegs',
-  shipment_not_received: 'Die Sendung wurde noch nicht empfangen'
+  shipment_not_received: 'Die Sendung wurde noch nicht empfangen',
+  switch_timeseries: 'Wechsel zu Timeseries',
+  switch_histogram: 'Wechsel zu Histogram'
 }

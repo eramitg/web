@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 const state = {
   token: null,
+  userObj: null,
   roles: ['USER', 'ADMIN', 'SUPER']
 }
 
@@ -10,13 +11,15 @@ const getters = {
     return state.token != null
   },
   user (state) {
-    if (state.token == null) {
-      return {}
-    }
-    let data = state.token.split('.')[1]
-    let json = JSON.parse(atob(data))
-
-    return json
+    return state.userObj || {}
+  },
+  company (state) {
+    return state.userObj ? state.userObj.company : {}
+  },
+  hasRole (state) {
+    return state.userObj
+    ? state.roles[state.userObj.role]
+    : ''
   }
 }
 
@@ -24,8 +27,12 @@ const mutations = {
   setToken (state, token) {
     state.token = token
   },
+  setUser (state, user) {
+    state.userObj = user
+  },
   logout (state) {
     state.token = null
+    state.userObj = null
   }
 }
 
@@ -36,6 +43,9 @@ const actions = {
       if (data.token) {
         commit('setToken', data.token)
       }
+      if (data.user) {
+        commit('setUser', data.user)
+      }
       return data
     } catch (e) {
       return Promise.reject(e)
@@ -45,15 +55,20 @@ const actions = {
     if (!role) {
       return true
     }
-    if (getters.user) {
-      let userRole = getters.user.role
-      if (userRole === 'SUPER') return true
-      if (userRole === 'ADMIN' && role === 'ADMIN') return true
-      if (userRole === 'USER') {
+    let userRole = getters.hasRole
+    switch (userRole) {
+      case 'SUPER':
+        return true
+      case 'ADMIN':
+        if (role === 'ADMIN' || role === undefined) return true
+        else return false
+      case 'USER':
         if (role === 'ADMIN' || role === 'SUPER') return false
-      }
+        if (role === undefined) return true
+        break
+      default:
+        return false
     }
-    return false
   }
 }
 
