@@ -66,9 +66,7 @@
               <a class="icon" @click="exportCSV"><i class="fa fa-file-o"></i></a>
             </p>
             <div class="level-item">
-              <a class="icon">
-                <i class="fa fa-file-excel-o"></i>
-              </a>
+              <a class="icon" @click="exportXLSX"><i class="fa fa-file-excel-o"></i></a>
             </div>
             <div class="level-item">
               <a class="icon">
@@ -125,6 +123,7 @@
 
 <script>
 import papaparse from 'papaparse'
+import XLSX from 'xlsx'
 import moment from 'moment'
 import Chart from '../../components/Chart.vue'
 import Plotly from '../../components/Plotly.vue'
@@ -172,6 +171,31 @@ export default {
         tempLink.click()
       } catch (e) {
         this.$store.dispatch('notify', {text: 'Unfortunately there was an error generating the CSV', type: 'danger'})
+      }
+    },
+    exportXLSX () {
+      try {
+        let {tnt} = this.rowData
+        let wb = {
+          SheetNames: [],
+          Sheets: {},
+          Props: {
+            Title: tnt,
+            Author: 'Modum.io'
+          }
+        }
+        let ws = XLSX.utils.json_to_sheet(this.dataTable)
+        XLSX.utils.book_append_sheet(wb, ws, 'Data')
+        let data = XLSX.write(wb, {bookType: 'xlsx', type: 'buffer'})
+        var xlsxData = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'})
+        var csvURL = window.URL.createObjectURL(xlsxData)
+        var tempLink = document.createElement('a')
+        tempLink.href = csvURL
+        tempLink.setAttribute('download', `${tnt}.xlsx`)
+        tempLink.click()
+      } catch (e) {
+        console.log(e)
+        this.$store.dispatch('notify', {text: 'Unfortunately there was an error generating the Excel', type: 'danger'})
       }
     }
   },
