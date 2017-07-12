@@ -205,7 +205,7 @@ export default {
       }
       this.$router.replace({...this.$route, query}, () => {
         this.$nextTick(() => {
-          this.reload()
+          this.$refs.vuetable.refresh()
         })
       })
     },
@@ -214,14 +214,14 @@ export default {
       delete query[key]
       this.$router.replace({...this.$route, query}, () => {
         this.$nextTick(() => {
-          this.reload()
+          this.$refs.vuetable.refresh()
         })
       })
     },
     resetFilter () {
       this.$router.replace({...this.$route, query: {}}, () => {
         this.$nextTick(() => {
-          this.reload()
+          this.$refs.vuetable.refresh()
         })
       })
     },
