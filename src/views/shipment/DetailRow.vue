@@ -55,7 +55,28 @@
 
     <div class="column">
       <div class="box">
-        <h1 class="title is-5">Infos</h1>
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <h1 class="title is-5">Infos</h1>
+            </div>
+          </div>
+          <div class="level-right">
+            <p class="level-item">
+              <a class="icon" @click="exportCSV"><i class="fa fa-file-o"></i></a>
+            </p>
+            <div class="level-item">
+              <a class="icon">
+                <i class="fa fa-file-excel-o"></i>
+              </a>
+            </div>
+            <div class="level-item">
+              <a class="icon">
+                <i class="fa fa-file-pdf-o"></i>
+              </a>
+            </div>
+          </div>
+        </div>
         <hr>
 
         <div class="inline field">
@@ -103,6 +124,7 @@
 </template>
 
 <script>
+import papaparse from 'papaparse'
 import moment from 'moment'
 import Chart from '../../components/Chart.vue'
 import Plotly from '../../components/Plotly.vue'
@@ -135,6 +157,22 @@ export default {
   data () {
     return {
       page: 0
+    }
+  },
+  methods: {
+    exportCSV () {
+      try {
+        let {tnt} = this.rowData
+        let data = papaparse.unparse(this.dataTable)
+        var csvData = new Blob([data], {type: 'text/csv;charset=utf-8;'})
+        var csvURL = window.URL.createObjectURL(csvData)
+        var tempLink = document.createElement('a')
+        tempLink.href = csvURL
+        tempLink.setAttribute('download', `${tnt}.csv`)
+        tempLink.click()
+      } catch (e) {
+        this.$store.dispatch('notify', {text: 'Unfortunately there was an error generating the CSV', type: 'danger'})
+      }
     }
   },
   computed: {
