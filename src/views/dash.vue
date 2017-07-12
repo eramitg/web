@@ -2,10 +2,12 @@
   <div v-if="statistics">
     <div class="tile is-ancestor" v-if="statistics">
       <div class="tile is-parent is-one-quarter">
-        <card type="white" class="tile is-child has-text-centered">
-          <p class="heading">{{$t('total_shipment')}}</p>
-          <p class="title">{{this.shipmentsTotal}}</p>
-        </card>
+        <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments'}">
+          <card type="white">
+            <p class="heading">{{$t('total_shipment')}}</p>
+            <p class="title">{{this.shipmentsTotal}}</p>
+          </card>
+        </router-link>
       </div>
       <div class="tile is-parent is-one-quarter">
         <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: [1, 3]}}">
