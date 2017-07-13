@@ -80,7 +80,7 @@ export default {
           'detail-row-component': this.rowComponent
         },
         on: {
-          'vuetable:cell-clicked': this.onCellClicked,
+          'vuetable:row-clicked': this.onRowClicked,
           'vuetable:pagination-data': this.onPaginationData
         }
       }),
@@ -190,6 +190,11 @@ export default {
     },
     reload () {
       this.$refs.vuetable.reload()
+    },
+    onRowClicked (data, event) {
+      if (this.rowComponent) {
+        this.$refs.vuetable.toggleDetailRow(data.id)
+      }
     },
     onCellClicked (data, field, event) {
       if (this.rowComponent) {
