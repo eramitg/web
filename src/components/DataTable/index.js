@@ -175,6 +175,13 @@ export default {
   },
   methods: {
     onPaginationData (tablePagination) {
+      // fix displaying to not more than total
+      try {
+        let {to, total} = tablePagination
+        if (to > total) {
+          tablePagination.to = total
+        }
+      } catch (e) {}
       this.$refs.paginationInfo.setPaginationData(tablePagination)
       this.$refs.pagination.setPaginationData(tablePagination)
     },
