@@ -113,7 +113,7 @@
           <label><b>{{$t('cat')}}</b>: </label>
           <span>{{rowData.tempCat.name}}</span>
         </div>
-        <div v-if="link" class="inline field" :style="{marginTop: '1rem'}">
+        <div v-if="link" class="inline field spacer-margin-top-1">
           <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
         </div>
       </div>
@@ -121,22 +121,13 @@
         <h1 class="title is-5">Mean Kinetic Temperature</h1>
         <hr>
 
-        <div class="field is-horizontal">
-          <div class="field-body">
-            <div class="field is-grouped">
-              <p class="control is-expanded">
-                <form-input v-model.number="defaultActivationEnergy" :horizontal="true" type="number" label="Activation Energy" v-validate="'required'" name="activation_energy"/>
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="block" :style="{marginTop: '1rem'}">
-          <button type="button" class="button is-primary" @click="calculateMKT">Calculate</button>
-          <button type="button" class="button is-info" @click="resetMKT">Reset</button>
-        </div>
+        <form-input type="number" label="Activation Energy:" :horizontal="true" v-model.number="defaultActivationEnergy">
+          <a @click="resetActivationEnergy" class="button is-primary">Reset</a>
+        </form-input>
+
         <div class="inline field">
-          <label><b>MKT</b>: </label>
-          <span v-if="mkt != 0" v-model="mkt">{{this.mkt}} °C</span>
+          <label><b>Mean Kinetic Temperature</b>: </label>
+          <span v-if="mkt !== 'NaN'" v-model="mkt">{{this.mkt}} °C</span>
         </div>
       </div>
     </div>
@@ -180,18 +171,20 @@ export default {
   data () {
     return {
       page: 0,
-      defaultActivationEnergy: 83.14472,
-      mkt: 0
+      defaultActivationEnergy: 83.14472
     }
   },
   methods: {
+    resetActivationEnergy () {
+      this.defaultActivationEnergy = 83.14472
+    },
     exportCSV () {
       try {
         let {tnt} = this.rowData
         let data = papaparse.unparse(this.dataTable)
-        var csvData = new Blob([data], {type: 'text/csv;charset=utf-8;'})
-        var csvURL = window.URL.createObjectURL(csvData)
-        var tempLink = document.createElement('a')
+        let csvData = new Blob([data], {type: 'text/csv;charset=utf-8;'})
+        let csvURL = window.URL.createObjectURL(csvData)
+        let tempLink = document.createElement('a')
         tempLink.href = csvURL
         tempLink.setAttribute('download', `${tnt}.csv`)
         tempLink.click()
@@ -226,6 +219,19 @@ export default {
     }
   },
   computed: {
+    mkt () {
+      let gasConstant = 8.314472
+      let numOfMeasurements = this.decodedMeasurements.length
+
+      let tempsInKelvin = this.decodedMeasurements.map(item => item + 273.15)
+      let defaultActivationEnergy = this.defaultActivationEnergy
+      let denominators = tempsInKelvin.map(item => Math.exp(-defaultActivationEnergy / (gasConstant * item)))
+      let sumOfDenominators = denominators.reduce((a, b) => a + b)
+      let logResult = -Math.log(sumOfDenominators / numOfMeasurements)
+
+      let mktInKelvin = (this.defaultActivationEnergy / gasConstant) / logResult
+      return mktInKelvin - 273.15
+    },
     decodedMeasurements () {
       try {
         let {measurements} = this.rowData
@@ -355,25 +361,6 @@ export default {
         },
         bargap: 0.15
       }
-    }
-  },
-  methods: {
-    calculateMKT () {
-      var gasConstant = 8.314472
-      var numOfMeasurements = this.decodedMeasurements.length
-
-      var tempsInKelvin = this.decodedMeasurements.map(item => item + 273.15)
-      var defaultActivationEnergy = this.defaultActivationEnergy
-      var denominators = tempsInKelvin.map(item => Math.exp(-defaultActivationEnergy / (gasConstant * item)))
-      var sumOfDenominators = denominators.reduce((a, b) => a + b)
-      var logResult = -Math.log(sumOfDenominators / numOfMeasurements)
-
-      var mktInKelvin = (this.defaultActivationEnergy / gasConstant) / logResult
-      this.mkt = mktInKelvin - 273.15
-    },
-    resetMKT () {
-      this.defaultActivationEnergy = 83.14472
-      this.mkt = 0
     }
   }
 }
