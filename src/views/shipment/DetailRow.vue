@@ -94,8 +94,30 @@
           <label><b>{{$t('cat')}}</b>: </label>
           <span>{{rowData.tempCat.name}}</span>
         </div>
-        <div v-if="link" class="inline field" :style="{marginTop: '20px'}">
+        <div v-if="link" class="inline field" :style="{marginTop: '1rem'}">
           <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
+        </div>
+      </div>
+      <div class="box">
+        <h1 class="title is-5">Mean Kinetic Temperature</h1>
+        <hr>
+
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field is-grouped">
+              <p class="control is-expanded">
+                <form-input v-model.number="defaultActivationEnergy" :horizontal="true" type="number" label="Activation Energy" v-validate="'required'" name="activation_energy"/>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="block" :style="{marginTop: '1rem'}">
+          <button type="button" class="button is-primary" @click="calculateMKT">Calculate</button>
+          <button type="button" class="button is-info" @click="resetMKT">Reset</button>
+        </div>
+        <div class="inline field">
+          <label><b>MKT</b>: </label>
+          <span v-if="mkt != 0" v-model="mkt">{{this.mkt}} °C</span>
         </div>
       </div>
     </div>
@@ -107,11 +129,13 @@ import moment from 'moment'
 import Chart from '../../components/Chart.vue'
 import Plotly from '../../components/Plotly.vue'
 import Switches from 'vue-switches'
+import FormInput from '../../components/FormInput.vue'
 export default {
   components: {
     Chart,
     Plotly,
-    Switches
+    Switches,
+    FormInput
   },
   props: {
     rowData: {
@@ -134,7 +158,9 @@ export default {
   },
   data () {
     return {
-      page: 0
+      page: 0,
+      defaultActivationEnergy: 83.14472,
+      mkt: 0
     }
   },
   computed: {
@@ -267,6 +293,25 @@ export default {
         },
         bargap: 0.15
       }
+    }
+  },
+  methods: {
+    calculateMKT () {
+      var gasConstant = 8.314472
+      var numOfMeasurements = this.decodedMeasurements.length
+
+      var tempsInKelvin = this.decodedMeasurements.map(item => item + 273.15)
+      var defaultActivationEnergy = this.defaultActivationEnergy
+      var denominators = tempsInKelvin.map(item => Math.exp(-defaultActivationEnergy / (gasConstant * item)))
+      var sumOfDenominators = denominators.reduce((a, b) => a + b)
+      var logResult = -Math.log(sumOfDenominators / numOfMeasurements)
+
+      var mktInKelvin = (this.defaultActivationEnergy / gasConstant) / logResult
+      this.mkt = mktInKelvin - 273.15
+    },
+    resetMKT () {
+      this.defaultActivationEnergy = 83.14472
+      this.mkt = 0
     }
   }
 }
