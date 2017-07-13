@@ -51,7 +51,6 @@ export default {
     animation-duration: .5s;
   }
 
-  // $sizes: (0,10,15,20,25,30,50);
   $sizes: (1,1.5,2,3,5,10);
   $positions: ('top','left','bottom','right');
 
