@@ -80,7 +80,7 @@ export default {
           'detail-row-component': this.rowComponent
         },
         on: {
-          'vuetable:cell-clicked': this.onCellClicked,
+          'vuetable:row-clicked': this.onRowClicked,
           'vuetable:pagination-data': this.onPaginationData
         }
       }),
@@ -175,6 +175,13 @@ export default {
   },
   methods: {
     onPaginationData (tablePagination) {
+      // fix displaying to not more than total
+      try {
+        let {to, total} = tablePagination
+        if (to > total) {
+          tablePagination.to = total
+        }
+      } catch (e) {}
       this.$refs.paginationInfo.setPaginationData(tablePagination)
       this.$refs.pagination.setPaginationData(tablePagination)
     },
@@ -183,6 +190,11 @@ export default {
     },
     reload () {
       this.$refs.vuetable.reload()
+    },
+    onRowClicked (data, event) {
+      if (this.rowComponent) {
+        this.$refs.vuetable.toggleDetailRow(data.id)
+      }
     },
     onCellClicked (data, field, event) {
       if (this.rowComponent) {
@@ -205,7 +217,7 @@ export default {
       }
       this.$router.replace({...this.$route, query}, () => {
         this.$nextTick(() => {
-          this.reload()
+          this.$refs.vuetable.refresh()
         })
       })
     },
@@ -214,14 +226,14 @@ export default {
       delete query[key]
       this.$router.replace({...this.$route, query}, () => {
         this.$nextTick(() => {
-          this.reload()
+          this.$refs.vuetable.refresh()
         })
       })
     },
     resetFilter () {
       this.$router.replace({...this.$route, query: {}}, () => {
         this.$nextTick(() => {
-          this.reload()
+          this.$refs.vuetable.refresh()
         })
       })
     },
