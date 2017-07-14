@@ -1,7 +1,7 @@
 <template>
-  <div class="columns">
-    <div class="column is-three-quarters">
-      <div v-if="decodedMeasurements.length" class="box">
+  <div class="tile is-ancestor">
+    <div class="tile is-parent is-8">
+      <div class="tile is-child box" v-if="decodedMeasurements.length">
         <div class="tabs is-boxed is-medium">
           <ul>
             <li :class="{'is-active': page === 0}">
@@ -53,8 +53,8 @@
       </div>
     </div>
 
-    <div class="column">
-      <div class="box">
+    <div class="tile is-vertical is-parent is-4">
+      <div class="tile is-child box">
         <div class="level">
           <div class="level-left">
             <div class="level-item">
@@ -76,7 +76,6 @@
           </div>
         </div>
         <hr>
-
         <div class="inline field">
           <label><b>{{$t('tnt')}}</b>: </label>
           <span>{{rowData.tnt}}</span>
@@ -113,28 +112,38 @@
           <label><b>{{$t('cat')}}</b>: </label>
           <span>{{rowData.tempCat.name}}</span>
         </div>
-        <div v-if="link" class="inline field spacer-margin-top-1">
-          <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
-        </div>
       </div>
-      <div class="box">
-        <div class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <h1 class="title is-5">Mean Kinetic Temperature</h1>
-            </div>
-          </div>
-        </div>
+
+      <div class="tile is-child box">
+        <h1 class="title is-5">Calculations</h1>
         <hr>
-
-        <form-input type="number" label="Activation Energy:" :horizontal="true" v-model.number="defaultActivationEnergy">
-          <a @click="resetActivationEnergy" class="button is-primary">Reset</a>
-        </form-input>
-
+        <div class="inline field">
+          <label><b>Minimum</b>: </label>
+          <span>{{rowData.calculation.min}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>Maximum</b>: </label>
+          <span>{{rowData.calculation.max}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>Average</b>: </label>
+          <span>{{rowData.calculation.average}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>Kelvin Minutes</b>: </label>
+          <span>{{rowData.calculation.kelvinMinutes}}</span>
+        </div>
         <div class="inline field">
           <label><b>Mean Kinetic Temperature</b>: </label>
           <span v-if="mkt !== 'NaN'" v-model="mkt">{{this.mkt}} °C</span>
         </div>
+        <form-input v-if="!link" type="number" label="Activation Energy:" v-model.number="defaultActivationEnergy">
+          <a @click="resetActivationEnergy" class="button is-primary">Reset</a>
+        </form-input>
+      </div>
+
+      <div class="tile is-child" v-if="link">
+        <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
       </div>
     </div>
   </div>
