@@ -118,7 +118,13 @@
         </div>
       </div>
       <div class="box">
-        <h1 class="title is-5">Mean Kinetic Temperature</h1>
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <h1 class="title is-5">Mean Kinetic Temperature</h1>
+            </div>
+          </div>
+        </div>
         <hr>
 
         <form-input type="number" label="Activation Energy:" :horizontal="true" v-model.number="defaultActivationEnergy">
