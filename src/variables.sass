@@ -28,7 +28,7 @@ $purple:       hsl(271, 100%, 71%) !default
 $red:          hsl(348, 100%, 61%) !default
 
 // custom colors
-$lynch: hsl(211, 17%, 53%)
+$lynch: hsl(211, 22%, 29%)
 $bluewood: hsl(210, 33%, 25%)
 $boston-blue: hsl(208, 56%, 46%)
 $viking: hsl(194, 66%, 61%)
@@ -105,7 +105,7 @@ $border-hover: $grey-light !default
 $text: $lynch !default
 $text-invert: findColorInvert($text) !default
 $text-light: $grey !default
-$text-strong: $lynch !default
+$text-strong: darken($text, 50%) !default
 
 // Code colors
 $code: $red !default
@@ -144,3 +144,16 @@ $size-large: $size-4 !default
 $colors: (white: ($white, $black), black: ($black, $white), light: ($light, $light-invert), dark: ($dark, $dark-invert), primary: ($primary, $primary-invert), info: ($info, $info-invert), success: ($success, $success-invert), warning: ($warning, $warning-invert), danger: ($danger, $danger-invert)) !default
 
 $sizes: $size-1 $size-2 $size-3 $size-4 $size-5 $size-6 !default
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+// 5. Table
+
+$table: $text
+
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+// 6. Form
+
+$input: $text
