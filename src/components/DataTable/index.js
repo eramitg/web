@@ -30,14 +30,6 @@ export default {
             })
           ])
         ]),
-        h('div', {class: 'level-left'}, [
-          h('div', {class: 'level-item'}, [
-            h('filter-tags', {
-              props: {tags: this.$route.query, query: this.query},
-              on: {'remove-tag': this.removeFilter}
-            })
-          ])
-        ]),
         h('div', {class: 'level-right'}, [
           h('div', {class: 'level-item'}, [
             h('vuetable-pagination-info', {ref: 'paginationInfo',
@@ -66,6 +58,10 @@ export default {
           ])
         ])
       ]),
+      h('filter-tags', {
+        props: {tags: this.$route.query, query: this.query},
+        on: {'remove-tag': this.removeFilter}
+      }),
       h('vuetable', {ref: 'vuetable',
         scopedSlots: this.$scopedSlots,
         props: {
