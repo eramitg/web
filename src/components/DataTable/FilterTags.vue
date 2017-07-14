@@ -1,10 +1,12 @@
 <template>
-  <ul>
-    <li v-for="value, key in tags" class="tag is-primary is-medium">
-      {{replaceNames(key, value)}}
-      <button class="delete is-small" @click="removeTag(key)"></button>
-    </li>
-  </ul>
+  <nav class="level" v-if="Object.keys(tags).length">
+    <div v-for="value, key in tags" class="level-item">
+      <div class="tag is-primary is-medium">
+        {{replaceNames(key, value)}}
+        <button class="delete is-small" @click="removeTag(key)"></button>
+      </div>
+    </div>
+  </nav>
 </template>
 
 <script>
