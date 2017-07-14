@@ -55,7 +55,26 @@
 
     <div class="column">
       <div class="box">
-        <h1 class="title is-5">Infos</h1>
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <h1 class="title is-5">Infos</h1>
+            </div>
+          </div>
+          <div class="level-right">
+            <p class="level-item">
+              <a class="icon" @click="exportCSV"><i class="fa fa-file-o"></i></a>
+            </p>
+            <div class="level-item">
+              <a class="icon" @click="exportXLSX"><i class="fa fa-file-excel-o"></i></a>
+            </div>
+            <div class="level-item">
+              <a class="icon">
+                <i class="fa fa-file-pdf-o"></i>
+              </a>
+            </div>
+          </div>
+        </div>
         <hr>
 
         <div class="inline field">
@@ -94,8 +113,21 @@
           <label><b>{{$t('cat')}}</b>: </label>
           <span>{{rowData.tempCat.name}}</span>
         </div>
-        <div v-if="link" class="inline field" :style="{marginTop: '20px'}">
+        <div v-if="link" class="inline field spacer-margin-top-1">
           <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
+        </div>
+      </div>
+      <div class="box">
+        <h1 class="title is-5">Mean Kinetic Temperature</h1>
+        <hr>
+
+        <form-input type="number" label="Activation Energy:" :horizontal="true" v-model.number="defaultActivationEnergy">
+          <a @click="resetActivationEnergy" class="button is-primary">Reset</a>
+        </form-input>
+
+        <div class="inline field">
+          <label><b>Mean Kinetic Temperature</b>: </label>
+          <span v-if="mkt !== 'NaN'" v-model="mkt">{{this.mkt}} °C</span>
         </div>
       </div>
     </div>
@@ -103,15 +135,19 @@
 </template>
 
 <script>
+import papaparse from 'papaparse'
+import XLSX from 'xlsx'
 import moment from 'moment'
 import Chart from '../../components/Chart.vue'
 import Plotly from '../../components/Plotly.vue'
 import Switches from 'vue-switches'
+import FormInput from '../../components/FormInput.vue'
 export default {
   components: {
     Chart,
     Plotly,
-    Switches
+    Switches,
+    FormInput
   },
   props: {
     rowData: {
@@ -134,16 +170,74 @@ export default {
   },
   data () {
     return {
-      page: 0
+      page: 0,
+      defaultActivationEnergy: 83.14472
+    }
+  },
+  methods: {
+    resetActivationEnergy () {
+      this.defaultActivationEnergy = 83.14472
+    },
+    exportCSV () {
+      try {
+        let {tnt} = this.rowData
+        let data = papaparse.unparse(this.dataTable)
+        let csvData = new Blob([data], {type: 'text/csv;charset=utf-8;'})
+        let csvURL = window.URL.createObjectURL(csvData)
+        let tempLink = document.createElement('a')
+        tempLink.href = csvURL
+        tempLink.setAttribute('download', `${tnt}.csv`)
+        tempLink.click()
+      } catch (e) {
+        this.$store.dispatch('notify', {text: 'Unfortunately there was an error generating the CSV', type: 'danger'})
+      }
+    },
+    exportXLSX () {
+      try {
+        let {tnt} = this.rowData
+        let wb = {
+          SheetNames: [],
+          Sheets: {},
+          Props: {
+            Title: tnt,
+            Author: 'Modum.io'
+          }
+        }
+        let ws = XLSX.utils.json_to_sheet(this.dataTable)
+        XLSX.utils.book_append_sheet(wb, ws, 'Data')
+        let data = XLSX.write(wb, {bookType: 'xlsx', type: 'buffer'})
+        var xlsxData = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'})
+        var csvURL = window.URL.createObjectURL(xlsxData)
+        var tempLink = document.createElement('a')
+        tempLink.href = csvURL
+        tempLink.setAttribute('download', `${tnt}.xlsx`)
+        tempLink.click()
+      } catch (e) {
+        console.log(e)
+        this.$store.dispatch('notify', {text: 'Unfortunately there was an error generating the Excel', type: 'danger'})
+      }
     }
   },
   computed: {
+    mkt () {
+      let gasConstant = 8.314472
+      let numOfMeasurements = this.decodedMeasurements.length
+
+      let tempsInKelvin = this.decodedMeasurements.map(item => item + 273.15)
+      let defaultActivationEnergy = this.defaultActivationEnergy
+      let denominators = tempsInKelvin.map(item => Math.exp(-defaultActivationEnergy / (gasConstant * item)))
+      let sumOfDenominators = denominators.reduce((a, b) => a + b)
+      let logResult = -Math.log(sumOfDenominators / numOfMeasurements)
+
+      let mktInKelvin = (this.defaultActivationEnergy / gasConstant) / logResult
+      return mktInKelvin - 273.15
+    },
     decodedMeasurements () {
       try {
         let {measurements} = this.rowData
         let binary = window.atob(measurements)
         let len = binary.length
-        let bytes = new Uint8Array(len)
+        let bytes = new Float32Array(len)
         for (let i = 0; i < len; i++) {
           bytes[i] = binary.charCodeAt(i)
         }

@@ -51,6 +51,28 @@ export default {
     animation-duration: .5s;
   }
 
+  $sizes: (1,1.5,2,3,5,10);
+  $positions: ('top','left','bottom','right');
+
+  @each $size in $sizes {
+    @each $position in $positions {
+      .spacer-margin-#{$position}-#{$size} {
+        margin-#{$position}: $size + rem;
+      }
+
+      .spacer-padding-#{$position}-#{$size} {
+        padding-#{$position}: $size + rem;
+      }
+    }
+
+    .spacer-margin-#{$size} {
+      margin: $size + rem;
+    }
+    .spacer-padding-#{$size} {
+      padding: $size + rem;
+    }
+  }
+
 
   $fa-font-path: '~font-awesome/fonts/';
   @import '~font-awesome/scss/font-awesome';

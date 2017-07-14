@@ -29,9 +29,11 @@ import moment from 'moment'
 import DataTable from '../../components/DataTable'
 import DetailRow from './DetailRow'
 import Status from './Status'
+import Watched from './Watched'
 
 Vue.component('shipment-detail-row', DetailRow)
 Vue.component('shipment-status', Status)
+Vue.component('shipment-watched', Watched)
 
 export default {
   components: {
@@ -43,6 +45,7 @@ export default {
         columns: [
           {name: '__component:shipment-status', title: this.$t('status'), titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered', sortField: 'status'},
           {name: '__slot:temperature', title: this.$t('temperature'), dataClass: 'vertical-centered has-text-centered'},
+          {name: '__component:shipment-watched', title: 'Watched', titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered', sortField: 'status'},
           {name: 'tnt', title: this.$t('tnt'), sortField: 'tnt'},
           {name: 'sender.company.name', title: this.$t('send_comp')},
           {name: 'receiver.company.name', title: this.$t('rcv_comp')},
@@ -52,7 +55,7 @@ export default {
         ],
         sortOrder: [{
           field: 'updatedAt',
-          direction: 'desc'
+          direction: 'asc'
         }],
         query: [
           {
@@ -134,7 +137,6 @@ export default {
 
         return `${before}${minTemp}|${middle}|${maxTemp}${after}`
       } catch (e) {
-        console.log(e)
         return 'Error =)'
       }
     }

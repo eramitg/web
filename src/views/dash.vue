@@ -1,17 +1,19 @@
 <template>
-  <div v-if="parcels">
-    <div class="tile is-ancestor" v-if="parcels">
+  <div v-if="statistics">
+    <div class="tile is-ancestor" v-if="statistics">
       <div class="tile is-parent is-one-quarter">
-        <card type="white" class="tile is-child has-text-centered">
-          <p class="heading">{{$t('total_shipment')}}</p>
-          <p class="title">{{this.totalParcels}}</p>
-        </card>
+        <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments'}">
+          <card type="white">
+            <p class="heading">{{$t('total_shipment')}}</p>
+            <p class="title">{{this.shipmentsTotal}}</p>
+          </card>
+        </router-link>
       </div>
       <div class="tile is-parent is-one-quarter">
         <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: [1, 3]}}">
           <card type="success">
             <p class="heading">{{$t('shipment_ok')}}</p>
-            <p class="title">{{this.okParcels}}</p>
+            <p class="title">{{this.shipmentsOK}}</p>
           </card>
         </router-link>
       </div>
@@ -19,7 +21,7 @@
         <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: [2, 4]}}">
           <card type="danger">
             <p class="heading">{{$t('deviations')}}</p>
-            <p class="title">{{this.nokParcels}}</p>
+            <p class="title">{{this.shipmentsNOK}}</p>
           </card>
         </router-link>
       </div>
@@ -27,19 +29,19 @@
         <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: 0}}">
           <card type="warning">
             <p class="heading">{{$t('shipment_transit')}}</p>
-            <p class="title">{{this.pendingParcels}}</p>
+            <p class="title">{{this.shipmentsInTransit}}</p>
           </card>
         </router-link>
       </div>
     </div>
 
-    <div class="tile is-ancestor" v-if="parcels">
+    <div class="tile is-ancestor" v-if="statistics">
       <div class="tile is-parent is-8">
         <article class="tile is-child box">
           <chart :type="'bar'" :data="pieData" :options="barOptions"></chart>
         </article>
       </div>
-      <div class="tile is-parent is-4" v-if="parcels">
+      <div class="tile is-parent is-4" v-if="statistics">
         <article class="tile is-child box">
           <chart :type="'doughnut'" :data="pieData"></chart>
         </article>
@@ -65,7 +67,7 @@
       try {
         let {data} = await Vue.http.get('statistics')
         next(vm => {
-          vm.$data.parcels = data
+          vm.$data.statistics = data
         })
       } catch (e) {
         next()
@@ -73,7 +75,7 @@
     },
     data () {
       return {
-        parcels: null,
+        statistics: null,
         labels: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
         backgroundColor: [
           '#26BA9A',
@@ -92,23 +94,39 @@
       }
     },
     computed: {
-      totalParcels () {
-        return this.parcels ? this.parcels.totalParcels : 0
+      shipmentsTotal () {
+        try {
+          return this.statistics ? this.statistics.shipmentsTotal : 0
+        } catch (e) {
+          return 0
+        }
       },
-      okParcels () {
-        return this.parcels ? this.parcels.okParcels : 0
+      shipmentsOK () {
+        try {
+          return this.statistics ? this.statistics.shipmentsOK : 0
+        } catch (e) {
+          return 0
+        }
       },
-      nokParcels () {
-        return this.parcels ? this.parcels.nokParcels : 0
+      shipmentsNOK () {
+        try {
+          return this.statistics ? this.statistics.shipmentsNOK : 0
+        } catch (e) {
+          return 0
+        }
       },
-      pendingParcels () {
-        return this.parcels ? this.parcels.pendingParcels : 0
+      shipmentsInTransit () {
+        try {
+          return this.statistics ? this.statistics.shipmentsInTransit : 0
+        } catch (e) {
+          return 0
+        }
       },
       pieData () {
         return {
-          labels: this.labels,
+          labels: [this.$t('shipment_ok'), this.$t('deviations'), this.$t('shipment_transit')],
           datasets: [{
-            data: [this.okParcels, this.nokParcels, this.pendingParcels],
+            data: [this.shipmentsOK, this.shipmentsNOK, this.shipmentsInTransit],
             backgroundColor: this.backgroundColor
           }]
         }
