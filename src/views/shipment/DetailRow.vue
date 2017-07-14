@@ -142,8 +142,16 @@
         </form-input>
       </div>
 
-      <div class="tile is-child" v-if="link">
-        <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
+      <div class="tile is-child">
+        <div class="columns">
+          <div class="column">
+            <button v-if="rowData.approvedID > 0" type="button" name="button" class="button is-success is-fullwidth" disabled><i class="fa fa-check"></i>Approved</button>
+            <button v-else type="button" name="button" class="button is-primary is-fullwidth" @click="setApproved">Approve</button>
+          </div>
+          <div class="column" v-if="link" >
+            <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Go to Detail</router-link>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -230,6 +238,15 @@ export default {
       } catch (e) {
         console.log(e)
         this.$store.dispatch('notify', {text: 'Unfortunately there was an error generating the Excel', type: 'danger'})
+      }
+    },
+    async setApproved () {
+      let {id} = this.rowData
+      try {
+        let {data} = await this.$http.post(`shipments/${id}/approved`)
+        this.rowData.approvedID = data.approvedID
+      } catch (e) {
+        console.log(e)
       }
     }
   },
@@ -382,8 +399,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import '../../variables';
+
   .data-table {
     max-height: 400px;
     overflow: scroll;
+  }
+
+  .not-watched {
+    color: $danger
+  }
+
+  .watched {
+    color: $success
   }
 </style>

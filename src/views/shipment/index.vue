@@ -29,11 +29,11 @@ import moment from 'moment'
 import DataTable from '../../components/DataTable'
 import DetailRow from './DetailRow'
 import Status from './Status'
-import Watched from './Watched'
+import Approved from './Approved'
 
 Vue.component('shipment-detail-row', DetailRow)
 Vue.component('shipment-status', Status)
-Vue.component('shipment-watched', Watched)
+Vue.component('shipment-approved', Approved)
 
 export default {
   components: {
@@ -45,13 +45,13 @@ export default {
         columns: [
           {name: '__component:shipment-status', title: this.$t('status'), titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered', sortField: 'status'},
           {name: '__slot:temperature', title: this.$t('temperature'), dataClass: 'vertical-centered has-text-centered'},
-          {name: '__component:shipment-watched', title: 'Watched', titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered', sortField: 'status'},
           {name: 'tnt', title: this.$t('tnt'), sortField: 'tnt'},
           {name: 'sender.company.name', title: this.$t('send_comp')},
           {name: 'receiver.company.name', title: this.$t('rcv_comp')},
           {name: 'sent', title: this.$t('date_sent'), sortField: 'sent', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
           {name: 'received', title: this.$t('date_received'), sortField: 'received', callback: 'formatDate|DD.MM.YYYY, HH:mm'},
-          {name: '__slot:transit', title: this.$t('transit')}
+          {name: '__slot:transit', title: this.$t('transit')},
+          {name: '__component:shipment-approved', title: 'Approved', titleClass: 'fix-width', dataClass: 'vertical-centered has-text-centered', sortField: 'approvedID'}
         ],
         sortOrder: [{
           field: 'updatedAt',
