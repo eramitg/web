@@ -20,7 +20,7 @@ export default {
   zero_records: 'Keine Einträge gefunden',
   total_shipment: 'Total Sendungen verschickt',
   shipment_ok: 'Total Sendungen OK',
-  deviations: 'Total Sendunen nict OK',
+  deviations: 'Total Sendungen nicht OK',
   shipment_transit: 'Total Sendungen unterwegs',
   shipment_not_received: 'Die Sendung wurde noch nicht empfangen',
   switch_timeseries: 'Wechsel zu Timeseries',
