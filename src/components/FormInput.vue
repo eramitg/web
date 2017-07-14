@@ -4,7 +4,6 @@
       <label class="label">{{label}}</label>
     </div>
     <label v-else-if="label" class="label">{{label}}</label>
-    {{slots}}
     <div class="control" :class="{'has-icon': icon, 'has-addons': hasSlot}">
       <input :value="value" @input="updateValue" class="input" :class="{'is-danger': err}" :type="type" :placeholder="placeholder || label.toLowerCase()" :name="name">
       <span v-if="icon" class="icon">

@@ -30,15 +30,13 @@ export default {
             })
           ])
         ]),
-        h('div', {class: 'level-left'}, [
-          h('div', {class: 'level-item'}, [
-            h('filter-tags', {
-              props: {tags: this.$route.query, query: this.query},
-              on: {'remove-tag': this.removeFilter}
-            })
-          ])
-        ]),
         h('div', {class: 'level-right'}, [
+          h('div', {class: 'level-item'}, [
+            h('button', {class: 'button', on: {click: this.expandAll}}, 'Expand all')
+          ]),
+          h('div', {class: 'level-item'}, [
+            h('button', {class: 'button', on: {click: this.collapseAll}}, 'Collapse all')
+          ]),
           h('div', {class: 'level-item'}, [
             h('vuetable-pagination-info', {ref: 'paginationInfo',
               props: {
@@ -66,6 +64,10 @@ export default {
           ])
         ])
       ]),
+      h('filter-tags', {
+        props: {tags: this.$route.query, query: this.query},
+        on: {'remove-tag': this.removeFilter}
+      }),
       h('vuetable', {ref: 'vuetable',
         scopedSlots: this.$scopedSlots,
         props: {
@@ -174,6 +176,30 @@ export default {
     }
   },
   methods: {
+    expandAll () {
+      try {
+        let {tableData} = this.$refs.vuetable
+        if (tableData) {
+          tableData.forEach(({id}) => {
+            Vue.nextTick(() => {
+              this.$refs.vuetable.showDetailRow(id)
+            })
+          })
+        }
+      } catch (e) {}
+    },
+    collapseAll () {
+      try {
+        let {visibleDetailRows} = this.$refs.vuetable
+        if (visibleDetailRows) {
+          visibleDetailRows.forEach((id) => {
+            Vue.nextTick(() => {
+              this.$refs.vuetable.hideDetailRow(id)
+            })
+          })
+        }
+      } catch (e) {}
+    },
     onPaginationData (tablePagination) {
       // fix displaying to not more than total
       try {
