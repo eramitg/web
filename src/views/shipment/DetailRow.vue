@@ -237,7 +237,7 @@ export default {
         let {measurements} = this.rowData
         let binary = window.atob(measurements)
         let len = binary.length
-        let bytes = new Uint8Array(len)
+        let bytes = new Float32Array(len)
         for (let i = 0; i < len; i++) {
           bytes[i] = binary.charCodeAt(i)
         }
