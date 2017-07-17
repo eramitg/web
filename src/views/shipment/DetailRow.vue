@@ -69,7 +69,7 @@
               <a class="icon" @click="exportXLSX"><i class="fa fa-file-excel-o"></i></a>
             </div>
             <div class="level-item">
-              <a class="icon">
+              <a class="icon" href="/api/static/draft9.pdf" target="_blank">
                 <i class="fa fa-file-pdf-o"></i>
               </a>
             </div>

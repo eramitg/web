@@ -73,6 +73,9 @@ export default {
     }
   }
 
+  .clickable {
+    cursor: pointer;
+  }
 
   $fa-font-path: '~font-awesome/fonts/';
   @import '~font-awesome/scss/font-awesome';
