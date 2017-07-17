@@ -137,7 +137,7 @@ export default {
 
         return `${before}${minTemp}|${middle}|${maxTemp}${after}`
       } catch (e) {
-        return 'Error =)'
+        return ''
       }
     }
   }

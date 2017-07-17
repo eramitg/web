@@ -186,7 +186,7 @@
             mail: this.form.mail,
             password: this.form.password,
             role: this.form.role,
-            companyId: this.form.companyID
+            companyID: this.form.companyID
           })
           this.$refs.vuetable.reload()
           this.$store.dispatch('notify', {type: 'success', text: `Successfully created User ${data.name}`})
