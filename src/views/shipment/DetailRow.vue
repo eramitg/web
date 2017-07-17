@@ -114,28 +114,28 @@
         </div>
       </div>
 
-      <div class="tile is-child box">
+      <div class="tile is-child box" v-if="rowData.calculation">
         <h1 class="title is-5">Calculations</h1>
         <hr>
         <div class="inline field">
           <label><b>Minimum</b>: </label>
-          <span>{{rowData.calculation.min}}</span>
+          <span>{{min}}</span>
         </div>
         <div class="inline field">
           <label><b>Maximum</b>: </label>
-          <span>{{rowData.calculation.max}}</span>
+          <span>{{max}}</span>
         </div>
         <div class="inline field">
           <label><b>Average</b>: </label>
-          <span>{{rowData.calculation.average}}</span>
+          <span>{{avg}}</span>
         </div>
         <div class="inline field">
           <label><b>Kelvin Minutes</b>: </label>
-          <span>{{rowData.calculation.kelvinMinutes}}</span>
+          <span>{{kelvinMinutes}}</span>
         </div>
         <div class="inline field">
           <label><b>Mean Kinetic Temperature</b>: </label>
-          <span v-if="mkt !== 'NaN'" v-model="mkt">{{this.mkt}} °C</span>
+          <span v-if="mkt !== 'NaN'" v-model="mkt">{{mkt}} °C</span>
         </div>
         <form-input v-if="!link" type="number" label="Activation Energy:" v-model.number="defaultActivationEnergy">
           <a @click="resetActivationEnergy" class="button is-primary">Reset</a>
@@ -252,17 +252,21 @@ export default {
   },
   computed: {
     mkt () {
-      let gasConstant = 8.314472
-      let numOfMeasurements = this.decodedMeasurements.length
+      try {
+        let gasConstant = 8.314472
+        let numOfMeasurements = this.decodedMeasurements.length
 
-      let tempsInKelvin = this.decodedMeasurements.map(item => item + 273.15)
-      let defaultActivationEnergy = this.defaultActivationEnergy
-      let denominators = tempsInKelvin.map(item => Math.exp(-defaultActivationEnergy / (gasConstant * item)))
-      let sumOfDenominators = denominators.reduce((a, b) => a + b)
-      let logResult = -Math.log(sumOfDenominators / numOfMeasurements)
+        let tempsInKelvin = this.decodedMeasurements.map(item => item + 273.15)
+        let defaultActivationEnergy = this.defaultActivationEnergy
+        let denominators = tempsInKelvin.map(item => Math.exp(-defaultActivationEnergy / (gasConstant * item)))
+        let sumOfDenominators = denominators.reduce((a, b) => a + b)
+        let logResult = -Math.log(sumOfDenominators / numOfMeasurements)
 
-      let mktInKelvin = (this.defaultActivationEnergy / gasConstant) / logResult
-      return mktInKelvin - 273.15
+        let mktInKelvin = (this.defaultActivationEnergy / gasConstant) / logResult
+        return mktInKelvin - 273.15
+      } catch (e) {
+        return 0
+      }
     },
     decodedMeasurements () {
       try {
@@ -355,10 +359,34 @@ export default {
       }
     },
     min () {
-      return this.decodedMeasurements.length ? Math.min(...this.decodedMeasurements) : 0
+      try {
+        return this.rowData.calculation.min
+      } catch (e) {
+        return 0
+      }
+      // return this.decodedMeasurements.length ? Math.min(...this.decodedMeasurements) : 0
     },
     max () {
-      return this.decodedMeasurements.length ? Math.max(...this.decodedMeasurements) : 0
+      try {
+        return this.rowData.calculation.max
+      } catch (e) {
+        return 0
+      }
+      // return this.decodedMeasurements.length ? Math.max(...this.decodedMeasurements) : 0
+    },
+    avg () {
+      try {
+        return this.rowData.calculation.average
+      } catch (e) {
+        return 0
+      }
+    },
+    kelvinMinutes () {
+      try {
+        return this.rowData.calculation.kelvinMinutes
+      } catch (e) {
+        return 0
+      }
     },
     range () {
       let offset = 3
