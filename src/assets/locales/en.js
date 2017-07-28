@@ -20,8 +20,8 @@ export default {
   zero_records: 'No records found',
   total_shipment: 'Total shipments sent',
   shipment_ok: 'Total shipments ok',
-  deviations: 'Number of deviations',
-  shipment_transit: 'Number of shipments in transit',
+  deviations: 'Total shipments not ok',
+  shipment_transit: 'Total shipments in transit',
   shipment_not_received: 'The shipment has not been received yet',
   switch_timeseries: 'Switch to timeseries',
   switch_histogram: 'Switch to histogram'

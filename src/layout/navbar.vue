@@ -49,9 +49,25 @@
           if (role === null) return true
         }
       },
-      async isAllowedToAccessPath (role) {
+      isAllowedToAccessPath (role) {
         try {
-          return await this.store.dispatch('checkAccess', role)
+          if (!role) {
+            return true
+          }
+          let userRole = this.hasRole
+          switch (userRole) {
+            case 'SUPER':
+              return true
+            case 'ADMIN':
+              if (role === 'ADMIN' || role === undefined) return true
+              else return false
+            case 'USER':
+              if (role === 'ADMIN' || role === 'SUPER') return false
+              if (role === undefined) return true
+              break
+            default:
+              return false
+          }
         } catch (e) {
           return false
         }

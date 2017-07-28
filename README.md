@@ -1,6 +1,6 @@
 # modum-web
 
-> Temperature Logging Web App for modum.io"
+> Temperature Logging Web App for modum.io
 
 ## Build Setup
 
@@ -26,5 +26,11 @@ npm run e2e
 # run all tests
 npm test
 ```
+
+## Configuration
+
+The build and development environment can be configured in `config/index.js`. For example the ip address and port can there be changed for development.
+
+
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

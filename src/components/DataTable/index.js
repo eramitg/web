@@ -32,6 +32,12 @@ export default {
         ]),
         h('div', {class: 'level-right'}, [
           h('div', {class: 'level-item'}, [
+            h('button', {class: 'button', on: {click: this.expandAll}}, 'Expand all')
+          ]),
+          h('div', {class: 'level-item'}, [
+            h('button', {class: 'button', on: {click: this.collapseAll}}, 'Collapse all')
+          ]),
+          h('div', {class: 'level-item'}, [
             h('vuetable-pagination-info', {ref: 'paginationInfo',
               props: {
                 infoClass: ''
@@ -170,6 +176,30 @@ export default {
     }
   },
   methods: {
+    expandAll () {
+      try {
+        let {tableData} = this.$refs.vuetable
+        if (tableData) {
+          tableData.forEach(({id}) => {
+            Vue.nextTick(() => {
+              this.$refs.vuetable.showDetailRow(id)
+            })
+          })
+        }
+      } catch (e) {}
+    },
+    collapseAll () {
+      try {
+        let {visibleDetailRows} = this.$refs.vuetable
+        if (visibleDetailRows) {
+          visibleDetailRows.forEach((id) => {
+            Vue.nextTick(() => {
+              this.$refs.vuetable.hideDetailRow(id)
+            })
+          })
+        }
+      } catch (e) {}
+    },
     onPaginationData (tablePagination) {
       // fix displaying to not more than total
       try {

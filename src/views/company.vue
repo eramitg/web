@@ -3,7 +3,7 @@
     <div class="tile is-parent is-12">
       <article class="tile is-child box">
         <h1 class="title">
-          Company
+          Companies
           <button v-if="$store.getters.hasRole == 'SUPER'" class="button" @click="showModal = true">
             <span class="fa fa-plus"></span>
           </button>

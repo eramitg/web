@@ -11,7 +11,7 @@
       </div>
       <div class="tile is-parent is-one-quarter">
         <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: [1, 3]}}">
-          <card type="success">
+          <card type="success" style="background-color: #48c092 !important;">
             <p class="heading">{{$t('shipment_ok')}}</p>
             <p class="title">{{this.shipmentsOK}}</p>
           </card>
@@ -19,7 +19,7 @@
       </div>
       <div class="tile is-parent is-one-quarter">
         <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: [2, 4]}}">
-          <card type="danger">
+          <card type="danger" style="background-color: #f79010 !important;">
             <p class="heading">{{$t('deviations')}}</p>
             <p class="title">{{this.shipmentsNOK}}</p>
           </card>
@@ -27,7 +27,7 @@
       </div>
       <div class="tile is-parent is-one-quarter">
         <router-link class="tile is-child has-text-centered" :to="{name: 'Shipments', query: {status: 0}}">
-          <card type="warning">
+          <card type="warning" style="background-color: #454aa7 !important;">
             <p class="heading">{{$t('shipment_transit')}}</p>
             <p class="title">{{this.shipmentsInTransit}}</p>
           </card>
@@ -76,11 +76,11 @@
     data () {
       return {
         statistics: null,
-        labels: ['Total Sendungen OK', 'Anzahl Abweichungen', '# Sendungen unterwegs'],
+        labels: ['Total Sendungen OK', 'Total Sendungen nicht OK', 'total Sendungen unterwegs'],
         backgroundColor: [
-          '#26BA9A',
-          '#D8544F',
-          '#EFAC4D'
+          '#48c092',
+          '#f79010',
+          '#454aa7'
         ],
         barOptions: {
           legend: {display: false},

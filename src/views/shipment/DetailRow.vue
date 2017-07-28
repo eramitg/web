@@ -1,7 +1,7 @@
 <template>
-  <div class="columns">
-    <div class="column is-three-quarters">
-      <div v-if="decodedMeasurements.length" class="box">
+  <div class="tile is-ancestor">
+    <div class="tile is-parent is-8">
+      <div class="tile is-child box" v-if="decodedMeasurements.length">
         <div class="tabs is-boxed is-medium">
           <ul>
             <li :class="{'is-active': page === 0}">
@@ -53,8 +53,8 @@
       </div>
     </div>
 
-    <div class="column">
-      <div class="box">
+    <div class="tile is-vertical is-parent is-4">
+      <div class="tile is-child box">
         <div class="level">
           <div class="level-left">
             <div class="level-item">
@@ -69,14 +69,13 @@
               <a class="icon" @click="exportXLSX"><i class="fa fa-file-excel-o"></i></a>
             </div>
             <div class="level-item">
-              <a class="icon">
+              <a class="icon" href="/api/static/draft9.pdf" target="_blank">
                 <i class="fa fa-file-pdf-o"></i>
               </a>
             </div>
           </div>
         </div>
         <hr>
-
         <div class="inline field">
           <label><b>{{$t('tnt')}}</b>: </label>
           <span>{{rowData.tnt}}</span>
@@ -113,21 +112,45 @@
           <label><b>{{$t('cat')}}</b>: </label>
           <span>{{rowData.tempCat.name}}</span>
         </div>
-        <div v-if="link" class="inline field spacer-margin-top-1">
-          <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Detail</router-link>
-        </div>
       </div>
-      <div class="box">
-        <h1 class="title is-5">Mean Kinetic Temperature</h1>
+
+      <div class="tile is-child box" v-if="rowData.calculation">
+        <h1 class="title is-5">Calculations</h1>
         <hr>
-
-        <form-input type="number" label="Activation Energy:" :horizontal="true" v-model.number="defaultActivationEnergy">
-          <a @click="resetActivationEnergy" class="button is-primary">Reset</a>
-        </form-input>
-
+        <div class="inline field">
+          <label><b>Minimum</b>: </label>
+          <span>{{min}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>Maximum</b>: </label>
+          <span>{{max}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>Average</b>: </label>
+          <span>{{avg}}</span>
+        </div>
+        <div class="inline field">
+          <label><b>Kelvin Minutes</b>: </label>
+          <span>{{kelvinMinutes}}</span>
+        </div>
         <div class="inline field">
           <label><b>Mean Kinetic Temperature</b>: </label>
-          <span v-if="mkt !== 'NaN'" v-model="mkt">{{this.mkt}} °C</span>
+          <span v-if="mkt !== 'NaN'" v-model="mkt">{{mkt}} °C</span>
+        </div>
+        <form-input v-if="!link" type="number" label="Activation Energy:" v-model.number="defaultActivationEnergy">
+          <a @click="resetActivationEnergy" class="button is-primary">Reset</a>
+        </form-input>
+      </div>
+
+      <div class="tile is-child">
+        <div class="columns">
+          <div class="column">
+            <button v-if="rowData.approvedID > 0" type="button" name="button" class="button is-success is-fullwidth" disabled><i class="fa fa-check"></i>Approved</button>
+            <button v-else type="button" name="button" class="button is-primary is-fullwidth" @click="setApproved">Approve</button>
+          </div>
+          <div class="column" v-if="link" >
+            <router-link class="button is-fullwidth is-primary" :to="{name: 'Detail', params: {id: rowData.id}}">Go to Detail</router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -216,21 +239,34 @@ export default {
         console.log(e)
         this.$store.dispatch('notify', {text: 'Unfortunately there was an error generating the Excel', type: 'danger'})
       }
+    },
+    async setApproved () {
+      let {id} = this.rowData
+      try {
+        let {data} = await this.$http.post(`shipments/${id}/approved`)
+        this.rowData.approvedID = data.approvedID
+      } catch (e) {
+        console.log(e)
+      }
     }
   },
   computed: {
     mkt () {
-      let gasConstant = 8.314472
-      let numOfMeasurements = this.decodedMeasurements.length
+      try {
+        let gasConstant = 8.314472
+        let numOfMeasurements = this.decodedMeasurements.length
 
-      let tempsInKelvin = this.decodedMeasurements.map(item => item + 273.15)
-      let defaultActivationEnergy = this.defaultActivationEnergy
-      let denominators = tempsInKelvin.map(item => Math.exp(-defaultActivationEnergy / (gasConstant * item)))
-      let sumOfDenominators = denominators.reduce((a, b) => a + b)
-      let logResult = -Math.log(sumOfDenominators / numOfMeasurements)
+        let tempsInKelvin = this.decodedMeasurements.map(item => item + 273.15)
+        let defaultActivationEnergy = this.defaultActivationEnergy
+        let denominators = tempsInKelvin.map(item => Math.exp(-defaultActivationEnergy / (gasConstant * item)))
+        let sumOfDenominators = denominators.reduce((a, b) => a + b)
+        let logResult = -Math.log(sumOfDenominators / numOfMeasurements)
 
-      let mktInKelvin = (this.defaultActivationEnergy / gasConstant) / logResult
-      return mktInKelvin - 273.15
+        let mktInKelvin = (this.defaultActivationEnergy / gasConstant) / logResult
+        return mktInKelvin - 273.15
+      } catch (e) {
+        return 0
+      }
     },
     decodedMeasurements () {
       try {
@@ -323,10 +359,34 @@ export default {
       }
     },
     min () {
-      return this.decodedMeasurements.length ? Math.min(...this.decodedMeasurements) : 0
+      try {
+        return this.rowData.calculation.min
+      } catch (e) {
+        return 0
+      }
+      // return this.decodedMeasurements.length ? Math.min(...this.decodedMeasurements) : 0
     },
     max () {
-      return this.decodedMeasurements.length ? Math.max(...this.decodedMeasurements) : 0
+      try {
+        return this.rowData.calculation.max
+      } catch (e) {
+        return 0
+      }
+      // return this.decodedMeasurements.length ? Math.max(...this.decodedMeasurements) : 0
+    },
+    avg () {
+      try {
+        return this.rowData.calculation.average
+      } catch (e) {
+        return 0
+      }
+    },
+    kelvinMinutes () {
+      try {
+        return this.rowData.calculation.kelvinMinutes
+      } catch (e) {
+        return 0
+      }
     },
     range () {
       let offset = 3
@@ -367,8 +427,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  @import '../../variables';
+
   .data-table {
     max-height: 400px;
     overflow: scroll;
+  }
+
+  .not-watched {
+    color: $danger
+  }
+
+  .watched {
+    color: $success
   }
 </style>

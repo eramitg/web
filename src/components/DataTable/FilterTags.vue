@@ -1,9 +1,11 @@
 <template>
   <nav class="level" v-if="Object.keys(tags).length">
-    <div v-for="value, key in tags" class="level-item">
-      <div class="tag is-primary is-medium">
-        {{replaceNames(key, value)}}
-        <button class="delete is-small" @click="removeTag(key)"></button>
+    <div class="level-left">
+      <div v-for="value, key in tags" class="level-item">
+        <div class="tag is-primary is-medium">
+          {{replaceNames(key, value)}}
+          <button class="delete is-small" @click="removeTag(key)"></button>
+        </div>
       </div>
     </div>
   </nav>
@@ -32,14 +34,18 @@ export default {
             let option = obj.options.find(item => {
               return item.value === val
             })
-            return option.label
+            return option ? option.label : ''
           })
           return `${obj.name} = ${names}`
         } else {
           let option = obj.options.find(item => {
             return item.value === value
           })
-          return `${obj.name} = ${option.label}`
+          if (option) {
+            return `${obj.name} = ${option.label}`
+          } else {
+            return `${obj.name} = ${value}`
+          }
         }
       }
       return `${obj.name} = ${value}`
